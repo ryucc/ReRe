@@ -4,11 +4,11 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.katie.orange.core.Listener;
 import org.katie.orange.core.data.methods.MethodCall;
 import org.katie.orange.core.data.methods.MethodResult;
 import org.katie.orange.core.data.methods.Signature;
 import org.katie.orange.core.data.objects.Node;
+import org.katie.orange.core.listener.Listener;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -30,22 +30,18 @@ public class CodeSynthesizer {
 
     public String generateMockito(Listener listener) {
         Node root = listener.getRoot();
-        try {
-            Class<?> clazz = root.getClazz();
-            String fileName = "Mock" + clazz.getSimpleName() + "Creator";
-            TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(fileName).addModifiers(Modifier.PUBLIC);
+        Class<?> clazz = root.getClazz();
+        String fileName = "Mock" + clazz.getSimpleName() + "Creator";
+        TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(fileName).addModifiers(Modifier.PUBLIC);
 
 
-            MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(this.methodName).addModifiers(Modifier.PUBLIC, Modifier.STATIC).returns(clazz);
-            generateObject(root, methodBuilder);
-            methodBuilder.addStatement("return $L", root.getUniqueMockName());
-            typeBuilder.addMethod(methodBuilder.build());
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(this.methodName).addModifiers(Modifier.PUBLIC, Modifier.STATIC).returns(clazz);
+        generateObject(root, methodBuilder);
+        methodBuilder.addStatement("return $L", root.getUniqueMockName());
+        typeBuilder.addMethod(methodBuilder.build());
 
-            JavaFile javaFile = JavaFile.builder(this.packageName, typeBuilder.build()).addStaticImport(ArgumentMatchers.class, "*").addStaticImport(Mockito.class, "doReturn").build();
-            return javaFile.toString();
-        } catch (Exception e) {
-        }
-        return "";
+        JavaFile javaFile = JavaFile.builder(this.packageName, typeBuilder.build()).addStaticImport(ArgumentMatchers.class, "*").addStaticImport(Mockito.class, "doReturn").build();
+        return javaFile.toString();
     }
 
     private void generateObject(Node objectNode, MethodSpec.Builder methodBuilder) {
@@ -59,38 +55,36 @@ public class CodeSynthesizer {
             }
             return;
         }
-        try {
-            Class<?> clazz = objectNode.getClazz();
 
-            String mockName = objectNode.getUniqueMockName();
+        Class<?> clazz = objectNode.getClazz();
 
-            Map<Signature, List<String>> childObjectNames = new HashMap<>();
+        String mockName = objectNode.getUniqueMockName();
 
-            for (MethodCall methodCall : objectNode.getMethodCalls()) {
-                Signature signature = methodCall.getSignature();
-                if (methodCall.getResult() == MethodResult.RETURN) {
-                    generateObject(methodCall.getDest(), methodBuilder);
-                    if (!childObjectNames.containsKey(signature)) {
-                        childObjectNames.put(signature, new ArrayList<>());
-                    }
-                    childObjectNames.get(signature).add(methodCall.getDest().getUniqueMockName());
+        Map<Signature, List<String>> childObjectNames = new HashMap<>();
+
+        for (MethodCall methodCall : objectNode.getMethodCalls()) {
+            Signature signature = methodCall.getSignature();
+            if (methodCall.getResult() == MethodResult.RETURN) {
+                generateObject(methodCall.getDest(), methodBuilder);
+                if (!childObjectNames.containsKey(signature)) {
+                    childObjectNames.put(signature, new ArrayList<>());
                 }
+                childObjectNames.get(signature).add(methodCall.getDest().getUniqueMockName());
             }
-            methodBuilder.addStatement("$T $L = $T.mock($T.class)", clazz, mockName, Mockito.class, clazz);
+        }
+        methodBuilder.addStatement("$T $L = $T.mock($T.class)", clazz, mockName, Mockito.class, clazz);
 
-            for (Signature key : childObjectNames.keySet()) {
-                System.out.println(key);
-                CodeBlock.Builder statement = CodeBlock.builder();
-                List<String> returnNames = childObjectNames.get(key);
-                for (String name : returnNames) {
-                    statement.add("doReturn($L).", name);
-                }
-                statement.add("when($L).", objectNode.getUniqueMockName());
-
-                statement.add("$L($L)", key.getMethodName(), generateParamString(key.getParamTypes()));
-                methodBuilder.addStatement(statement.build());
+        for (Signature key : childObjectNames.keySet()) {
+            System.out.println(key);
+            CodeBlock.Builder statement = CodeBlock.builder();
+            List<String> returnNames = childObjectNames.get(key);
+            for (String name : returnNames) {
+                statement.add("doReturn($L).", name);
             }
-        } catch (Exception e) {
+            statement.add("when($L).", objectNode.getUniqueMockName());
+
+            statement.add("$L($L)", key.getMethodName(), generateParamString(key.getParamTypes()));
+            methodBuilder.addStatement(statement.build());
         }
     }
 

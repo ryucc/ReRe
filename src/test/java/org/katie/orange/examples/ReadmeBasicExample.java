@@ -1,19 +1,20 @@
 package org.katie.orange.examples;
 
-import org.katie.orange.core.Listener;
+import org.katie.orange.core.listener.Listener;
 import org.katie.orange.core.synthesizer.CodeSynthesizer;
 
-public class Main2 {
+public class ReadmeBasicExample {
     public static void main(String[] args) {
-        HttpClient client = new HttpClient();
 
+        Dice dice = new Dice(1);
         Listener listener = new Listener();
-        HttpClient wrappedClient = listener.wrap(client);
+        Dice wrappedDice = listener.wrap(dice);
 
-        System.out.println(wrappedClient.get().getBody());
+        for (int i = 1; i <= 5; i++) {
+            System.out.println("Rolled " + wrappedDice.roll());
+        }
 
         CodeSynthesizer codeSynthesizer = new CodeSynthesizer("org.katie.orange.examples", "create");
-
         System.out.println(codeSynthesizer.generateMockito(listener));
     }
 }

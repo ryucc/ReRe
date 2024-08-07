@@ -2,6 +2,7 @@ package org.katie.orange.core;
 
 
 import org.junit.jupiter.api.Test;
+import org.katie.orange.core.listener.ObjectInitializer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
