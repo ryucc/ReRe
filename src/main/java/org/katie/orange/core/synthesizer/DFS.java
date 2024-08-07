@@ -4,11 +4,10 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.katie.orange.core.data.methods.InternalMethodCall;
+import org.katie.orange.core.data.methods.MethodCall;
 import org.katie.orange.core.data.methods.MethodResult;
-import org.katie.orange.core.data.methods.PrimitiveMethodCall;
 import org.katie.orange.core.data.methods.Signature;
-import org.katie.orange.core.data.objects.InternalNode;
+import org.katie.orange.core.data.objects.Node;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -20,9 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 public class DFS {
-    public void generateMockito(InternalNode root) {
+    public void generateMockito(Node root) {
         try {
-            Class<?> clazz = Class.forName(root.getDisplayName());
+            Class<?> clazz = root.getClazz();
             String fileName = "Mock" + clazz.getSimpleName() + "Creator";
             TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(fileName).addModifiers(Modifier.PUBLIC);
 
@@ -32,24 +31,27 @@ public class DFS {
             methodBuilder.addStatement("return $L", root.getUniqueMockName());
             typeBuilder.addMethod(methodBuilder.build());
 
-            JavaFile javaFile = JavaFile.builder("com.example.helloworld", typeBuilder.build())
-                    .addStaticImport(ArgumentMatchers.class, "*")
-                    .addStaticImport(Mockito.class, "doReturn")
-                    .build();
+            JavaFile javaFile = JavaFile.builder("org.katie.orange", typeBuilder.build()).addStaticImport(ArgumentMatchers.class, "*").addStaticImport(Mockito.class, "doReturn").build();
             javaFile.writeTo(System.out);
         } catch (Exception e) {
         }
     }
 
-    private void generateObject(InternalNode objectNode, MethodSpec.Builder methodBuilder) {
+    private void generateObject(Node objectNode, MethodSpec.Builder methodBuilder) {
+        if (objectNode.isTerminal()) {
+            Class<?> clazz = objectNode.getClazz();
+            String mockName = objectNode.getUniqueMockName();
+            methodBuilder.addStatement("$T $L = $L", clazz, mockName, objectNode.getValue());
+            return;
+        }
         try {
-            Class<?> clazz = Class.forName(objectNode.getDisplayName());
+            Class<?> clazz = objectNode.getClazz();
 
             String mockName = objectNode.getUniqueMockName();
 
             Map<Signature, List<String>> childObjectNames = new HashMap<>();
 
-            for (InternalMethodCall methodCall : objectNode.getInternalMethodCalls()) {
+            for (MethodCall methodCall : objectNode.getMethodCalls()) {
                 Signature signature = methodCall.getSignature();
                 if (methodCall.getResult() == MethodResult.RETURN) {
                     generateObject(methodCall.getDest(), methodBuilder);
@@ -60,8 +62,6 @@ public class DFS {
                 }
             }
             methodBuilder.addStatement("$T $L = $T.mock($T.class)", clazz, mockName, Mockito.class, clazz);
-
-            generatePrimitiveCalls(objectNode, methodBuilder);
 
             for (Signature key : childObjectNames.keySet()) {
                 System.out.println(key);
@@ -76,32 +76,6 @@ public class DFS {
                 methodBuilder.addStatement(statement.build());
             }
         } catch (Exception e) {
-        }
-    }
-    private void generatePrimitiveCalls(InternalNode objectNode, MethodSpec.Builder methodBuilder) {
-
-        Map<Signature, List<PrimitiveMethodCall>> methodsBySignature = new HashMap<>();
-        for (PrimitiveMethodCall methodCall : objectNode.getPrimitiveMethodCalls()) {
-            Signature signature = methodCall.getSignature();
-            if (!methodsBySignature.containsKey(signature)) {
-                methodsBySignature.put(signature, new ArrayList<>());
-            }
-            methodsBySignature.get(signature).add(methodCall);
-        }
-        for (Signature key : methodsBySignature.keySet()) {
-            CodeBlock.Builder statement = CodeBlock.builder();
-            List<PrimitiveMethodCall> methodCalls = methodsBySignature.get(key);
-            for (PrimitiveMethodCall methodCall : methodCalls) {
-                if(methodCall.getResult() == MethodResult.RETURN) {
-                    statement.add("doReturn($L).", methodCall.getDest().getValue());
-                } else {
-                    statement.add("doThrow($L).", methodCall.getDest().getValue());
-                }
-            }
-            statement.add("when($L).", objectNode.getUniqueMockName());
-
-            statement.add("$L($L)", key.getMethodName(), generateParamString(key.getParamTypes()));
-            methodBuilder.addStatement(statement.build());
         }
     }
 

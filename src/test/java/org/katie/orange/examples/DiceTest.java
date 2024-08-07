@@ -1,4 +1,4 @@
-package org.kaite.orange.examples;
+package org.katie.orange.examples;
 
 import org.junit.jupiter.api.Test;
 import org.katie.orange.examples.Dice;

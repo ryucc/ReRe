@@ -7,11 +7,20 @@ import java.util.UUID;
 
 public class MethodCall {
 
+    public Signature getSignature() {
+        return signature;
+    }
+
     private final Signature signature;
 
     // Dynamic
     private final UUID uuid;
     private final Node source;
+
+    public Node getDest() {
+        return dest;
+    }
+
     private final Node dest;
     private final MethodResult result;
 
@@ -23,6 +32,9 @@ public class MethodCall {
         this.signature = new Signature(method);
     }
 
+    public String getName() {
+        return signature.getMethodName();
+    }
     public MethodResult getResult() {
         return result;
     }

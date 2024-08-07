@@ -1,12 +1,8 @@
 package org.katie.orange.examples;
 
-import  org.katie.orange.core.MockFactory;
-import org.katie.orange.core.MockFactory2;
-import org.katie.orange.core.data.objects.InternalNode;
+import org.katie.orange.core.MockFactory;
 import org.katie.orange.core.data.objects.Node;
 import org.katie.orange.core.synthesizer.DFS;
-import org.katie.orange.core.synthesizer.DFS2;
-import org.katie.orange.core.synthesizer.SimpleTreePrinter;
 
 import java.util.UUID;
 
@@ -19,7 +15,7 @@ public class Main {
 
 
         MockFactory mockFactory = new MockFactory();
-        InternalNode root = new InternalNode(Dice.class);
+        Node root = new Node(Dice.class);
 
         Dice c = mockFactory.createInternal(dice, root);
         DFS dfs = new DFS();

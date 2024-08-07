@@ -4,27 +4,31 @@ import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.katie.orange.core.data.objects.InternalNode;
+import org.katie.orange.core.data.objects.Node;
 
 import java.lang.reflect.Modifier;
 
 
 public class MockFactory {
+    RecordInterceptor interceptor;
 
+    public MockFactory() {
+        interceptor = new RecordInterceptor(this);
+    }
 
     public <T> T createRoot(T original) {
-        InternalNode node = new InternalNode(original.getClass());
+        Node node = new Node(original.getClass());
         return createInternal(original, node);
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T createInternal(T original, InternalNode node) {
+    public <T> T createInternal(T original, Node node) {
         Class<?> mockedClass = new ByteBuddy()
                 .subclass(original.getClass())
                 .defineField("original", Object.class, Modifier.PUBLIC)
-                .defineField("objectNode", InternalNode.class, Modifier.PUBLIC)
+                .defineField("objectNode", Node.class, Modifier.PUBLIC)
                 .method(ElementMatchers.not(ElementMatchers.isToString()))
-                .intercept(MethodDelegation.to(new RecordInterceptor()))
+                .intercept(MethodDelegation.to(interceptor))
                 .make()
                 .load(getClass().getClassLoader(), ClassLoadingStrategy.Default.WRAPPER)
                 .getLoaded();
