@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
 import java.util.Set;
 
 public class RecordInterceptor {
-    public static final Set<Class<?>> primitiveClasses = Set.of(Integer.class, Byte.class, Character.class, Boolean.class, Double.class, Float.class, Long.class, Short.class, int.class, byte.class, char.class, boolean.class, double.class, float.class, long.class, short.class);
+    public static final Set<Class<?>> primitiveClasses = Set.of(Integer.class, Byte.class, Character.class, Boolean.class, Double.class, Float.class, Long.class, Short.class, int.class, byte.class, char.class, boolean.class, double.class, float.class, long.class, short.class, String.class);
     public static final Set<Class<?>> voidClasses = Set.of(Void.class, void.class);
 
     private final Listener listener;

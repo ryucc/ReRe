@@ -52,7 +52,11 @@ public class CodeSynthesizer {
         if (objectNode.isTerminal()) {
             Class<?> clazz = objectNode.getClazz();
             String mockName = objectNode.getUniqueMockName();
-            methodBuilder.addStatement("$T $L = $L", clazz, mockName, objectNode.getValue());
+            if (objectNode.getClazz().equals(String.class)) {
+                methodBuilder.addStatement("$T $L = $S", clazz, mockName, objectNode.getValue());
+            } else {
+                methodBuilder.addStatement("$T $L = $L", clazz, mockName, objectNode.getValue());
+            }
             return;
         }
         try {

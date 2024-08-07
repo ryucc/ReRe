@@ -50,7 +50,7 @@ public class Main {
             wrappedDice.roll();
         }
         CodeSynthesizer synth = new CodeSynthesizer("org.katie.orange.examples", "create");
-        System.out.println(synth.generateMockito(root));
+        System.out.println(synth.generateMockito(listener));
     }
 }
 ```
@@ -61,4 +61,49 @@ There are 2 modifications required.
 
 That's it!
 
+Of course, it's not useful to only return primitives. Orange mocks the objects recursively.
+
+For example, having a object
+
+```java
+
+import java.net.http.HttpResponse;
+
+public class Main2 {
+    public static void main(String[] args) {
+        HttpClient client = new HttpClient();
+        HttpResponse response = client.get();
+        String body = response.getBody();
+        System.out.println(body);
+    }
+}
+```
+Orange can generate the following code by listening to HttpClient
+
+
+
+```java
+public class MockHttpClientCreator {
+  public static HttpClient create() {
+    String string_d510 = "Hello World!";
+    HttpResponse mockHttpResponse_047e = Mockito.mock(HttpResponse.class);
+    doReturn(string_d510).when(mockHttpResponse_047e).getBody();
+    HttpClient mockHttpClient_c11e = Mockito.mock(HttpClient.class);
+    doReturn(mockHttpResponse_047e).when(mockHttpClient_c11e).get();
+    return mockHttpClient_c11e;
+  }
+}
+```
+
+As long as your program ends, this tree is will be finite, also the leaf nodes return void or a primitive data type.
+
+This means that Orange can mock almost any java object! (As long as there are no final classes involved)
+
+### Recording throws
+
+Yes, Orange will also record and chain `doThrow`
+
+## Recording methods with side effects
+
+Coming soon
 
