@@ -4,6 +4,7 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import org.katie.orange.core.Listener;
 import org.katie.orange.core.data.methods.MethodCall;
 import org.katie.orange.core.data.methods.MethodResult;
 import org.katie.orange.core.data.methods.Signature;
@@ -18,23 +19,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DFS {
-    public void generateMockito(Node root) {
+public class CodeSynthesizer {
+    private final String packageName;
+    private final String methodName;
+
+    public CodeSynthesizer(String packageName, String methodName) {
+        this.packageName = packageName;
+        this.methodName = methodName;
+    }
+
+    public String generateMockito(Listener listener) {
+        Node root = listener.getRoot();
         try {
             Class<?> clazz = root.getClazz();
             String fileName = "Mock" + clazz.getSimpleName() + "Creator";
             TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(fileName).addModifiers(Modifier.PUBLIC);
 
 
-            MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("create").addModifiers(Modifier.PUBLIC, Modifier.STATIC).returns(clazz);
+            MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(this.methodName).addModifiers(Modifier.PUBLIC, Modifier.STATIC).returns(clazz);
             generateObject(root, methodBuilder);
             methodBuilder.addStatement("return $L", root.getUniqueMockName());
             typeBuilder.addMethod(methodBuilder.build());
 
-            JavaFile javaFile = JavaFile.builder("org.katie.orange", typeBuilder.build()).addStaticImport(ArgumentMatchers.class, "*").addStaticImport(Mockito.class, "doReturn").build();
-            javaFile.writeTo(System.out);
+            JavaFile javaFile = JavaFile.builder(this.packageName, typeBuilder.build()).addStaticImport(ArgumentMatchers.class, "*").addStaticImport(Mockito.class, "doReturn").build();
+            return javaFile.toString();
         } catch (Exception e) {
         }
+        return "";
     }
 
     private void generateObject(Node objectNode, MethodSpec.Builder methodBuilder) {

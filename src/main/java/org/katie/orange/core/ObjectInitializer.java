@@ -6,7 +6,6 @@ public class ObjectInitializer {
     @SuppressWarnings("unchecked")
     public static <T> T create(Class<T> clazz) {
         for (Constructor<?> constructor : clazz.getConstructors()) {
-            System.out.println(constructor);
             try {
                 int length = constructor.getParameterCount();
                 Class<?>[] paramClazzes = constructor.getParameterTypes();

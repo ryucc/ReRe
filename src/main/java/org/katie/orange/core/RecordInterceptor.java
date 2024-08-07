@@ -15,10 +15,10 @@ public class RecordInterceptor {
     public static final Set<Class<?>> primitiveClasses = Set.of(Integer.class, Byte.class, Character.class, Boolean.class, Double.class, Float.class, Long.class, Short.class, int.class, byte.class, char.class, boolean.class, double.class, float.class, long.class, short.class);
     public static final Set<Class<?>> voidClasses = Set.of(Void.class, void.class);
 
-    private final MockFactory mockFactory;
+    private final Listener listener;
 
-    public RecordInterceptor(MockFactory mockFactory) {
-        this.mockFactory = mockFactory;
+    public RecordInterceptor(Listener listener) {
+        this.listener = listener;
     }
 
     private boolean shouldSerialize(Object obj) {
@@ -49,7 +49,7 @@ public class RecordInterceptor {
                 Node dest = new Node(returnValue.getClass());
                 MethodCall edge = new MethodCall(orignalMethod, source, dest, MethodResult.RETURN);
                 source.addEdge(edge);
-                return new MockFactory().createInternal(returnValue, dest);
+                return listener.createInternal(returnValue, dest);
             }
         } catch (Exception e) {
             Node dest = new Node(e.getClass());
