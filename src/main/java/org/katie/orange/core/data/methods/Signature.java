@@ -9,10 +9,17 @@ public class Signature {
     private final String returnType;
     private final String methodName;
     private final List<String> paramTypes;
+    private final List<Class<?>> paramClasses;
+
     public Signature(Method method) {
         this.methodName = method.getName();
         this.returnType = method.getReturnType().getName();
         this.paramTypes = Arrays.stream(method.getParameterTypes()).map(Class::getName).collect(Collectors.toList());
+        this.paramClasses = Arrays.asList(method.getParameterTypes());
+    }
+
+    public List<Class<?>> getParamClasses() {
+        return paramClasses;
     }
 
     public String getReturnType() {

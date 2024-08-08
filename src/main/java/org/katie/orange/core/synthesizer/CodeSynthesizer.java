@@ -45,33 +45,28 @@ public class CodeSynthesizer {
     }
 
     private void generateObject(Node objectNode, MethodSpec.Builder methodBuilder) {
-        if (objectNode.isTerminal()) {
-            Class<?> clazz = objectNode.getClazz();
-            String mockName = objectNode.getUniqueMockName();
-            if (objectNode.getClazz().equals(String.class)) {
-                methodBuilder.addStatement("$T $L = $S", clazz, mockName, objectNode.getValue());
-            } else {
-                methodBuilder.addStatement("$T $L = $L", clazz, mockName, objectNode.getValue());
-            }
-            return;
-        }
-
-        Class<?> clazz = objectNode.getClazz();
-
-        String mockName = objectNode.getUniqueMockName();
-
         Map<Signature, List<String>> childObjectNames = new HashMap<>();
-
         for (MethodCall methodCall : objectNode.getMethodCalls()) {
             Signature signature = methodCall.getSignature();
             if (methodCall.getResult() == MethodResult.RETURN) {
-                generateObject(methodCall.getDest(), methodBuilder);
                 if (!childObjectNames.containsKey(signature)) {
                     childObjectNames.put(signature, new ArrayList<>());
                 }
-                childObjectNames.get(signature).add(methodCall.getDest().getUniqueMockName());
+                if (methodCall.getDest().isTerminal()) {
+                    if (methodCall.getDest().getClazz().equals(String.class)) {
+                        String value = methodCall.getDest().getValue();
+                        childObjectNames.get(signature).add("\"" + value + "\"");
+                    } else {
+                        childObjectNames.get(signature).add(methodCall.getDest().getValue());
+                    }
+                } else {
+                    generateObject(methodCall.getDest(), methodBuilder);
+                    childObjectNames.get(signature).add(methodCall.getDest().getUniqueMockName());
+                }
             }
         }
+        Class<?> clazz = objectNode.getClazz();
+        String mockName = objectNode.getUniqueMockName();
         methodBuilder.addStatement("$T $L = $T.mock($T.class)", clazz, mockName, Mockito.class, clazz);
 
         for (Signature key : childObjectNames.keySet()) {
@@ -83,13 +78,37 @@ public class CodeSynthesizer {
             }
             statement.add("when($L).", objectNode.getUniqueMockName());
 
-            statement.add("$L($L)", key.getMethodName(), generateParamString(key.getParamTypes()));
+            statement.add("$L($L)", key.getMethodName(), generateParamString(key.getParamClasses()));
             methodBuilder.addStatement(statement.build());
         }
     }
 
-    private String generateParamString(List<String> paramTypes) {
+    private String generateParamString(List<Class<?>> paramTypes) {
+        List<String> params = new ArrayList<>();
+        for(Class<?> clazz : paramTypes) {
+            if(clazz.equals(Integer.class) || clazz.equals(int.class)) {
+                params.add("anyInt()");
+            } else if(clazz.equals(Double.class) || clazz.equals(double.class)) {
+                params.add("anyDouble()");
+            } else if(clazz.equals(Long.class) || clazz.equals(long.class)) {
+                params.add("anyLong()");
+            } else if(clazz.equals(Short.class) || clazz.equals(short.class)) {
+                params.add("anyShort()");
+            } else if(clazz.equals(Character.class) || clazz.equals(char.class)) {
+                params.add("anyChar()");
+            } else if(clazz.equals(Byte.class) || clazz.equals(byte.class)) {
+                params.add("anyByte()");
+            } else if(clazz.equals(Boolean.class) || clazz.equals(boolean.class)) {
+                params.add("anyBoolean()");
+            } else if(clazz.equals(Float.class) || clazz.equals(float.class)) {
+                params.add("anyFloat()");
+            } else if(clazz.equals(String.class)) {
+                params.add("anyString()");
+            } else {
+                params.add("any()");
+            }
+        }
 
-        return String.join(", ", Collections.nCopies(paramTypes.size(), "any()"));
+        return String.join(", ", params);
     }
 }

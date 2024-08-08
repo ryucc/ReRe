@@ -3,8 +3,10 @@ package org.katie.orange.core;
 
 import org.junit.jupiter.api.Test;
 import org.katie.orange.core.listener.ObjectInitializer;
+import org.mockito.Mockito;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 
 class ObjectInitializerTest {
 

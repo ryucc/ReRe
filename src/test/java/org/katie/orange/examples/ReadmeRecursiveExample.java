@@ -10,7 +10,7 @@ public class ReadmeRecursiveExample {
         Listener listener = new Listener();
         HttpClient wrappedClient = listener.wrap(client);
 
-        System.out.println(wrappedClient.get().getBody());
+        System.out.println(wrappedClient.get(0).getBody());
 
         CodeSynthesizer codeSynthesizer = new CodeSynthesizer("org.katie.orange.examples", "create");
 
