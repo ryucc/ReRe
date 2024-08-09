@@ -8,10 +8,17 @@ import java.util.Stack;
 
 public class SimpleTreePrinter {
 
+    private final SimpleUUIDNaming namer;
+    public SimpleTreePrinter() {
+        namer = new SimpleUUIDNaming();
+
+    }
+
+
     public void printTree(Node root) {
         Stack<Integer> depth = new Stack<>();
         Stack<MethodCall> edges = new Stack<>();
-        System.out.println(root.getUniqueMockName());
+        System.out.println(namer.getUniqueMockName(root));
         for (MethodCall e : root.getMethodCalls()) {
             edges.push(e);
             depth.push(1);
@@ -25,7 +32,7 @@ public class SimpleTreePrinter {
             }
             System.out.print(e.getName());
             Node dest = e.getDest();
-            System.out.println("->" + dest.getUniqueMockName());
+            System.out.println("->" + namer.getUniqueMockName(dest));
             for (MethodCall child : dest.getMethodCalls()) {
                 edges.push(child);
                 depth.push(d + 1);
