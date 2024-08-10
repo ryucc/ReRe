@@ -11,7 +11,7 @@ public class ListenerTest {
     @Test
     public void test() {
         Listener listener = new Listener();
-        MyObjectCreatorFactory wrapped = listener.wrap(new MyObjectCreatorFactory());
+        MyObjectCreatorFactory wrapped = listener.createRoot(new MyObjectCreatorFactory());
         MyObjectCreator creator = wrapped.build();
         MyObject myObject = creator.create();
 

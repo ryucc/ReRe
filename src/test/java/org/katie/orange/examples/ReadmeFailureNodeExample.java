@@ -3,12 +3,26 @@ package org.katie.orange.examples;
 import org.katie.orange.core.listener.Listener;
 import org.katie.orange.core.synthesizer.CodeSynthesizer;
 
-public class ReadmeBasicExample {
+import java.util.Random;
+
+public class ReadmeFailureNodeExample {
+    private static class PrivateDice {
+
+        private final Random rand;
+        public PrivateDice() {
+            rand = new Random();
+        }
+        public int roll() {
+            return rand.nextInt(6) + 1;
+        }
+
+    }
+
     public static void main(String[] args) {
 
-        Dice dice = new Dice(1);
+        PrivateDice dice = new PrivateDice();
         Listener listener = new Listener();
-        Dice wrappedDice = listener.createRoot(dice);
+        PrivateDice wrappedDice = listener.createRoot(dice);
 
         for (int i = 1; i <= 5; i++) {
             System.out.println("Rolled " + wrappedDice.roll());

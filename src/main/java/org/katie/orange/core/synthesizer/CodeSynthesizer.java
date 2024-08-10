@@ -46,6 +46,15 @@ public class CodeSynthesizer {
     }
 
     private void generateObject(Node objectNode, MethodSpec.Builder methodBuilder) {
+        if (objectNode.isTerminal()) {
+            String mockName = namingStrategy.getUniqueMockName(objectNode);
+            Class<?> clazz = objectNode.getRuntimeClass();
+            if(objectNode.getComments().isPresent()) {
+                methodBuilder.addComment(objectNode.getComments().get());
+            }
+            methodBuilder.addStatement("$T $L = $L", clazz, mockName, objectNode.getValue());
+            return;
+        }
         Map<Signature, List<String>> methodActions = new HashMap<>();
         for (MethodCall methodCall : objectNode.getMethodCalls()) {
             Signature signature = methodCall.getSignature();

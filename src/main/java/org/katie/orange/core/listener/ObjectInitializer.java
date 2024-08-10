@@ -1,10 +1,15 @@
 package org.katie.orange.core.listener;
 
+import org.katie.orange.core.listener.exceptions.InitializationException;
+
 import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ObjectInitializer {
     @SuppressWarnings("unchecked")
-    public static <T> T create(Class<T> clazz) {
+    public static <T> T create(Class<T> clazz) throws InitializationException {
+        List<String> causes = new ArrayList<>();
         for (Constructor<?> constructor : clazz.getConstructors()) {
             try {
                 int length = constructor.getParameterCount();
@@ -23,9 +28,9 @@ public class ObjectInitializer {
                     return (T) constructor.newInstance();
                 }
             } catch (Exception e) {
-
+                causes.add(constructor.toGenericString() + " failed with " + e);
             }
         }
-        return null;
+        throw new InitializationException("IDK");
     }
 }

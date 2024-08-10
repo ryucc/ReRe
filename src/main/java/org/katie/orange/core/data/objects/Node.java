@@ -2,30 +2,19 @@ package org.katie.orange.core.data.objects;
 
 import org.katie.orange.core.data.methods.MethodCall;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 import java.util.UUID;
 
 public class Node {
-    public static final Set<Class<?>> primitiveClasses = Set.of(Integer.class, Byte.class, Character.class, Boolean.class, Double.class, Float.class, Long.class, Short.class, int.class, byte.class, char.class, boolean.class, double.class, float.class, long.class, short.class);
-    public static final Set<Class<?>> voidClasses = Set.of(Void.class, void.class);
     private final List<MethodCall> methodCalls;
     private final UUID uuid;
-
-    public String getValue() {
-        return value;
-    }
-
     private final String value;
     private final boolean terminal;
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
+    private final boolean failedNode;
     private final Class<?> runtimeClass;
+    private final Optional<String> comments;
 
     public Node(Class<?> clazz) {
         this.methodCalls = new ArrayList<>();
@@ -33,7 +22,20 @@ public class Node {
         this.runtimeClass = clazz;
         this.value = "";
         this.terminal = false;
+        this.failedNode = false;
+        this.comments = Optional.empty();
     }
+
+    public Node(Class<?> clazz, Exception reason) {
+        this.methodCalls = new ArrayList<>();
+        this.uuid = UUID.randomUUID();
+        this.runtimeClass = clazz;
+        this.value = "null";
+        this.terminal = true;
+        this.failedNode = true;
+        this.comments = Optional.of(reason.toString());
+    }
+
 
     public Node(Class<?> clazz, String value) {
         this.methodCalls = new ArrayList<>();
@@ -41,10 +43,24 @@ public class Node {
         this.runtimeClass = clazz;
         this.value = value;
         this.terminal = true;
+        this.failedNode = false;
+        this.comments = Optional.empty();
     }
 
-    public static Node ofSerialized(Serializable object) {
-        return null;
+    public Optional<String> getComments() {
+        return comments;
+    }
+
+    public boolean isFailedNode() {
+        return failedNode;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public UUID getUuid() {
+        return uuid;
     }
 
     public Class<?> getRuntimeClass() {
@@ -57,18 +73,6 @@ public class Node {
 
     public boolean isTerminal() {
         return this.terminal;
-        /*
-        try {
-            if (primitiveClasses.contains(Class.forName(className))) {
-                return true;
-            } else if (voidClasses.contains(Class.forName(className))) {
-                return true;
-            }
-        } catch (Exception e) {
-            return false;
-        }
-        return false;
-         */
     }
 
     public void addEdge(MethodCall methodCall) {

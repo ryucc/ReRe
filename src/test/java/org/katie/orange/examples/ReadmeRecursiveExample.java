@@ -8,7 +8,7 @@ public class ReadmeRecursiveExample {
         HttpClient client = new HttpClient();
 
         Listener listener = new Listener();
-        HttpClient wrappedClient = listener.wrap(client);
+        HttpClient wrappedClient = listener.createRoot(client);
 
         System.out.println(wrappedClient.get(0).getBody());
 
