@@ -5,11 +5,11 @@ import org.katie.orange.core.synthesizer.CodeSynthesizer;
 
 import java.util.Random;
 
-public class ReadmeFailureNodeExample {
-    private static class PrivateDice {
+public class ReadmeFinalClassExample {
+    public static final class FinalDice {
 
         private final Random rand;
-        public PrivateDice() {
+        public FinalDice() {
             rand = new Random();
         }
         public int roll() {
@@ -20,9 +20,9 @@ public class ReadmeFailureNodeExample {
 
     public static void main(String[] args) {
 
-        PrivateDice dice = new PrivateDice();
+        FinalDice dice = new FinalDice();
         Listener listener = new Listener();
-        PrivateDice wrappedDice = listener.createRoot(dice);
+        FinalDice wrappedDice = listener.createRoot(dice);
 
         for (int i = 1; i <= 5; i++) {
             System.out.println("Rolled " + wrappedDice.roll());

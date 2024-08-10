@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class CodeSynthesizer {
     private final String packageName;
@@ -49,8 +50,10 @@ public class CodeSynthesizer {
         if (objectNode.isTerminal()) {
             String mockName = namingStrategy.getUniqueMockName(objectNode);
             Class<?> clazz = objectNode.getRuntimeClass();
-            if(objectNode.getComments().isPresent()) {
-                methodBuilder.addComment(objectNode.getComments().get());
+            Optional<String> comments = objectNode.getComments();
+            if(comments.isPresent()) {
+                String escaped = comments.get().replace("$", "$$");
+                methodBuilder.addComment(escaped);
             }
             methodBuilder.addStatement("$T $L = $L", clazz, mockName, objectNode.getValue());
             return;

@@ -33,9 +33,20 @@ public class Node {
         this.value = "null";
         this.terminal = true;
         this.failedNode = true;
-        this.comments = Optional.of(reason.toString());
+        this.comments = Optional.of(reason.getMessage());
     }
 
+    /*
+    public Node(Class<?> clazz, Exception reason, String comment) {
+        this.methodCalls = new ArrayList<>();
+        this.uuid = UUID.randomUUID();
+        this.runtimeClass = clazz;
+        this.value = "null";
+        this.terminal = true;
+        this.failedNode = true;
+        this.comments = Optional.of(comment);
+    }
+     */
 
     public Node(Class<?> clazz, String value) {
         this.methodCalls = new ArrayList<>();

@@ -6,6 +6,7 @@ import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.katie.orange.core.listener.exceptions.SubclassingException;
 
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +19,11 @@ public class ClassRepo {
     }
 
     public Class<?> getOrDefineSubclass(Class<?> target) throws SubclassingException {
+        if (Modifier.isFinal(target.getModifiers())) {
+            throw new SubclassingException("Cannot sub final class: " + target.getName());
+        } else if(Modifier.isPrivate(target.getModifiers())) {
+            throw new SubclassingException("Cannot sub private class: " + target.getName());
+        }
         try {
             if (classCache.containsKey(target)) {
                 return classCache.get(target);
@@ -32,7 +38,7 @@ public class ClassRepo {
             classCache.put(target, newClass);
             return newClass;
         } catch (Throwable t) {
-            throw new SubclassingException("", t);
+            throw new SubclassingException("No constructors available", t);
         }
     }
 }
