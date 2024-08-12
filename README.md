@@ -45,8 +45,8 @@ That's it!
 Example:
 
 ```java
-import org.katie.orange.core.listener.Listener;
-import org.katie.orange.core.synthesizer.CodeSynthesizer;
+import listener.core.org.parrot.Listener;
+import synthesizer.core.org.parrot.CodeSynthesizer;
 
 public class Main {
     public static void main(String[] args) {
@@ -110,6 +110,10 @@ The other limitation is Orange only records behavior that was executed at runtim
 ## Recording throws
 
 Yes, Orange will also record and chain `doThrow`
+
+## Arrays and Records
+
+Arrays and Records are final by the Java's language design. But some of their properties
 
 ## Recording methods with side effects
 
