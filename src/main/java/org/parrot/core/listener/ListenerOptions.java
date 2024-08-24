@@ -1,6 +1,7 @@
 package org.parrot.core.listener;
 
-public class Options {
+public class ListenerOptions {
     // Expand Throwable
-    // hash strings
+    boolean prehashStrings;
+
 }

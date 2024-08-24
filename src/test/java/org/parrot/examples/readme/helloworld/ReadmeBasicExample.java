@@ -31,7 +31,7 @@ public class ReadmeBasicExample {
 
         CodeSynthesizer codeSynthesizer = new CodeSynthesizer("org.katie.orange.examples", "create");
         String generatedCode = codeSynthesizer.generateMockito(listener);
-        Path expectedCodePath = Path.of("src/test/java/org/parrot/examples/readme/helloworld/expectedJavaTemplate");
+        Path expectedCodePath = Path.of("src/test/java/org/parrot/examples/readme/helloworld/MockFinalDiceCreator.java");
         String expectedCode = Files.readString(expectedCodePath);
         for (int i = 0; i < 5; i++) {
             expectedCode = expectedCode.replace("{ret" + i + "}", Integer.toString(actualValues.get(i)));

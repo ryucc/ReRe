@@ -50,9 +50,9 @@ public class CodeSynthesizer {
         if (objectNode.isTerminal()) {
             String mockName = namingStrategy.getUniqueMockName(objectNode);
             Class<?> clazz = objectNode.getRuntimeClass();
-            Optional<String> comments = objectNode.getComments();
-            if(comments.isPresent()) {
-                String escaped = comments.get().replace("$", "$$");
+            String comments = objectNode.getComments();
+            if(!comments.isEmpty()) {
+                String escaped = comments.replace("$", "$$");
                 methodBuilder.addComment(escaped);
             }
             methodBuilder.addStatement("$T $L = $L", clazz, mockName, objectNode.getValue());

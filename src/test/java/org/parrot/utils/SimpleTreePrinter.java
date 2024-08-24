@@ -1,8 +1,9 @@
-package org.parrot.core.synthesizer;
+package org.parrot.utils;
 
 
 import org.parrot.core.data.methods.MethodCall;
 import org.parrot.core.data.objects.Node;
+import org.parrot.core.synthesizer.SimpleUUIDNaming;
 
 import java.util.Stack;
 

@@ -15,7 +15,8 @@ public class Node implements Serializable {
     private final boolean terminal;
     private final boolean failedNode;
     private final Class<?> runtimeClass;
-    private final Optional<String> comments;
+    private final String comments;
+    private final List<Node> directChildren;
 
 
     //TODO: ArrayNodes, serialization nodes, record Nodes
@@ -26,7 +27,8 @@ public class Node implements Serializable {
         this.value = "";
         this.terminal = false;
         this.failedNode = false;
-        this.comments = Optional.empty();
+        this.comments = "";
+        this.directChildren = new ArrayList<>();
     }
 
     public Node(Class<?> clazz, Exception reason) {
@@ -36,7 +38,8 @@ public class Node implements Serializable {
         this.value = "null";
         this.terminal = true;
         this.failedNode = true;
-        this.comments = Optional.of(reason.getMessage());
+        this.comments = reason.getMessage();
+        this.directChildren = new ArrayList<>();
     }
 
     public Node(Class<?> clazz, String value) {
@@ -46,10 +49,11 @@ public class Node implements Serializable {
         this.value = value;
         this.terminal = true;
         this.failedNode = false;
-        this.comments = Optional.empty();
+        this.comments = "";
+        this.directChildren = new ArrayList<>();
     }
 
-    public Optional<String> getComments() {
+    public String getComments() {
         return comments;
     }
 
@@ -79,6 +83,10 @@ public class Node implements Serializable {
 
     public void addEdge(MethodCall methodCall) {
         methodCalls.add(methodCall);
+    }
+
+    public void addDirectChild(Node node) {
+        directChildren.add(node);
     }
 
 }

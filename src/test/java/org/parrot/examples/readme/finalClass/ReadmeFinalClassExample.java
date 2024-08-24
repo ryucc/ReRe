@@ -1,9 +1,14 @@
 package org.parrot.examples.readme.finalClass;
 
+import org.junit.jupiter.api.Test;
 import org.parrot.core.listener.Listener;
 import org.parrot.core.synthesizer.CodeSynthesizer;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Random;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class ReadmeFinalClassExample {
     public static final class FinalDice {
@@ -18,7 +23,8 @@ public class ReadmeFinalClassExample {
 
     }
 
-    public static void main(String[] args) {
+    @Test
+    public void testMain() throws Exception{
 
         FinalDice dice = new FinalDice();
         Listener listener = new Listener();
@@ -28,7 +34,11 @@ public class ReadmeFinalClassExample {
             System.out.println("Rolled " + wrappedDice.roll());
         }
 
-        CodeSynthesizer codeSynthesizer = new CodeSynthesizer("org.katie.orange.examples", "create");
-        System.out.println(codeSynthesizer.generateMockito(listener));
+        CodeSynthesizer codeSynthesizer = new CodeSynthesizer("org.parrot.examples.readme.finalClass", "create");
+        String generatedCode = codeSynthesizer.generateMockito(listener);
+        System.out.println(generatedCode);
+        Path expectedCodePath = Path.of("src/test/java/org/parrot/examples/readme/finalClass/MockFinalDiceCreatorjava");
+        String expectedCode = Files.readString(expectedCodePath);
+        assertThat(generatedCode).isEqualTo(expectedCode);
     }
 }

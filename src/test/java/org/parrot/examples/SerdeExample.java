@@ -1,5 +1,7 @@
 package org.parrot.examples;
 
+import org.parrot.examples.testObjects.Dice;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -11,6 +13,9 @@ import java.util.Base64.Encoder;
 public class SerdeExample {
 
     public static void main(String[] args) throws Exception{
+        Dice dice = new Dice();
+        dice = null;
+        dice.roll();
         //ser
         Integer a = 10;
         Encoder encoder = Base64.getEncoder();

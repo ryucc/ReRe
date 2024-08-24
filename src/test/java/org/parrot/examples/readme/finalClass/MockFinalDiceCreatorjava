@@ -1,0 +1,12 @@
+package org.parrot.examples.readme.finalClass;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doReturn;
+
+public class MockFinalDiceCreator {
+  public static ReadmeFinalClassExample.FinalDice create() {
+    // Cannot sub final class: org.parrot.examples.readme.finalClass.ReadmeFinalClassExample$FinalDice
+    ReadmeFinalClassExample.FinalDice finalDice1 = null;
+    return finalDice1;
+  }
+}

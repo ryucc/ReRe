@@ -1,6 +1,7 @@
 package org.parrot.core.listener;
 
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
+import java.util.Arrays;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
@@ -9,11 +10,16 @@ import org.parrot.core.data.methods.MethodResult;
 import org.parrot.core.data.objects.Node;
 import org.parrot.core.listener.exceptions.InitializationException;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.RecordComponent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 public class Listener {
@@ -27,6 +33,9 @@ public class Listener {
         originMap = new HashMap<>();
         nodeMap = new HashMap<>();
         classRepo = new ClassRepo(this);
+    }
+
+    public record ListenResult (Object wrapped, Node dataNode) {
     }
 
     public Node getRoot() {
@@ -55,6 +64,7 @@ public class Listener {
         nodeMap.put(mocked, node);
         return mocked;
     }
+
     public Exception handleThrow(Node source, Method method, Exception exception) {
         try {
             Node dest = new Node(exception.getClass());
@@ -82,6 +92,20 @@ public class Listener {
         source.addEdge(edge);
     }
 
+    /*
+    Order
+    1. throws
+    2. Serialize = null = primitive
+    2. ComplexNode
+    3. Internal
+
+    Context free syntax:
+    root -> throw, serializable, null, primitive, internal
+    complex -> internal, null, primitive
+    throw -> internal, null, primitive
+    internal -> failed
+
+     */
     @RuntimeType
     public Object intercept(@AllArguments Object[] allArguments,
                             @Origin Method orignalMethod,
@@ -103,8 +127,75 @@ public class Listener {
         } else if (ClassUtils.isStringOrPrimitive(orignalMethod.getReturnType())) {
             handlePrimitive(source, orignalMethod, returnValue.toString());
             return returnValue;
+        } else if (orignalMethod.getReturnType().isRecord()) {
+            return handleRecord(source, returnValue, orignalMethod);
+        } else {
+            return handleInternal(source, returnValue, orignalMethod);
         }
+    }
+    public ListenResult handleRecord(Node source, Object returnValue, Method orignalMethod){
+        Node cur = new Node(orignalMethod.getReturnType());
 
+        return new ListenResult(returnValue, cur);
+    }
+    public Object handleRecordRecursive(Node cur, Object original){
+        RecordComponent[] components = original.getClass().getRecordComponents();
+        List<Object> children = new ArrayList<>();
+        for (RecordComponent component: components) {
+            try {
+                Object fieldValue = component.getAccessor().invoke(original);
+                if (component.getType().isRecord()) {
+                    children.add(handleRecordRecursive(cur, fieldValue));
+                } else if(fieldValue == null) {
+                    Node node = new Node(component.getType(), "null");
+                    cur.addDirectChild(node);
+                    children.add(null);
+                } else if (ClassUtils.isWrapperOrPrimitive(component.getType())) {
+                    Node node = new Node(component.getType(), fieldValue.toString());
+                    cur.addDirectChild(node);
+                    children.add(fieldValue);
+                } else {
+                    try {
+                        Node child = new Node(component.getType());
+                        Object mocked = createAndRegister(fieldValue, child);
+                        children.add(mocked);
+                        cur.addDirectChild(child);
+                    } catch (Exception e) {
+                        Node child = new Node(component.getType(), e);
+                        children.add(fieldValue);
+                        cur.addDirectChild(child);
+                    }
+                }
+            } catch (IllegalAccessException|InvocationTargetException e) {
+                // Failed to access fields for a record
+                // this should never happen since all fields have public getters;
+                Node failureNode = new Node(original.getClass(), e);
+                cur.addDirectChild(failureNode);
+                return original;
+            }
+        }
+        try {
+            Class<?>[] paramTypes =
+                    Arrays.stream(components)
+                            .map(RecordComponent::getType)
+                            .toArray(Class<?>[]::new);
+            Constructor<?> constructor = original.getClass().getDeclaredConstructor(paramTypes);
+            return constructor.newInstance(children.toArray());
+        } catch (NoSuchMethodException e) {
+            // Can't find constructor for Record
+            // should never happen
+            Node failureNode = new Node(original.getClass(), e);
+            cur.addDirectChild(failureNode);
+            return original;
+        } catch (InstantiationException|IllegalAccessException|InvocationTargetException e) {
+            // unable to create mock
+            Node failureNode = new Node(original.getClass(), e);
+            cur.addDirectChild(failureNode);
+            return original;
+        }
+    }
+
+    public Object handleInternal(Node source, Object returnValue, Method orignalMethod){
         try {
             Node dest = new Node(returnValue.getClass());
             Object mocked = createAndRegister(returnValue, dest);
