@@ -119,3 +119,7 @@ Arrays and Records are final by the Java's language design. But some of their pr
 
 Coming soon
 
+## Known Issues
+hashCode() and isEqual() might break, because we are subclassing.
+
+

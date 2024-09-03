@@ -14,7 +14,6 @@ public class SerdeExample {
 
     public static void main(String[] args) throws Exception{
         Dice dice = new Dice();
-        dice = null;
         dice.roll();
         //ser
         Integer a = 10;

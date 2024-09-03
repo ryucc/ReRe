@@ -15,6 +15,7 @@ public class Node implements Serializable {
     private final boolean terminal;
     private final boolean failedNode;
     private final Class<?> runtimeClass;
+    private final Class<?> representingClass;
     private final String comments;
     private final List<Node> directChildren;
 
@@ -24,6 +25,19 @@ public class Node implements Serializable {
         this.methodCalls = new ArrayList<>();
         this.uuid = UUID.randomUUID();
         this.runtimeClass = clazz;
+        this.representingClass = clazz;
+        this.value = "";
+        this.terminal = false;
+        this.failedNode = false;
+        this.comments = "";
+        this.directChildren = new ArrayList<>();
+    }
+
+    public Node(Class<?> clazz, Class<?> returnClazz) {
+        this.methodCalls = new ArrayList<>();
+        this.uuid = UUID.randomUUID();
+        this.runtimeClass = clazz;
+        this.representingClass = returnClazz;
         this.value = "";
         this.terminal = false;
         this.failedNode = false;
@@ -35,6 +49,7 @@ public class Node implements Serializable {
         this.methodCalls = new ArrayList<>();
         this.uuid = UUID.randomUUID();
         this.runtimeClass = clazz;
+        this.representingClass = clazz;
         this.value = "null";
         this.terminal = true;
         this.failedNode = true;
@@ -46,6 +61,7 @@ public class Node implements Serializable {
         this.methodCalls = new ArrayList<>();
         this.uuid = UUID.randomUUID();
         this.runtimeClass = clazz;
+        this.representingClass = clazz;
         this.value = value;
         this.terminal = true;
         this.failedNode = false;
@@ -87,6 +103,10 @@ public class Node implements Serializable {
 
     public void addDirectChild(Node node) {
         directChildren.add(node);
+    }
+
+    public List<Node> getDirectChildren(){
+        return directChildren;
     }
 
 }

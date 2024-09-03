@@ -17,14 +17,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class CodeSynthesizer {
+public class MockitoSynthesizer {
     private final String packageName;
     private final String methodName;
     private final NamingStrategy namingStrategy;
 
-    public CodeSynthesizer(String packageName, String methodName) {
+    public MockitoSynthesizer(String packageName, String methodName) {
         this.packageName = packageName;
         this.methodName = methodName;
         namingStrategy = new OrderedNaming();
@@ -47,6 +47,19 @@ public class CodeSynthesizer {
     }
 
     private void generateObject(Node objectNode, MethodSpec.Builder methodBuilder) {
+        if (objectNode.getRuntimeClass().isRecord()) {
+            String mockName = namingStrategy.getUniqueMockName(objectNode);
+            Class<?> clazz = objectNode.getRuntimeClass();
+
+            List<String> childrenNames = new ArrayList<>();
+            for(Node child: objectNode.getDirectChildren()) {
+                generateObject(child, methodBuilder);
+                childrenNames.add(namingStrategy.getUniqueMockName(child));
+            }
+            String params = childrenNames.stream().collect(Collectors.joining(", "));
+            methodBuilder.addStatement("$T $L = new $T($L)", clazz, mockName, clazz, params);
+            return;
+        }
         if (objectNode.isTerminal()) {
             String mockName = namingStrategy.getUniqueMockName(objectNode);
             Class<?> clazz = objectNode.getRuntimeClass();
@@ -89,6 +102,11 @@ public class CodeSynthesizer {
                         String action = String.format("doReturn(%s).", namingStrategy.getUniqueMockName(returnVal));
                         methodActions.get(signature).add(action);
                     }
+                } else if (methodCall.getResult() == MethodResult.THROW) {
+                    Node throwable = methodCall.getDest();
+                    generateObject(throwable, methodBuilder);
+                    String action = String.format("doThrow(%s).", namingStrategy.getUniqueMockName(throwable));
+                    methodActions.get(methodCall.getSignature()).add(action);
                 }
             }
         }
@@ -97,7 +115,7 @@ public class CodeSynthesizer {
         methodBuilder.addStatement("$T $L = $T.mock($T.class)", clazz, mockName, Mockito.class, clazz);
 
         for (Signature key : methodActions.keySet()) {
-            System.out.println(key);
+            //System.out.println(key);
             CodeBlock.Builder statement = CodeBlock.builder();
             List<String> actions = methodActions.get(key);
             for (String action : actions) {

@@ -12,7 +12,7 @@ public class ListenerTest {
     @Test
     public void test() {
         Listener listener = new Listener();
-        MyObjectCreatorFactory wrapped = listener.createRoot(new MyObjectCreatorFactory());
+        MyObjectCreatorFactory wrapped = listener.createRoot(new MyObjectCreatorFactory(), MyObjectCreatorFactory.class);
         MyObjectCreator creator = wrapped.build();
         MyObject myObject = creator.create();
 

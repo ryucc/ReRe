@@ -1,10 +1,30 @@
 package org.parrot.examples;
 
 import org.parrot.core.listener.Listener;
-import org.parrot.core.synthesizer.CodeSynthesizer;
+import org.parrot.core.synthesizer.MockitoSynthesizer;
 
 import java.util.Random;
 
+/*
+This code prints out the following:
+
+package org.katie.orange.examples;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.doReturn;
+
+import org.mockito.Mockito;
+import org.parrot.examples.ReadmeExample;
+
+public class MockPrivateDiceCreator {
+  public static ReadmeExample.PrivateDice create() {
+    ReadmeExample.PrivateDice mockPrivateDice1 = Mockito.mock(ReadmeExample.PrivateDice.class);
+    doReturn(1).doReturn(6).doReturn(5).doReturn(1).doReturn(3).when(mockPrivateDice1).roll();
+    return mockPrivateDice1;
+  }
+}
+
+ */
 public class ReadmeExample {
     public static class PrivateDice {
 
@@ -22,13 +42,13 @@ public class ReadmeExample {
 
         PrivateDice dice = new PrivateDice();
         Listener listener = new Listener();
-        PrivateDice wrappedDice = listener.createRoot(dice);
+        PrivateDice wrappedDice = listener.createRoot(dice, PrivateDice.class);
 
         for (int i = 1; i <= 5; i++) {
             System.out.println("Rolled " + wrappedDice.roll());
         }
 
-        CodeSynthesizer codeSynthesizer = new CodeSynthesizer("org.katie.orange.examples", "create");
-        System.out.println(codeSynthesizer.generateMockito(listener));
+        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.orange.examples", "create");
+        System.out.println(mockitoSynthesizer.generateMockito(listener));
     }
 }

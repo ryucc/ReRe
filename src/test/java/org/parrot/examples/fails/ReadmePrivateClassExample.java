@@ -1,7 +1,7 @@
-package org.parrot.examples;
+package org.parrot.examples.fails;
 
 import org.parrot.core.listener.Listener;
-import org.parrot.core.synthesizer.CodeSynthesizer;
+import org.parrot.core.synthesizer.MockitoSynthesizer;
 
 import java.util.Random;
 
@@ -22,13 +22,13 @@ public class ReadmePrivateClassExample {
 
         PrivateDice dice = new PrivateDice();
         Listener listener = new Listener();
-        PrivateDice wrappedDice = listener.createRoot(dice);
+        PrivateDice wrappedDice = listener.createRoot(dice, PrivateDice.class);
 
         for (int i = 1; i <= 5; i++) {
             System.out.println("Rolled " + wrappedDice.roll());
         }
 
-        CodeSynthesizer codeSynthesizer = new CodeSynthesizer("org.katie.orange.examples", "create");
-        System.out.println(codeSynthesizer.generateMockito(listener));
+        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.orange.examples", "create");
+        System.out.println(mockitoSynthesizer.generateMockito(listener));
     }
 }
