@@ -1,5 +1,8 @@
 # Record-Replay Mock Creator
 
+TODO: 
+loop detection
+
 ## Basic Example
 
 Create Mockito java code by replaying executions.

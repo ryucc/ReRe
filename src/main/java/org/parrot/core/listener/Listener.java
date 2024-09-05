@@ -10,11 +10,11 @@ import org.parrot.core.data.objects.Node;
 import org.parrot.core.listener.exceptions.InitializationException;
 import org.parrot.core.listener.utils.ParrotFieldAccessors;
 import org.parrot.core.listener.utils.ClassUtils;
+import org.parrot.core.serde.DefaultSerde;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.RecordComponent;
@@ -27,6 +27,8 @@ import java.util.List;
 public class Listener {
     List<Node> roots;
     ClassRepo classRepo;
+
+    private static final DefaultSerde defaultSerde = new DefaultSerde();
 
     public Listener() {
         roots = new ArrayList<>();
@@ -50,9 +52,11 @@ public class Listener {
     }
 
     public <T> ListenResult<T> handleAnything(T returnValue, Class<?> targetClass) {
-        if (returnValue == null || ClassUtils.isStringOrPrimitive(targetClass)) {
+        // Need to think more about this.
+        // targetClass will be Object.class on generics.
+        if (returnValue == null || ClassUtils.isStringOrPrimitive(returnValue.getClass())|| ClassUtils.isStringOrPrimitive(targetClass)) {
             return handlePrimitiveOrNull(returnValue, targetClass);
-        } else if(Serializable.class.isAssignableFrom(targetClass)) {
+        } else if(Throwable.class.isAssignableFrom(targetClass)) {
             return handleBySerialization(returnValue, targetClass);
         } else if (targetClass.isRecord()) {
             return handleRecord(returnValue, targetClass);
@@ -65,14 +69,8 @@ public class Listener {
     public <T> ListenResult<T> handleBySerialization(T returnValue, Class<?> targetClass) {
 
         try {
-            Base64.Encoder encoder = Base64.getEncoder();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(encoder.wrap(baos));
-            objectOutputStream.writeObject(returnValue);
-            objectOutputStream.flush();
-            objectOutputStream.close();
-            String s = baos.toString();
-            Node serializedNode = new Node(returnValue.getClass(), s);
+            String s = defaultSerde.serialize(returnValue);
+            Node serializedNode = Node.ofSerialized(returnValue.getClass(), s);
             return new ListenResult<>(returnValue, serializedNode);
         } catch (IOException e) {
             Node failureNode = new Node(returnValue.getClass(), e);
@@ -146,13 +144,12 @@ public class Listener {
                 // Failed to access fields for a record
                 // this should never happen since all fields have public getters;
                 Node failureNode = new Node(original.getClass(), e);
-                cur.addDirectChild(failureNode);
-                return new ListenResult<>(original, new Node(clazz));
+                return new ListenResult<>(original, failureNode);
             }
         }
 
         try {
-            T dubbed = (T) ObjectInitializer.initRecord(clazz, components, children);
+            T dubbed = (T) ObjectInitializer.initRecord(clazz, children);
             return new ListenResult<>(dubbed, cur);
         } catch (InitializationException e) {
             Node failureNode = new Node(original.getClass(), e);

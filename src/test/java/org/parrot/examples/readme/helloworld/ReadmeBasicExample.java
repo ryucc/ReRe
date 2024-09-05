@@ -32,6 +32,8 @@ public class ReadmeBasicExample {
         MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.orange.examples", "create");
         String generatedCode = mockitoSynthesizer.generateMockito(listener);
         Path expectedCodePath = Path.of("src/test/java/org/parrot/examples/readme/helloworld/expectedJavaTemplate");
+        // Use this line to reset new changes
+        // Files.writeString(expectedCodePath, generatedCode);
         String expectedCode = Files.readString(expectedCodePath);
         for (int i = 0; i < 5; i++) {
             expectedCode = expectedCode.replace("{ret" + i + "}", Integer.toString(actualValues.get(i)));

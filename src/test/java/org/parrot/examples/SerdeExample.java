@@ -29,8 +29,7 @@ public class SerdeExample {
         //deser
         InputStream stream = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
         Base64.Decoder decoder = Base64.getDecoder();
-        ObjectInputStream objectInputStream
-                = new ObjectInputStream(decoder.wrap(stream));
+        ObjectInputStream objectInputStream = new ObjectInputStream(decoder.wrap(stream));
         Integer aa = (Integer) objectInputStream.readObject();
         objectInputStream.close();
         System.out.println(aa);

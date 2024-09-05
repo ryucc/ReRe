@@ -26,7 +26,7 @@ public class Node implements Serializable {
     private final List<Node> directChildren;
 
 
-    //TODO: ArrayNodes, serialization nodes, record Nodes
+    //TODO: ArrayNodes
     public Node(Class<?> clazz) {
         this.methodCalls = new ArrayList<>();
         this.uuid = UUID.randomUUID();

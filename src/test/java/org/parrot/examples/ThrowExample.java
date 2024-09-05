@@ -6,23 +6,28 @@ import org.parrot.core.synthesizer.MockitoSynthesizer;
 import java.util.Random;
 
 public class ThrowExample {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         ErrorDice dice = new ErrorDice();
 
         Listener listener = new Listener();
         ErrorDice wrappedDice = listener.createRoot(dice, ErrorDice.class);
 
+
         for (int i = 1; i <= 5; i++) {
             try {
                 System.out.println("Rolled " + wrappedDice.roll());
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                e.printStackTrace();
             }
         }
 
-        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.orange.examples", "create");
-        System.out.println(mockitoSynthesizer.generateMockito(listener));
+        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.parrot.examples", "create");
+        String result = mockitoSynthesizer.generateMockito(listener);
+        System.out.println(result);
+
+        //Path output = Path.of("src/test/java/org/parrot/examples/MockErrorDiceCreator.java");
+        //Files.writeString(output, result);
     }
 
     public static class ErrorDice {

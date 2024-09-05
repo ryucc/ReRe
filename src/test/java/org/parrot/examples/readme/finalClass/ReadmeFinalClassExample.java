@@ -39,6 +39,8 @@ public class ReadmeFinalClassExample {
         System.out.println(generatedCode);
         Path expectedCodePath = Path.of("src/test/java/org/parrot/examples/readme/finalClass/MockFinalDiceCreatorjava");
         String expectedCode = Files.readString(expectedCodePath);
+        // Use this line to reset new changes
+        //Files.writeString(expectedCodePath, generatedCode);
         assertThat(generatedCode).isEqualTo(expectedCode);
     }
 }

@@ -1,19 +1,27 @@
 package org.parrot.core.synthesizer;
 
 import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.parrot.core.data.methods.MethodCall;
 import org.parrot.core.data.methods.MethodResult;
 import org.parrot.core.data.methods.Signature;
 import org.parrot.core.data.objects.Node;
 import org.parrot.core.listener.Listener;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import org.parrot.core.serde.DefaultSerde;
 
 import javax.lang.model.element.Modifier;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,12 +45,23 @@ public class MockitoSynthesizer {
         TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(fileName).addModifiers(Modifier.PUBLIC);
 
 
-        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(this.methodName).addModifiers(Modifier.PUBLIC, Modifier.STATIC).returns(clazz);
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(this.methodName)
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                .returns(clazz);
         generateObject(root, methodBuilder);
         methodBuilder.addStatement("return $L", namingStrategy.getUniqueMockName(root));
         typeBuilder.addMethod(methodBuilder.build());
 
-        JavaFile javaFile = JavaFile.builder(this.packageName, typeBuilder.build()).addStaticImport(ArgumentMatchers.class, "*").addStaticImport(Mockito.class, "doReturn").build();
+        FieldSpec defaultSerde = FieldSpec.builder(DefaultSerde.class, "defaultSerde")
+                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                .initializer("new $T()", DefaultSerde.class)
+                .build();
+        typeBuilder.addField(defaultSerde);
+
+        JavaFile javaFile = JavaFile.builder(this.packageName, typeBuilder.build())
+                .addStaticImport(ArgumentMatchers.class, "*")
+                .addStaticImport(Mockito.class, "doReturn")
+                .build();
         return javaFile.toString();
     }
 
@@ -52,7 +71,7 @@ public class MockitoSynthesizer {
             Class<?> clazz = objectNode.getRuntimeClass();
 
             List<String> childrenNames = new ArrayList<>();
-            for(Node child: objectNode.getDirectChildren()) {
+            for (Node child : objectNode.getDirectChildren()) {
                 generateObject(child, methodBuilder);
                 childrenNames.add(namingStrategy.getUniqueMockName(child));
             }
@@ -60,16 +79,18 @@ public class MockitoSynthesizer {
             methodBuilder.addStatement("$T $L = new $T($L)", clazz, mockName, clazz, params);
             return;
         }
-        if(objectNode.isSerialized()) {
-            String mockName = namingStrategy.getUniqueMockName(objectNode);
+        if (objectNode.isSerialized()) {
             Class<?> clazz = objectNode.getRuntimeClass();
-
+            String mockName = namingStrategy.getUniqueMockName(objectNode);
+            methodBuilder
+                    .addStatement("$T $L = ($T) defaultSerde.deserialize($S)", clazz, mockName, clazz, objectNode.getValue());
+            return;
         }
         if (objectNode.isTerminal()) {
             String mockName = namingStrategy.getUniqueMockName(objectNode);
             Class<?> clazz = objectNode.getRuntimeClass();
             String comments = objectNode.getComments();
-            if(!comments.isEmpty()) {
+            if (!comments.isEmpty()) {
                 String escaped = comments.replace("$", "$$");
                 methodBuilder.addComment(escaped);
             }

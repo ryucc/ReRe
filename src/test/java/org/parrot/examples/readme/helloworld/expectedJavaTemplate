@@ -4,9 +4,12 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 
 import org.mockito.Mockito;
+import org.parrot.core.serde.DefaultSerde;
 import org.parrot.examples.testObjects.Dice;
 
 public class MockDiceCreator {
+  private static final DefaultSerde defaultSerde = new DefaultSerde();
+
   public static Dice create() {
     Dice mockDice1 = Mockito.mock(Dice.class);
     doReturn({ret0}).doReturn({ret1}).doReturn({ret2}).doReturn({ret3}).doReturn({ret4}).when(mockDice1).roll();
