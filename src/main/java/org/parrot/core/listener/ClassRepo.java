@@ -10,21 +10,25 @@ import net.bytebuddy.matcher.ElementMatchers;
 import org.parrot.core.data.objects.Node;
 import org.parrot.core.listener.exceptions.SubclassingException;
 
+import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.stream.Collectors;
+
+import static net.bytebuddy.matcher.ElementMatchers.not;
 
 public class ClassRepo {
     private final Object interceptor;
-    private final StackTraceInterceptor stackTraceInterceptor;
     private final Map<Class<?>, Class<?>> classCache;
 
     public ClassRepo(Object interceptor) {
         this.interceptor = interceptor;
         this.classCache = new HashMap<>();
-        stackTraceInterceptor = new StackTraceInterceptor();
     }
 
     public Class<?> getOrDefineSubclass(Class<?> child, Class<?> target) throws SubclassingException {
@@ -34,28 +38,36 @@ public class ClassRepo {
         } else {
             throw new SubclassingException("Target class is not assignable from input.");
         }
+        List<Class<?>> triedClasses = new ArrayList<>();
+        List<Throwable> failureReason = new ArrayList<>();
         while (!candidates.isEmpty()) {
             Class<?> cur = candidates.poll();
-            System.out.println("cur:" + cur);
             try {
                 return getOrDefineSubclass(cur);
             } catch (SubclassingException e) {
-                System.out.println("wrong");
+                triedClasses.add(cur);
+                failureReason.add(e);
             }
             if (cur.getSuperclass() != null && target.isAssignableFrom(cur.getSuperclass())) {
                 candidates.add(cur.getSuperclass());
             }
             Class<?>[] interfaces = cur.getInterfaces();
             for (Class<?> implementedInterface : interfaces) {
-                System.out.println("target:" + target);
-                System.out.println("implemented:" + target);
                 if (target.isAssignableFrom(implementedInterface) || target.equals(implementedInterface)) {
-                    System.out.println("hello:" + target);
                     candidates.add(implementedInterface);
                 }
             }
         }
-        throw new SubclassingException("other error");
+
+        List<String> explainations = new ArrayList<>();
+
+        for(int i = 0; i < failureReason.size(); i++) {
+            String reason = String.format("%s failed with %s.", triedClasses.get(i).toString(),
+                    failureReason.get(i).toString());
+            explainations.add(reason);
+        }
+        String finalReason = String.join("\n", explainations);
+        throw new SubclassingException("Can not subclass any suitable interface. The following classes were attempted: " + finalReason);
     }
 
     private <T> DynamicType.Builder<T> addField(DynamicType.Builder<T> builder, String fieldName, Class<?> fieldType) {
@@ -80,12 +92,10 @@ public class ClassRepo {
                 return classCache.get(target);
             }
             DynamicType.Builder<?> builder = new ByteBuddy().subclass(target)
-                    .method(ElementMatchers.not(ElementMatchers.isToString()
+                    .method(not(ElementMatchers.isToString()).and(not(ElementMatchers.hasMethodName("fillInStackTrace")))
                             //.or(ElementMatchers.isHashCode().or(ElementMatchers.isEquals()))
-                    ))
-                    .intercept(MethodDelegation.to(interceptor))
-                    .method(ElementMatchers.hasMethodName("fillInStackTrace"))
-                    .intercept(MethodDelegation.to(stackTraceInterceptor));
+                    )
+                    .intercept(MethodDelegation.to(interceptor));
             builder = addField(builder, "parrotNodePointer", Node.class);
             builder = addField(builder, "parrotOriginObjectPointer", Object.class);
 

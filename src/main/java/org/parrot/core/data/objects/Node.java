@@ -13,6 +13,12 @@ public class Node implements Serializable {
     private final UUID uuid;
     private final String value;
     private final boolean terminal;
+
+    public boolean isSerialized() {
+        return serialized;
+    }
+
+    private final boolean serialized;
     private final boolean failedNode;
     private final Class<?> runtimeClass;
     private final Class<?> representingClass;
@@ -31,6 +37,7 @@ public class Node implements Serializable {
         this.failedNode = false;
         this.comments = "";
         this.directChildren = new ArrayList<>();
+        this.serialized = false;
     }
 
     public Node(Class<?> clazz, Class<?> returnClazz) {
@@ -43,6 +50,7 @@ public class Node implements Serializable {
         this.failedNode = false;
         this.comments = "";
         this.directChildren = new ArrayList<>();
+        this.serialized = false;
     }
 
     public Node(Class<?> clazz, Exception reason) {
@@ -55,6 +63,27 @@ public class Node implements Serializable {
         this.failedNode = true;
         this.comments = reason.getMessage();
         this.directChildren = new ArrayList<>();
+        this.serialized = false;
+    }
+
+    public static Node ofSerialized(Class<?> clazz, String value) {
+        return new Node(clazz, value, true);
+    }
+
+    public static Node ofRawValue(Class<?> clazz, String value) {
+        return new Node(clazz, value);
+    }
+    public Node(Class<?> clazz, String value, boolean serialized) {
+        this.methodCalls = new ArrayList<>();
+        this.uuid = UUID.randomUUID();
+        this.runtimeClass = clazz;
+        this.representingClass = clazz;
+        this.value = value;
+        this.terminal = true;
+        this.failedNode = false;
+        this.comments = "";
+        this.directChildren = new ArrayList<>();
+        this.serialized = serialized;
     }
 
     public Node(Class<?> clazz, String value) {
@@ -67,6 +96,7 @@ public class Node implements Serializable {
         this.failedNode = false;
         this.comments = "";
         this.directChildren = new ArrayList<>();
+        this.serialized = false;
     }
 
     public String getComments() {

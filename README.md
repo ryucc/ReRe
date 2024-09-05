@@ -109,7 +109,7 @@ The other limitation is Orange only records behavior that was executed at runtim
 
 ## Recording throws
 
-Yes, Orange will also record and chain `doThrow`
+See test/java/examples/ThrowExample.java
 
 ## Arrays and Records
 
@@ -123,3 +123,4 @@ Coming soon
 hashCode() and isEqual() might break, because we are subclassing.
 
 
+Array + Record loops

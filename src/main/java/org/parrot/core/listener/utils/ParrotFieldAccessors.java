@@ -1,10 +1,10 @@
-package org.parrot.core.listener;
+package org.parrot.core.listener.utils;
 
 import org.parrot.core.data.objects.Node;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class Accessors {
+public class ParrotFieldAccessors {
     public static Node getNode(Object self) {
         try {
             return (Node) self.getClass().getMethod("getParrotNodePointer").invoke(self);

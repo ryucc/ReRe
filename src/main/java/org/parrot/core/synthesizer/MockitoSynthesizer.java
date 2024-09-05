@@ -60,6 +60,11 @@ public class MockitoSynthesizer {
             methodBuilder.addStatement("$T $L = new $T($L)", clazz, mockName, clazz, params);
             return;
         }
+        if(objectNode.isSerialized()) {
+            String mockName = namingStrategy.getUniqueMockName(objectNode);
+            Class<?> clazz = objectNode.getRuntimeClass();
+
+        }
         if (objectNode.isTerminal()) {
             String mockName = namingStrategy.getUniqueMockName(objectNode);
             Class<?> clazz = objectNode.getRuntimeClass();

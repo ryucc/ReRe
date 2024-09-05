@@ -8,11 +8,18 @@ import org.parrot.core.data.methods.MethodCall;
 import org.parrot.core.data.methods.MethodResult;
 import org.parrot.core.data.objects.Node;
 import org.parrot.core.listener.exceptions.InitializationException;
+import org.parrot.core.listener.utils.ParrotFieldAccessors;
+import org.parrot.core.listener.utils.ClassUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.RecordComponent;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 
@@ -45,18 +52,40 @@ public class Listener {
     public <T> ListenResult<T> handleAnything(T returnValue, Class<?> targetClass) {
         if (returnValue == null || ClassUtils.isStringOrPrimitive(targetClass)) {
             return handlePrimitiveOrNull(returnValue, targetClass);
+        } else if(Serializable.class.isAssignableFrom(targetClass)) {
+            return handleBySerialization(returnValue, targetClass);
         } else if (targetClass.isRecord()) {
             return handleRecord(returnValue, targetClass);
+        } else if (targetClass.isArray()) {
+            // do something
         }
         return handleInternal(returnValue, targetClass);
+    }
+
+    public <T> ListenResult<T> handleBySerialization(T returnValue, Class<?> targetClass) {
+
+        try {
+            Base64.Encoder encoder = Base64.getEncoder();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(encoder.wrap(baos));
+            objectOutputStream.writeObject(returnValue);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+            String s = baos.toString();
+            Node serializedNode = new Node(returnValue.getClass(), s);
+            return new ListenResult<>(returnValue, serializedNode);
+        } catch (IOException e) {
+            Node failureNode = new Node(returnValue.getClass(), e);
+            return new ListenResult<>(returnValue, failureNode);
+        }
     }
 
     public <T> ListenResult<T> handleInternal(T returnValue, Class<?> targetClass) {
         try {
             T mocked = (T) findClassThenInit(returnValue, targetClass);
             Node dest = new Node(returnValue.getClass());
-            Accessors.setOriginal(mocked, returnValue);
-            Accessors.setNode(mocked, dest);
+            ParrotFieldAccessors.setOriginal(mocked, returnValue);
+            ParrotFieldAccessors.setNode(mocked, dest);
             return new ListenResult<>(mocked, dest);
         } catch (Exception e) {
             Node dest = new Node(returnValue.getClass(), e);
@@ -77,8 +106,8 @@ public class Listener {
     public Object intercept(@AllArguments Object[] allArguments,
                             @Origin Method orignalMethod,
                             @This Object self) throws Throwable {
-        Object original = Accessors.getOriginal(self);
-        Node source = Accessors.getNode(self);
+        Object original = ParrotFieldAccessors.getOriginal(self);
+        Node source = ParrotFieldAccessors.getNode(self);
 
         Object returnValue;
 
