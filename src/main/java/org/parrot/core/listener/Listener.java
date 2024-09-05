@@ -11,6 +11,7 @@ import org.parrot.core.listener.exceptions.InitializationException;
 import org.parrot.core.listener.utils.ParrotFieldAccessors;
 import org.parrot.core.listener.utils.ClassUtils;
 import org.parrot.core.serde.DefaultSerde;
+import org.parrot.core.serde.exceptions.SerializationException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class Listener {
             String s = defaultSerde.serialize(returnValue);
             Node serializedNode = Node.ofSerialized(returnValue.getClass(), s);
             return new ListenResult<>(returnValue, serializedNode);
-        } catch (IOException e) {
+        } catch (SerializationException e) {
             Node failureNode = new Node(returnValue.getClass(), e);
             return new ListenResult<>(returnValue, failureNode);
         }

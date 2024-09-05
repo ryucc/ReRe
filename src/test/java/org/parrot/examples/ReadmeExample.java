@@ -3,6 +3,7 @@ package org.parrot.examples;
 import org.parrot.core.listener.Listener;
 import org.parrot.core.synthesizer.MockitoSynthesizer;
 
+import java.io.PrintStream;
 import java.util.Random;
 
 /*
@@ -27,10 +28,9 @@ public class MockPrivateDiceCreator {
  */
 public class ReadmeExample {
     public static class PrivateDice {
-
         private final Random rand;
         public PrivateDice() {
-            rand = new Random();
+            rand = new Random(1);
         }
         public int roll() {
             return rand.nextInt(6) + 1;

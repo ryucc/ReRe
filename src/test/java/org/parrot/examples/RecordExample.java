@@ -10,7 +10,7 @@ public class RecordExample {
 
         private final Random rand;
         public Dice() {
-            rand = new Random();
+            rand = new Random(0);
         }
         public int roll() {
             return rand.nextInt(6) + 1;

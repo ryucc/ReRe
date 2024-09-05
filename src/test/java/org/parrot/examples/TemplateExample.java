@@ -28,7 +28,7 @@ public class TemplateExample {
 
         public TemplateDice(T o) {
             this.object = o;
-            rand = new Random();
+            rand = new Random(0);
         }
 
         public T getObject() {

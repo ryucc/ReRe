@@ -25,9 +25,6 @@ public class ThrowExample {
         MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.parrot.examples", "create");
         String result = mockitoSynthesizer.generateMockito(listener);
         System.out.println(result);
-
-        //Path output = Path.of("src/test/java/org/parrot/examples/MockErrorDiceCreator.java");
-        //Files.writeString(output, result);
     }
 
     public static class ErrorDice {
@@ -36,7 +33,7 @@ public class ThrowExample {
         private int count;
 
         public ErrorDice() {
-            rand = new Random();
+            rand = new Random(1239);
             count = 0;
         }
 

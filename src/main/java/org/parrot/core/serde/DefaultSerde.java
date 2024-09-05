@@ -1,5 +1,7 @@
 package org.parrot.core.serde;
 
+import org.parrot.core.serde.exceptions.SerializationException;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,22 +16,26 @@ public class DefaultSerde implements ParrotSerde<Object> {
     private static final Base64.Decoder decoder = Base64.getDecoder();
 
 
-    public String serialize(Object object) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutputStream = new ObjectOutputStream(encoder.wrap(baos));
-        objectOutputStream.writeObject(object);
-        objectOutputStream.flush();
-        objectOutputStream.close();
-        return baos.toString();
+    public String serialize(Object object) throws SerializationException {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(encoder.wrap(baos));
+            objectOutputStream.writeObject(object);
+            objectOutputStream.flush();
+            objectOutputStream.close();
+            return baos.toString();
+        } catch (IOException e) {
+            throw new SerializationException(e);
+        }
     }
 
-    public Object deserialize(String serialization) throws IOException {
+    public Object deserialize(String serialization) {
         try {
             InputStream stream = new ByteArrayInputStream(serialization.getBytes(StandardCharsets.UTF_8));
             ObjectInputStream objectInputStream = new ObjectInputStream(decoder.wrap(stream));
             objectInputStream.close();
             return objectInputStream.readObject();
-        } catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException |IOException e) {
             return null;
         }
     }

@@ -1,3 +1,4 @@
+Rolled 10
 package org.katie.orange.examples;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -5,7 +6,7 @@ import static org.mockito.Mockito.doReturn;
 
 import org.mockito.Mockito;
 import org.parrot.core.serde.DefaultSerde;
-import org.parrot.examples.readme.parameters.ParameterExample;
+import org.parrot.examples.ParameterExample;
 
 public class MockPrivateDiceCreator {
   private static final DefaultSerde defaultSerde = new DefaultSerde();
@@ -16,3 +17,4 @@ public class MockPrivateDiceCreator {
     return mockPrivateDice1;
   }
 }
+
