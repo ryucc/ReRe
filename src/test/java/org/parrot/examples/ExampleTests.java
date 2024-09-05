@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class ExampleTests {
+    private static final boolean RESET_TESTS = false;
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
@@ -35,7 +36,10 @@ public class ExampleTests {
         String[] args = {};
         ReadmeExample.main(args);
         Path output = Path.of("src/test/resources/ReadmeOutput.expected.java");
-        //Files.writeString(output, outContent.toString());
+        if (RESET_TESTS) {
+            Files.writeString(output, outContent.toString());
+            return;
+        }
         String expected = Files.readString(output);
         assertThat(outContent.toString()).isEqualTo(expected);
     }
@@ -45,7 +49,10 @@ public class ExampleTests {
         String[] args = {};
         RecordExample.main(args);
         Path output = Path.of("src/test/resources/RecordExample.expected.java");
-        //Files.writeString(output, outContent.toString());
+        if (RESET_TESTS) {
+            Files.writeString(output, outContent.toString());
+            return;
+        }
         String expected = Files.readString(output);
         assertThat(outContent.toString()).isEqualTo(expected);
     }
@@ -55,7 +62,10 @@ public class ExampleTests {
         String[] args = {};
         ParameterExample.main(args);
         Path output = Path.of("src/test/resources/ParameterExample.expected.java");
-        //Files.writeString(output, outContent.toString());
+        if (RESET_TESTS) {
+            Files.writeString(output, outContent.toString());
+            return;
+        }
         String expected = Files.readString(output);
         assertThat(outContent.toString()).isEqualTo(expected);
     }
@@ -65,7 +75,10 @@ public class ExampleTests {
         String[] args = {};
         TemplateExample.main(args);
         Path output = Path.of("src/test/resources/TemplateExample.expected.java");
-        //Files.writeString(output, outContent.toString());
+        if (RESET_TESTS) {
+            Files.writeString(output, outContent.toString());
+            return;
+        }
         String expected = Files.readString(output);
         assertThat(outContent.toString()).isEqualTo(expected);
     }
@@ -75,7 +88,10 @@ public class ExampleTests {
         String[] args = {};
         ThrowExample.main(args);
         Path output = Path.of("src/test/resources/ThrowExample.expected.java");
-        //Files.writeString(output, outContent.toString());
+        if (RESET_TESTS) {
+            Files.writeString(output, outContent.toString());
+            return;
+        }
         String[] expected = Files.readString(output).split("\n");
         String[] actual = outContent.toString().split("\n");
         assertThat(expected.length).isEqualTo(actual.length);
