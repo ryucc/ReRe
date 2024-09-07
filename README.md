@@ -1,10 +1,12 @@
 # Record-Replay Mock Creator
 
 TODO: 
+array support
 loop detection
 custom serialization
 unit tests
 Override final public non-static fields for all classes
+BUG: private classes with no constructors declared will error
 
 ## Basic Example
 
