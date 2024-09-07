@@ -7,7 +7,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ListenerRecordTests {
     public record RecordA (int a, RecordB recordB){}
-    public record RecordB (int a, int b){}
+    public record RecordB (int a, int b){
+    }
 
 
     @Test

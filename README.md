@@ -2,6 +2,9 @@
 
 TODO: 
 loop detection
+custom serialization
+unit tests
+Override final public non-static fields for all classes
 
 ## Basic Example
 

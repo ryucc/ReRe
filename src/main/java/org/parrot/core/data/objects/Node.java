@@ -5,7 +5,6 @@ import org.parrot.core.data.methods.MethodCall;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public class Node implements Serializable {
@@ -13,90 +12,87 @@ public class Node implements Serializable {
     private final UUID uuid;
     private final String value;
     private final boolean terminal;
-
-    public boolean isSerialized() {
-        return serialized;
-    }
-
     private final boolean serialized;
     private final boolean failedNode;
     private final Class<?> runtimeClass;
     private final Class<?> representingClass;
     private final String comments;
     private final List<Node> directChildren;
-
-
-    //TODO: ArrayNodes
-    public Node(Class<?> clazz) {
-        this.methodCalls = new ArrayList<>();
-        this.uuid = UUID.randomUUID();
-        this.runtimeClass = clazz;
-        this.representingClass = clazz;
-        this.value = "";
-        this.terminal = false;
-        this.failedNode = false;
-        this.comments = "";
-        this.directChildren = new ArrayList<>();
-        this.serialized = false;
+    public Node(List<MethodCall> methodCalls,
+                UUID uuid,
+                String value,
+                boolean terminal,
+                boolean serialized,
+                boolean failedNode,
+                Class<?> runtimeClass,
+                Class<?> representingClass,
+                String comments,
+                List<Node> directChildren) {
+        this.methodCalls = methodCalls;
+        this.uuid = uuid;
+        this.value = value;
+        this.terminal = terminal;
+        this.serialized = serialized;
+        this.failedNode = failedNode;
+        this.runtimeClass = runtimeClass;
+        this.representingClass = representingClass;
+        this.comments = comments;
+        this.directChildren = directChildren;
     }
 
-    public Node(Class<?> clazz, Class<?> returnClazz) {
-        this.methodCalls = new ArrayList<>();
-        this.uuid = UUID.randomUUID();
-        this.runtimeClass = clazz;
-        this.representingClass = returnClazz;
-        this.value = "";
-        this.terminal = false;
-        this.failedNode = false;
-        this.comments = "";
-        this.directChildren = new ArrayList<>();
-        this.serialized = false;
+    public static Node ofFailed(Class<?> clazz, String comments) {
+        return new Node(new ArrayList<>(),
+                UUID.randomUUID(),
+                "null",
+                true,
+                false,
+                true,
+                clazz,
+                clazz,
+                comments,
+                new ArrayList<>());
     }
 
-    public Node(Class<?> clazz, Exception reason) {
-        this.methodCalls = new ArrayList<>();
-        this.uuid = UUID.randomUUID();
-        this.runtimeClass = clazz;
-        this.representingClass = clazz;
-        this.value = "null";
-        this.terminal = true;
-        this.failedNode = true;
-        this.comments = reason.getMessage();
-        this.directChildren = new ArrayList<>();
-        this.serialized = false;
+    public static Node ofPrimitive(Class<?> clazz, String value) {
+        return new Node(new ArrayList<>(),
+                UUID.randomUUID(),
+                value,
+                true,
+                false,
+                false,
+                clazz,
+                clazz,
+                "",
+                new ArrayList<>());
+    }
+    public static Node ofInternal(Class<?> clazz) {
+        return new Node(new ArrayList<>(),
+                UUID.randomUUID(),
+                "",
+                false,
+                false,
+                false,
+                clazz,
+                clazz,
+                "",
+                new ArrayList<>());
     }
 
     public static Node ofSerialized(Class<?> clazz, String value) {
-        return new Node(clazz, value, true);
+        return new Node(new ArrayList<>(),
+                UUID.randomUUID(),
+                value,
+                true,
+                true,
+                false,
+                clazz,
+                clazz,
+                "",
+                new ArrayList<>());
     }
 
-    public static Node ofRawValue(Class<?> clazz, String value) {
-        return new Node(clazz, value);
-    }
-    public Node(Class<?> clazz, String value, boolean serialized) {
-        this.methodCalls = new ArrayList<>();
-        this.uuid = UUID.randomUUID();
-        this.runtimeClass = clazz;
-        this.representingClass = clazz;
-        this.value = value;
-        this.terminal = true;
-        this.failedNode = false;
-        this.comments = "";
-        this.directChildren = new ArrayList<>();
-        this.serialized = serialized;
-    }
-
-    public Node(Class<?> clazz, String value) {
-        this.methodCalls = new ArrayList<>();
-        this.uuid = UUID.randomUUID();
-        this.runtimeClass = clazz;
-        this.representingClass = clazz;
-        this.value = value;
-        this.terminal = true;
-        this.failedNode = false;
-        this.comments = "";
-        this.directChildren = new ArrayList<>();
-        this.serialized = false;
+    public boolean isSerialized() {
+        return serialized;
     }
 
     public String getComments() {
@@ -135,7 +131,7 @@ public class Node implements Serializable {
         directChildren.add(node);
     }
 
-    public List<Node> getDirectChildren(){
+    public List<Node> getDirectChildren() {
         return directChildren;
     }
 

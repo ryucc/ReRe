@@ -1,10 +1,28 @@
-package org.parrot.examples.fails;
+package org.parrot.examples;
 
 import org.parrot.core.listener.Listener;
 import org.parrot.core.synthesizer.MockitoSynthesizer;
-import org.parrot.examples.testObjects.HttpClient;
 
 public class ReadmeRecursiveExample {
+
+    public static class HttpClient {
+        public HttpResponse get(int i) {
+            return new HttpResponse();
+        }
+    }
+
+    public static class HttpResponse {
+        public HttpResponse() {
+        }
+
+        public String getBody() {
+            return body;
+        }
+
+        private final String body = "Hello World!";
+
+    }
+
     public static void main(String[] args) {
         HttpClient client = new HttpClient();
 

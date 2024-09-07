@@ -8,28 +8,23 @@ import org.parrot.core.data.methods.MethodCall;
 import org.parrot.core.data.methods.MethodResult;
 import org.parrot.core.data.objects.Node;
 import org.parrot.core.listener.exceptions.InitializationException;
-import org.parrot.core.listener.utils.ParrotFieldAccessors;
 import org.parrot.core.listener.utils.ClassUtils;
+import org.parrot.core.listener.utils.ParrotFieldAccessors;
 import org.parrot.core.serde.DefaultSerde;
 import org.parrot.core.serde.exceptions.SerializationException;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.RecordComponent;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 
 @SuppressWarnings("unchecked")
 public class Listener {
+    private static final DefaultSerde defaultSerde = new DefaultSerde();
     List<Node> roots;
     ClassRepo classRepo;
-
-    private static final DefaultSerde defaultSerde = new DefaultSerde();
 
     public Listener() {
         roots = new ArrayList<>();
@@ -55,9 +50,10 @@ public class Listener {
     public <T> ListenResult<T> handleAnything(T returnValue, Class<?> targetClass) {
         // Need to think more about this.
         // targetClass will be Object.class on generics.
-        if (returnValue == null || ClassUtils.isStringOrPrimitive(returnValue.getClass())|| ClassUtils.isStringOrPrimitive(targetClass)) {
+        if (returnValue == null || ClassUtils.isStringOrPrimitive(returnValue.getClass()) || ClassUtils.isStringOrPrimitive(
+                targetClass)) {
             return handlePrimitiveOrNull(returnValue, targetClass);
-        } else if(Throwable.class.isAssignableFrom(targetClass)) {
+        } else if (Throwable.class.isAssignableFrom(targetClass)) {
             return handleBySerialization(returnValue, targetClass);
         } else if (targetClass.isRecord()) {
             return handleRecord(returnValue, targetClass);
@@ -74,7 +70,7 @@ public class Listener {
             Node serializedNode = Node.ofSerialized(returnValue.getClass(), s);
             return new ListenResult<>(returnValue, serializedNode);
         } catch (SerializationException e) {
-            Node failureNode = new Node(returnValue.getClass(), e);
+            Node failureNode = Node.ofFailed(returnValue.getClass(), e.getMessage());
             return new ListenResult<>(returnValue, failureNode);
         }
     }
@@ -82,21 +78,21 @@ public class Listener {
     public <T> ListenResult<T> handleInternal(T returnValue, Class<?> targetClass) {
         try {
             T mocked = (T) findClassThenInit(returnValue, targetClass);
-            Node dest = new Node(returnValue.getClass());
+            Node dest = Node.ofInternal(returnValue.getClass());
             ParrotFieldAccessors.setOriginal(mocked, returnValue);
             ParrotFieldAccessors.setNode(mocked, dest);
             return new ListenResult<>(mocked, dest);
         } catch (Exception e) {
-            Node dest = new Node(returnValue.getClass(), e);
+            Node dest = Node.ofFailed(returnValue.getClass(), e.getMessage());
             return new ListenResult<>(returnValue, dest);
         }
     }
 
     public <T> ListenResult<T> handlePrimitiveOrNull(T value, Class<?> clazz) {
         Node dest = switch (value) {
-            case null -> new Node(clazz, "null");
-            case String sValue -> new Node(String.class, "\"" + sValue + "\"");
-            default -> new Node(clazz, value.toString());
+            case null -> Node.ofPrimitive(clazz, "null");
+            case String sValue -> Node.ofPrimitive(String.class, "\"" + sValue + "\"");
+            default -> Node.ofPrimitive(clazz, value.toString());
         };
         return new ListenResult<>(value, dest);
     }
@@ -111,6 +107,7 @@ public class Listener {
         Object returnValue;
 
         try {
+            orignalMethod.setAccessible(true);
             returnValue = orignalMethod.invoke(original, allArguments);
         } catch (InvocationTargetException e) {
             ListenResult<Throwable> result = handleAnything(e.getTargetException(), e.getTargetException().getClass());
@@ -131,7 +128,7 @@ public class Listener {
     }
 
     public <T> ListenResult<T> handleRecord(T original, Class<?> clazz) {
-        Node cur = new Node(clazz);
+        Node cur = Node.ofInternal(clazz);
 
         RecordComponent[] components = original.getClass().getRecordComponents();
         List<Object> children = new ArrayList<>();
@@ -144,7 +141,7 @@ public class Listener {
             } catch (IllegalAccessException | InvocationTargetException e) {
                 // Failed to access fields for a record
                 // this should never happen since all fields have public getters;
-                Node failureNode = new Node(original.getClass(), e);
+                Node failureNode = Node.ofFailed(original.getClass(), e.getMessage());
                 return new ListenResult<>(original, failureNode);
             }
         }
@@ -153,7 +150,7 @@ public class Listener {
             T dubbed = (T) ObjectInitializer.initRecord(clazz, children);
             return new ListenResult<>(dubbed, cur);
         } catch (InitializationException e) {
-            Node failureNode = new Node(original.getClass(), e);
+            Node failureNode = Node.ofFailed(original.getClass(), e.getMessage());
             return new ListenResult<>(original, failureNode);
         }
     }

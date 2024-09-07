@@ -2,8 +2,6 @@ package org.parrot.core.serde;
 
 import org.parrot.core.serde.exceptions.SerializationException;
 
-import java.io.IOException;
-
 public interface ParrotSerde<T> {
     String serialize(T object) throws SerializationException;
 

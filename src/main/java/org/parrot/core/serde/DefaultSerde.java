@@ -17,12 +17,11 @@ public class DefaultSerde implements ParrotSerde<Object> {
 
 
     public String serialize(Object object) throws SerializationException {
-        try {
+        try (
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(encoder.wrap(baos));
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(encoder.wrap(baos))) {
             objectOutputStream.writeObject(object);
             objectOutputStream.flush();
-            objectOutputStream.close();
             return baos.toString();
         } catch (IOException e) {
             throw new SerializationException(e);
@@ -30,12 +29,10 @@ public class DefaultSerde implements ParrotSerde<Object> {
     }
 
     public Object deserialize(String serialization) {
-        try {
-            InputStream stream = new ByteArrayInputStream(serialization.getBytes(StandardCharsets.UTF_8));
-            ObjectInputStream objectInputStream = new ObjectInputStream(decoder.wrap(stream));
-            objectInputStream.close();
+        try (InputStream stream = new ByteArrayInputStream(serialization.getBytes(StandardCharsets.UTF_8));
+             ObjectInputStream objectInputStream = new ObjectInputStream(decoder.wrap(stream))) {
             return objectInputStream.readObject();
-        } catch (ClassNotFoundException |IOException e) {
+        } catch (ClassNotFoundException | IOException e) {
             return null;
         }
     }

@@ -3,6 +3,7 @@ package org.parrot.core.listener;
 
 import org.junit.jupiter.api.Test;
 import org.parrot.core.listener.exceptions.SubclassingException;
+import org.parrot.core.listener.testUtils.ReturnNullInterceptor;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -31,10 +32,12 @@ class ClassRepoBasicTests {
         ClassRepo classRepo = new ClassRepo(new ReturnNullInterceptor());
         assertThatExceptionOfType(SubclassingException.class).isThrownBy(() -> classRepo.getOrDefineSubclass(MyFinal.class));
     }
+
     @Test
-    public void testPrivateClass() {
+    public void testPrivateClass() throws Exception {
         ClassRepo classRepo = new ClassRepo(new ReturnNullInterceptor());
-        assertThatExceptionOfType(SubclassingException.class).isThrownBy(() -> classRepo.getOrDefineSubclass(MyPrivate.class));
+        Class<?> subClass = classRepo.getOrDefineSubclass(MyPrivate.class);
+        assertThat(MyPrivate.class.isAssignableFrom(subClass)).isTrue();
     }
 
     public static class MyClass {

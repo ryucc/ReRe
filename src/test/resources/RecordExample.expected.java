@@ -21,11 +21,11 @@ public class MockTwoDiceCreator {
   private static final DefaultSerde defaultSerde = new DefaultSerde();
 
   public static RecordExample.TwoDice create() {
+    RecordExample.Dice mockDice1 = Mockito.mock(RecordExample.Dice.class);
+    doReturn(1).doReturn(5).doReturn(2).doReturn(6).doReturn(6).when(mockDice1).roll();
     RecordExample.Dice mockDice2 = Mockito.mock(RecordExample.Dice.class);
     doReturn(1).doReturn(5).doReturn(2).doReturn(6).doReturn(6).when(mockDice2).roll();
-    RecordExample.Dice mockDice3 = Mockito.mock(RecordExample.Dice.class);
-    doReturn(1).doReturn(5).doReturn(2).doReturn(6).doReturn(6).when(mockDice3).roll();
-    RecordExample.TwoDice mockTwoDice1 = new RecordExample.TwoDice(mockDice2, mockDice3);
+    RecordExample.TwoDice mockTwoDice1 = new RecordExample.TwoDice(mockDice1, mockDice2);
     return mockTwoDice1;
   }
 }

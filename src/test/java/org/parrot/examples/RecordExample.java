@@ -6,20 +6,6 @@ import org.parrot.core.synthesizer.MockitoSynthesizer;
 import java.util.Random;
 
 public class RecordExample {
-    public static class Dice {
-
-        private final Random rand;
-        public Dice() {
-            rand = new Random(0);
-        }
-        public int roll() {
-            return rand.nextInt(6) + 1;
-        }
-
-    }
-
-    public record TwoDice(Dice dice1, Dice dice2){};
-
     public static void main(String[] args) {
 
         TwoDice twoDice = new TwoDice(new Dice(), new Dice());
@@ -34,5 +20,22 @@ public class RecordExample {
 
         MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.orange.examples", "create");
         System.out.println(mockitoSynthesizer.generateMockito(listener));
+    }
+
+    public static class Dice {
+
+        private final Random rand;
+
+        public Dice() {
+            rand = new Random(0);
+        }
+
+        public int roll() {
+            return rand.nextInt(6) + 1;
+        }
+
+    }
+
+    public record TwoDice(Dice dice1, Dice dice2) {
     }
 }

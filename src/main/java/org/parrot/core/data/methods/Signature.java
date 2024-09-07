@@ -63,4 +63,10 @@ public class Signature implements Serializable {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s %s()", returnType, methodName);
+    }
+
 }

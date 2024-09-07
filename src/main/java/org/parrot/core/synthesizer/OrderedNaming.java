@@ -16,7 +16,7 @@ public class OrderedNaming implements NamingStrategy {
 
     @Override
     public String getUniqueMockName(Node node) {
-        Class<?> clazz = node.getClass();
+        Class<?> clazz = node.getRuntimeClass();
         ids.putIfAbsent(clazz, new HashMap<>());
 
         Map<UUID, Integer> classIds = ids.get(clazz);

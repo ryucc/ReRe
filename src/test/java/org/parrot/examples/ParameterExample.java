@@ -3,8 +3,6 @@ package org.parrot.examples;
 import org.parrot.core.listener.Listener;
 import org.parrot.core.synthesizer.MockitoSynthesizer;
 
-import java.util.Random;
-
 public class ParameterExample {
 
     public static class PrivateDice {

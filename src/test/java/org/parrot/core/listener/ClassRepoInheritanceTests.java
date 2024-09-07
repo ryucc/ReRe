@@ -3,6 +3,7 @@ package org.parrot.core.listener;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.parrot.core.listener.testUtils.ReturnNullInterceptor;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
