@@ -4,13 +4,12 @@ Rolled 1
 Rolled 4
 package org.katie.parrot.examples;
 
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 
 import java.lang.RuntimeException;
 import org.mockito.Mockito;
-import org.parrot.core.serde.DefaultSerde;
-import org.parrot.examples.ThrowExample;
+import org.ingko.core.serde.DefaultSerde;
+import org.ingko.examples.ThrowExample;
 
 public class MockErrorDiceCreator {
   private static final DefaultSerde defaultSerde = new DefaultSerde();

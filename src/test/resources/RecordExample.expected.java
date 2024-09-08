@@ -10,12 +10,11 @@ Rolled 6
 Rolled 6
 package org.katie.orange.examples;
 
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 
 import org.mockito.Mockito;
-import org.parrot.core.serde.DefaultSerde;
-import org.parrot.examples.RecordExample;
+import org.ingko.core.serde.DefaultSerde;
+import org.ingko.examples.RecordExample;
 
 public class MockTwoDiceCreator {
   private static final DefaultSerde defaultSerde = new DefaultSerde();
