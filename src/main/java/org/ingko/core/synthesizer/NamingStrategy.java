@@ -1,7 +1,7 @@
 package org.ingko.core.synthesizer;
 
-import org.ingko.core.data.objects.Node;
+import org.ingko.core.data.objects.EnvironmentNode;
 
 public interface NamingStrategy {
-    String getUniqueMockName(Node node);
+    String getUniqueMockName(EnvironmentNode environmentNode);
 }

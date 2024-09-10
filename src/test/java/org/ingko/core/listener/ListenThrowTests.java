@@ -1,10 +1,10 @@
 package org.ingko.core.listener;
 
+import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.testUtils.GraphCompare;
 import org.junit.jupiter.api.Test;
-import org.ingko.core.data.methods.MethodCall;
+import org.ingko.core.data.methods.EnvironmentMethodCall;
 import org.ingko.core.data.methods.MethodResult;
-import org.ingko.core.data.objects.Node;
 
 import java.util.Random;
 
@@ -27,18 +27,18 @@ public class ListenThrowTests {
                 System.out.println("Caught Exception");
             }
         }
-        Node root = listener.getRoot();
-        Node expectedRoot = Node.ofInternal(ErrorDice.class);
-        Node returnNode = Node.ofPrimitive(int.class, "2");
-        Node throwNode = Node.ofSerialized(RuntimeException.class, "dummySerialization");
-        MethodCall call1 = new MethodCall(ErrorDice.class.getMethod("roll"),
+        EnvironmentNode root = listener.getRoot();
+        EnvironmentNode expectedRoot = EnvironmentNode.ofInternal(ErrorDice.class);
+        EnvironmentNode returnEnvironmentNode = EnvironmentNode.ofPrimitive(int.class, "2");
+        EnvironmentNode throwEnvironmentNode = EnvironmentNode.ofSerialized(RuntimeException.class, "dummySerialization");
+        EnvironmentMethodCall call1 = new EnvironmentMethodCall(ErrorDice.class.getMethod("roll"),
                 expectedRoot,
-                returnNode,
+                returnEnvironmentNode,
                 MethodResult.RETURN
                 );
-        MethodCall call2 = new MethodCall(ErrorDice.class.getMethod("roll"),
+        EnvironmentMethodCall call2 = new EnvironmentMethodCall(ErrorDice.class.getMethod("roll"),
                 expectedRoot,
-                throwNode,
+                throwEnvironmentNode,
                 MethodResult.THROW
         );
         expectedRoot.addEdge(call1);

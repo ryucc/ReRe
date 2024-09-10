@@ -1,8 +1,8 @@
 package org.ingko.testUtils;
 
 
-import org.ingko.core.data.methods.MethodCall;
-import org.ingko.core.data.objects.Node;
+import org.ingko.core.data.methods.EnvironmentMethodCall;
+import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.synthesizer.SimpleUUIDNaming;
 
 import java.util.Stack;
@@ -16,25 +16,25 @@ public class SimpleTreePrinter {
     }
 
 
-    public void printTree(Node root) {
+    public void printTree(EnvironmentNode root) {
         Stack<Integer> depth = new Stack<>();
-        Stack<MethodCall> edges = new Stack<>();
+        Stack<EnvironmentMethodCall> edges = new Stack<>();
         System.out.println(namer.getUniqueMockName(root));
-        for (MethodCall e : root.getMethodCalls()) {
+        for (EnvironmentMethodCall e : root.getMethodCalls()) {
             edges.push(e);
             depth.push(1);
         }
 
         while (!edges.empty()) {
-            MethodCall e = edges.pop();
+            EnvironmentMethodCall e = edges.pop();
             int d = depth.pop();
             for (int i = 0; i < d; i++) {
                 System.out.print("    ");
             }
             System.out.print(e.getName());
-            Node dest = e.getDest();
+            EnvironmentNode dest = e.getDest();
             System.out.println("->" + namer.getUniqueMockName(dest));
-            for (MethodCall child : dest.getMethodCalls()) {
+            for (EnvironmentMethodCall child : dest.getMethodCalls()) {
                 edges.push(child);
                 depth.push(d + 1);
             }

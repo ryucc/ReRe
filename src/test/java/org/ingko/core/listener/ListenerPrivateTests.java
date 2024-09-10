@@ -1,9 +1,9 @@
 package org.ingko.core.listener;
 
+import org.ingko.core.data.objects.EnvironmentNode;
 import org.junit.jupiter.api.Test;
-import org.ingko.core.data.methods.MethodCall;
+import org.ingko.core.data.methods.EnvironmentMethodCall;
 import org.ingko.core.data.methods.MethodResult;
-import org.ingko.core.data.objects.Node;
 
 import java.util.Random;
 
@@ -33,14 +33,14 @@ public class ListenerPrivateTests {
             wrappedDice.roll();
         }
 
-        Node root = listener.getRoot();
+        EnvironmentNode root = listener.getRoot();
         assertThat(root.getRuntimeClass()).isEqualTo(PrivateDice.class);
         assertThat(root.getMethodCalls()).hasSize(5)
-                .extracting(MethodCall::getResult)
+                .extracting(EnvironmentMethodCall::getResult)
                 .allMatch(result -> result == MethodResult.RETURN);
         assertThat(root.getMethodCalls())
-                .extracting(MethodCall::getDest)
-                .map(Node::getValue)
+                .extracting(EnvironmentMethodCall::getDest)
+                .map(EnvironmentNode::getValue)
                 .containsExactly("1", "5", "2", "6", "6");
     }
 }

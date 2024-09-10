@@ -5,12 +5,12 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import org.ingko.core.data.objects.EnvironmentNode;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
-import org.ingko.core.data.methods.MethodCall;
+import org.ingko.core.data.methods.EnvironmentMethodCall;
 import org.ingko.core.data.methods.MethodResult;
 import org.ingko.core.data.methods.Signature;
-import org.ingko.core.data.objects.Node;
 import org.ingko.core.listener.Listener;
 import org.ingko.core.serde.DefaultSerde;
 
@@ -33,9 +33,10 @@ public class MockitoSynthesizer {
     }
 
     public String generateMockito(Listener listener) {
-        Node root = listener.getRoot();
+        EnvironmentNode root = listener.getRoot();
         Class<?> clazz = root.getRuntimeClass();
-        String fileName = "Mock" + clazz.getSimpleName() + "Creator";
+        //String fileName = "Mock" + clazz.getSimpleName() + "Creator";
+        String fileName = "Mock" + "Creator";
         TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(fileName).addModifiers(Modifier.PUBLIC);
 
 
@@ -59,13 +60,13 @@ public class MockitoSynthesizer {
         return javaFile.toString();
     }
 
-    private void generateObject(Node objectNode, MethodSpec.Builder methodBuilder) {
-        if (objectNode.getRuntimeClass().isRecord()) {
-            String mockName = namingStrategy.getUniqueMockName(objectNode);
-            Class<?> clazz = objectNode.getRuntimeClass();
+    private void generateObject(EnvironmentNode objectEnvironmentNode, MethodSpec.Builder methodBuilder) {
+        if (objectEnvironmentNode.getRuntimeClass().isRecord()) {
+            String mockName = namingStrategy.getUniqueMockName(objectEnvironmentNode);
+            Class<?> clazz = objectEnvironmentNode.getRuntimeClass();
 
             List<String> childrenNames = new ArrayList<>();
-            for (Node child : objectNode.getDirectChildren()) {
+            for (EnvironmentNode child : objectEnvironmentNode.getDirectChildren()) {
                 generateObject(child, methodBuilder);
                 childrenNames.add(namingStrategy.getUniqueMockName(child));
             }
@@ -73,65 +74,78 @@ public class MockitoSynthesizer {
             methodBuilder.addStatement("$T $L = new $T($L)", clazz, mockName, clazz, params);
             return;
         }
-        if (objectNode.isSerialized()) {
-            Class<?> clazz = objectNode.getRuntimeClass();
-            String mockName = namingStrategy.getUniqueMockName(objectNode);
-            methodBuilder
-                    .addStatement("$T $L = ($T) defaultSerde.deserialize($S)", clazz, mockName, clazz, objectNode.getValue());
+        if (objectEnvironmentNode.getRuntimeClass().isArray()) {
+            String mockName = namingStrategy.getUniqueMockName(objectEnvironmentNode);
+            Class<?> clazz = objectEnvironmentNode.getRuntimeClass();
+
+            List<String> childrenNames = new ArrayList<>();
+            for (EnvironmentNode child : objectEnvironmentNode.getDirectChildren()) {
+                generateObject(child, methodBuilder);
+                childrenNames.add(namingStrategy.getUniqueMockName(child));
+            }
+            String params = childrenNames.stream().collect(Collectors.joining(", "));
+            methodBuilder.addStatement("$T $L = {$L}", clazz, mockName, params);
             return;
         }
-        if (objectNode.isTerminal()) {
-            String mockName = namingStrategy.getUniqueMockName(objectNode);
-            Class<?> clazz = objectNode.getRuntimeClass();
-            String comments = objectNode.getComments();
+        if (objectEnvironmentNode.isSerialized()) {
+            Class<?> clazz = objectEnvironmentNode.getRuntimeClass();
+            String mockName = namingStrategy.getUniqueMockName(objectEnvironmentNode);
+            methodBuilder
+                    .addStatement("$T $L = ($T) defaultSerde.deserialize($S)", clazz, mockName, clazz, objectEnvironmentNode.getValue());
+            return;
+        }
+        if (objectEnvironmentNode.isTerminal()) {
+            String mockName = namingStrategy.getUniqueMockName(objectEnvironmentNode);
+            Class<?> clazz = objectEnvironmentNode.getRuntimeClass();
+            String comments = objectEnvironmentNode.getComments();
             if (!comments.isEmpty()) {
                 String escaped = comments.replace("$", "$$");
                 methodBuilder.addComment(escaped);
             }
-            methodBuilder.addStatement("$T $L = $L", clazz, mockName, objectNode.getValue());
+            methodBuilder.addStatement("$T $L = $L", clazz, mockName, objectEnvironmentNode.getValue());
             return;
         }
         Map<Signature, List<String>> methodActions = new HashMap<>();
-        for (MethodCall methodCall : objectNode.getMethodCalls()) {
-            Signature signature = methodCall.getSignature();
+        for (EnvironmentMethodCall environmentMethodCall : objectEnvironmentNode.getMethodCalls()) {
+            Signature signature = environmentMethodCall.getSignature();
             if (!methodActions.containsKey(signature)) {
                 methodActions.put(signature, new ArrayList<>());
             }
-            if (methodCall.isVoid()) {
-                if (methodCall.getResult() == MethodResult.RETURN) {
-                    methodActions.get(methodCall.getSignature()).add("doNothing().");
-                } else if (methodCall.getResult() == MethodResult.THROW) {
-                    Node throwable = methodCall.getDest();
+            if (environmentMethodCall.isVoid()) {
+                if (environmentMethodCall.getResult() == MethodResult.RETURN) {
+                    methodActions.get(environmentMethodCall.getSignature()).add("doNothing().");
+                } else if (environmentMethodCall.getResult() == MethodResult.THROW) {
+                    EnvironmentNode throwable = environmentMethodCall.getDest();
                     generateObject(throwable, methodBuilder);
                     String action = String.format("doThrow(%s).", namingStrategy.getUniqueMockName(throwable));
-                    methodActions.get(methodCall.getSignature()).add(action);
+                    methodActions.get(environmentMethodCall.getSignature()).add(action);
                 }
             } else {
-                if (methodCall.getResult() == MethodResult.RETURN) {
-                    if (methodCall.getDest().isTerminal()) {
-                        if (methodCall.getDest().getRuntimeClass().equals(String.class)) {
-                            String action = String.format("doReturn(\"%s\").", methodCall.getDest().getValue());
+                if (environmentMethodCall.getResult() == MethodResult.RETURN) {
+                    if (environmentMethodCall.getDest().isTerminal()) {
+                        if (environmentMethodCall.getDest().getRuntimeClass().equals(String.class)) {
+                            String action = String.format("doReturn(\"%s\").", environmentMethodCall.getDest().getValue());
                             methodActions.get(signature).add(action);
                         } else {
-                            String action = String.format("doReturn(%s).", methodCall.getDest().getValue());
+                            String action = String.format("doReturn(%s).", environmentMethodCall.getDest().getValue());
                             methodActions.get(signature).add(action);
                         }
                     } else {
-                        Node returnVal = methodCall.getDest();
+                        EnvironmentNode returnVal = environmentMethodCall.getDest();
                         generateObject(returnVal, methodBuilder);
                         String action = String.format("doReturn(%s).", namingStrategy.getUniqueMockName(returnVal));
                         methodActions.get(signature).add(action);
                     }
-                } else if (methodCall.getResult() == MethodResult.THROW) {
-                    Node throwable = methodCall.getDest();
+                } else if (environmentMethodCall.getResult() == MethodResult.THROW) {
+                    EnvironmentNode throwable = environmentMethodCall.getDest();
                     generateObject(throwable, methodBuilder);
                     String action = String.format("doThrow(%s).", namingStrategy.getUniqueMockName(throwable));
-                    methodActions.get(methodCall.getSignature()).add(action);
+                    methodActions.get(environmentMethodCall.getSignature()).add(action);
                 }
             }
         }
-        Class<?> clazz = objectNode.getRuntimeClass();
-        String mockName = namingStrategy.getUniqueMockName(objectNode);
+        Class<?> clazz = objectEnvironmentNode.getRuntimeClass();
+        String mockName = namingStrategy.getUniqueMockName(objectEnvironmentNode);
         methodBuilder.addStatement("$T $L = $T.mock($T.class)", clazz, mockName, Mockito.class, clazz);
 
         for (Signature key : methodActions.keySet()) {
@@ -141,7 +155,7 @@ public class MockitoSynthesizer {
             for (String action : actions) {
                 statement.add(action);
             }
-            statement.add("when($L).", namingStrategy.getUniqueMockName(objectNode));
+            statement.add("when($L).", namingStrategy.getUniqueMockName(objectEnvironmentNode));
 
             statement.add("$L($L)", key.getMethodName(), generateParamString(key.getParamClasses()));
             methodBuilder.addStatement(statement.build());

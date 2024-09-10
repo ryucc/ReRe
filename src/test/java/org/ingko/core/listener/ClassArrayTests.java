@@ -1,8 +1,8 @@
 package org.ingko.core.listener;
 
 
+import org.ingko.core.data.objects.EnvironmentNode;
 import org.junit.jupiter.api.Test;
-import org.ingko.core.data.objects.Node;
 import org.ingko.testUtils.SimpleTreePrinter;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -17,7 +17,7 @@ class ClassArrayTests {
 
         listener.createRoot(arr, arr.getClass());
 
-        Node root = listener.getRoot();
+        EnvironmentNode root = listener.getRoot();
         assertThat(root);
     }
 
@@ -29,7 +29,7 @@ class ClassArrayTests {
 
         listener.createRoot(arr, arr.getClass());
 
-        Node root = listener.getRoot();
+        EnvironmentNode root = listener.getRoot();
         assertThat(root);
     }
 
@@ -43,7 +43,7 @@ class ClassArrayTests {
         Listener listener = new Listener();
         listener.createRoot(arr, arr.getClass());
         listener.createRoot(holder, holder.getClass());
-        Node root1 = listener.getRoot();
+        EnvironmentNode root1 = listener.getRoot();
         new SimpleTreePrinter().printTree(root1);
     }
 

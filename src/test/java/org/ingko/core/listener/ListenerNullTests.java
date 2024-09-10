@@ -1,9 +1,9 @@
 package org.ingko.core.listener;
 
+import org.ingko.core.data.objects.EnvironmentNode;
 import org.junit.jupiter.api.Test;
-import org.ingko.core.data.methods.MethodCall;
+import org.ingko.core.data.methods.EnvironmentMethodCall;
 import org.ingko.core.data.methods.MethodResult;
-import org.ingko.core.data.objects.Node;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,14 +38,14 @@ public class ListenerNullTests {
 
         wrappedDice.rollNull();
 
-        Node root = listener.getRoot();
+        EnvironmentNode root = listener.getRoot();
         assertThat(root.getRuntimeClass()).isEqualTo(NullDice.class);
         assertThat(root.getMethodCalls()).hasSize(1)
-                .extracting(MethodCall::getResult)
+                .extracting(EnvironmentMethodCall::getResult)
                 .allMatch(result -> result == MethodResult.RETURN);
         assertThat(root.getMethodCalls())
-                .extracting(MethodCall::getDest)
-                .map(Node::getValue)
+                .extracting(EnvironmentMethodCall::getDest)
+                .map(EnvironmentNode::getValue)
                 .containsExactly("null");
     }
     @Test
@@ -57,14 +57,14 @@ public class ListenerNullTests {
 
         wrappedDice.rollVoid();
 
-        Node root = listener.getRoot();
+        EnvironmentNode root = listener.getRoot();
         assertThat(root.getRuntimeClass()).isEqualTo(NullDice.class);
         assertThat(root.getMethodCalls()).hasSize(1)
-                .extracting(MethodCall::getResult)
+                .extracting(EnvironmentMethodCall::getResult)
                 .allMatch(result -> result == MethodResult.RETURN);
         assertThat(root.getMethodCalls())
-                .extracting(MethodCall::getDest)
-                .map(Node::getRuntimeClass)
+                .extracting(EnvironmentMethodCall::getDest)
+                .map(EnvironmentNode::getRuntimeClass)
                 .first()
                 .isEqualTo(void.class);
     }

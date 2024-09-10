@@ -8,7 +8,7 @@ import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.ingko.core.data.objects.Node;
+import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.exceptions.SubclassingException;
 
 import java.lang.reflect.Method;
@@ -140,7 +140,7 @@ public class ClassRepo {
                             //.or(ElementMatchers.isHashCode().or(ElementMatchers.isEquals()))
                     )
                     .intercept(MethodDelegation.to(interceptor));
-            builder = addField(builder, "parrotNodePointer", Node.class);
+            builder = addField(builder, "parrotNodePointer", EnvironmentNode.class);
             builder = addField(builder, "parrotOriginObjectPointer", Object.class);
 
             Class<?> newClass = builder.make()

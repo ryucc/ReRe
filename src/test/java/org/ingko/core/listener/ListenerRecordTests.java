@@ -1,7 +1,7 @@
 package org.ingko.core.listener;
 
 import org.junit.jupiter.api.Test;
-import org.ingko.core.data.objects.Node;
+import org.ingko.core.data.objects.EnvironmentNode;
 
 import java.util.HashMap;
 
@@ -20,27 +20,27 @@ public class ListenerRecordTests {
         Listener listener = new Listener();
 
         Listener.ListenResult<?> aa = listener.handleRecord(a, RecordA.class, new HashMap<>());
-        Node node = aa.dataNode();
+        EnvironmentNode environmentNode = aa.dataEnvironmentNode();
         RecordA wrappedA = (RecordA) aa.wrapped();
         assertThat(wrappedA).isEqualTo(a);
 
-        assertThat(node.getRuntimeClass()).isEqualTo(RecordA.class);
-        assertThat(node.getDirectChildren())
+        assertThat(environmentNode.getRuntimeClass()).isEqualTo(RecordA.class);
+        assertThat(environmentNode.getDirectChildren())
                 .hasSize(2);
-        assertThat(node.getDirectChildren().getFirst().getRuntimeClass())
+        assertThat(environmentNode.getDirectChildren().getFirst().getRuntimeClass())
                 .isEqualTo(int.class);
-        assertThat(node.getDirectChildren().getFirst().getValue())
+        assertThat(environmentNode.getDirectChildren().getFirst().getValue())
                 .isEqualTo(Integer.valueOf(a.a()).toString());
-        Node bNode = node.getDirectChildren().getLast();
-        assertThat(bNode.getRuntimeClass())
+        EnvironmentNode bEnvironmentNode = environmentNode.getDirectChildren().getLast();
+        assertThat(bEnvironmentNode.getRuntimeClass())
                 .isEqualTo(RecordB.class);
-        assertThat(bNode.getDirectChildren().getFirst().getRuntimeClass())
+        assertThat(bEnvironmentNode.getDirectChildren().getFirst().getRuntimeClass())
                 .isEqualTo(int.class);
-        assertThat(bNode.getDirectChildren().getFirst().getValue())
+        assertThat(bEnvironmentNode.getDirectChildren().getFirst().getValue())
                 .isEqualTo(Integer.valueOf(b.a()).toString());
-        assertThat(bNode.getDirectChildren().getLast().getRuntimeClass())
+        assertThat(bEnvironmentNode.getDirectChildren().getLast().getRuntimeClass())
                 .isEqualTo(int.class);
-        assertThat(bNode.getDirectChildren().getLast().getValue())
+        assertThat(bEnvironmentNode.getDirectChildren().getLast().getValue())
                 .isEqualTo(Integer.valueOf(b.b()).toString());
     }
 }

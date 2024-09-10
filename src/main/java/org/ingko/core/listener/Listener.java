@@ -4,9 +4,9 @@ import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
-import org.ingko.core.data.methods.MethodCall;
+import org.ingko.core.data.methods.EnvironmentMethodCall;
 import org.ingko.core.data.methods.MethodResult;
-import org.ingko.core.data.objects.Node;
+import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.exceptions.InitializationException;
 import org.ingko.core.listener.utils.ClassUtils;
 import org.ingko.core.listener.utils.ParrotFieldAccessors;
@@ -26,7 +26,7 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class Listener {
     private static final DefaultSerde defaultSerde = new DefaultSerde();
-    List<Node> roots;
+    List<EnvironmentNode> roots;
     ClassRepo classRepo;
 
     public Listener() {
@@ -34,13 +34,13 @@ public class Listener {
         classRepo = new ClassRepo(this);
     }
 
-    public Node getRoot() {
+    public EnvironmentNode getRoot() {
         return roots.getFirst();
     }
 
     public <T> T createRoot(Object original, Class<T> targetClass) {
         ListenResult<?> result = handleAnything(original, targetClass);
-        roots.add(result.dataNode());
+        roots.add(result.dataEnvironmentNode());
         return (T) result.wrapped();
     }
 
@@ -82,14 +82,14 @@ public class Listener {
         int size = Array.getLength(original);
         Class<?> componentType = clazz.getComponentType();
 
-        Node cur = Node.ofInternal(clazz);
+        EnvironmentNode cur = EnvironmentNode.ofInternal(clazz);
         Object aObject = Array.newInstance(componentType, size);
 
         for (int i = 0; i < size; i++) {
             Object child = Array.get(original, i);
             explored.put(original, new ListenResult<>(aObject, cur));
             ListenResult<?> result = handleAnything(child, componentType, explored);
-            cur.addDirectChild(result.dataNode());
+            cur.addDirectChild(result.dataEnvironmentNode());
             children.add(result.wrapped());
         }
 
@@ -105,32 +105,32 @@ public class Listener {
 
         try {
             String s = defaultSerde.serialize(returnValue);
-            Node serializedNode = Node.ofSerialized(returnValue.getClass(), s);
-            return new ListenResult<>(returnValue, serializedNode);
+            EnvironmentNode serializedEnvironmentNode = EnvironmentNode.ofSerialized(returnValue.getClass(), s);
+            return new ListenResult<>(returnValue, serializedEnvironmentNode);
         } catch (SerializationException e) {
-            Node failureNode = Node.ofFailed(returnValue.getClass(), e.getMessage());
-            return new ListenResult<>(returnValue, failureNode);
+            EnvironmentNode failureEnvironmentNode = EnvironmentNode.ofFailed(returnValue.getClass(), e.getMessage());
+            return new ListenResult<>(returnValue, failureEnvironmentNode);
         }
     }
 
     public <T> ListenResult<T> handleInternal(T returnValue, Class<?> targetClass) {
         try {
             T mocked = (T) findClassThenInit(returnValue, targetClass);
-            Node dest = Node.ofInternal(returnValue.getClass());
+            EnvironmentNode dest = EnvironmentNode.ofInternal(returnValue.getClass());
             ParrotFieldAccessors.setOriginal(mocked, returnValue);
             ParrotFieldAccessors.setNode(mocked, dest);
             return new ListenResult<>(mocked, dest);
         } catch (Exception e) {
-            Node dest = Node.ofFailed(returnValue.getClass(), e.getMessage());
+            EnvironmentNode dest = EnvironmentNode.ofFailed(returnValue.getClass(), e.getMessage());
             return new ListenResult<>(returnValue, dest);
         }
     }
 
     public <T> ListenResult<T> handlePrimitiveOrNull(T value, Class<?> clazz) {
-        Node dest = switch (value) {
-            case null -> Node.ofPrimitive(clazz, "null");
-            case String sValue -> Node.ofPrimitive(String.class, "\"" + sValue + "\"");
-            default -> Node.ofPrimitive(clazz, value.toString());
+        EnvironmentNode dest = switch (value) {
+            case null -> EnvironmentNode.ofPrimitive(clazz, "null");
+            case String sValue -> EnvironmentNode.ofPrimitive(String.class, "\"" + sValue + "\"");
+            default -> EnvironmentNode.ofPrimitive(clazz, value.toString());
         };
         return new ListenResult<>(value, dest);
     }
@@ -140,7 +140,7 @@ public class Listener {
                             @Origin Method orignalMethod,
                             @This Object self) throws Throwable {
         Object original = ParrotFieldAccessors.getOriginal(self);
-        Node source = ParrotFieldAccessors.getNode(self);
+        EnvironmentNode source = ParrotFieldAccessors.getNode(self);
 
         Object returnValue;
 
@@ -149,7 +149,7 @@ public class Listener {
             returnValue = orignalMethod.invoke(original, allArguments);
         } catch (InvocationTargetException e) {
             ListenResult<Throwable> result = handleAnything(e.getTargetException(), e.getTargetException().getClass());
-            MethodCall edge = new MethodCall(orignalMethod, source, result.dataNode, MethodResult.THROW);
+            EnvironmentMethodCall edge = new EnvironmentMethodCall(orignalMethod, source, result.dataEnvironmentNode, MethodResult.THROW);
             source.addEdge(edge);
             throw result.wrapped();
         } catch (IllegalAccessException e) {
@@ -159,14 +159,14 @@ public class Listener {
         }
 
         ListenResult<?> result = handleAnything(returnValue, orignalMethod.getReturnType());
-        MethodCall edge = new MethodCall(orignalMethod, source, result.dataNode, MethodResult.RETURN);
+        EnvironmentMethodCall edge = new EnvironmentMethodCall(orignalMethod, source, result.dataEnvironmentNode, MethodResult.RETURN);
         source.addEdge(edge);
 
         return result.wrapped;
     }
 
     public <T> ListenResult<T> handleRecord(T original, Class<?> clazz, Map<Object, ListenResult<?>> explored) {
-        Node cur = Node.ofInternal(original.getClass());
+        EnvironmentNode cur = EnvironmentNode.ofInternal(original.getClass());
 
         RecordComponent[] components = original.getClass().getRecordComponents();
         List<Object> children = new ArrayList<>();
@@ -174,13 +174,13 @@ public class Listener {
             try {
                 Object fieldValue = component.getAccessor().invoke(original);
                 ListenResult<?> result = handleAnything(fieldValue, component.getType(), explored);
-                cur.addDirectChild(result.dataNode());
+                cur.addDirectChild(result.dataEnvironmentNode());
                 children.add(result.wrapped());
             } catch (IllegalAccessException | InvocationTargetException e) {
                 // Failed to access fields for a record
                 // this should never happen since all fields have public getters;
-                Node failureNode = Node.ofFailed(original.getClass(), e.getMessage());
-                return new ListenResult<>(original, failureNode);
+                EnvironmentNode failureEnvironmentNode = EnvironmentNode.ofFailed(original.getClass(), e.getMessage());
+                return new ListenResult<>(original, failureEnvironmentNode);
             }
         }
 
@@ -188,12 +188,12 @@ public class Listener {
             T dubbed = (T) ObjectInitializer.initRecord(original.getClass(), children);
             return new ListenResult<>(dubbed, cur);
         } catch (InitializationException e) {
-            Node failureNode = Node.ofFailed(original.getClass(), e.getMessage());
-            return new ListenResult<>(original, failureNode);
+            EnvironmentNode failureEnvironmentNode = EnvironmentNode.ofFailed(original.getClass(), e.getMessage());
+            return new ListenResult<>(original, failureEnvironmentNode);
         }
     }
 
-    public record ListenResult<T>(T wrapped, Node dataNode) {
+    public record ListenResult<T>(T wrapped, EnvironmentNode dataEnvironmentNode) {
     }
 
 }

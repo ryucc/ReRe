@@ -1,8 +1,8 @@
 package org.ingko.core.listener;
 
 import org.assertj.core.api.Assertions;
+import org.ingko.core.data.objects.EnvironmentNode;
 import org.junit.jupiter.api.Test;
-import org.ingko.core.data.objects.Node;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -18,20 +18,20 @@ public class ListenerTest {
         int id = myObject.getId();
         String value = myObject.getValue();
 
-        Node root = listener.getRoot();
+        EnvironmentNode root = listener.getRoot();
         assertThat(root.isTerminal()).isFalse();
         assertThat(root.getRuntimeClass()).isEqualTo(MyObjectCreatorFactory.class);
         Assertions.assertThat(root.getMethodCalls()).hasSize(1);
 
-        Node creatorNode = root.getMethodCalls().getFirst().getDest();
-        assertThat(creatorNode.isTerminal()).isFalse();
-        assertThat(creatorNode.getRuntimeClass()).isEqualTo(MyObjectCreator.class);
-        Assertions.assertThat(creatorNode.getMethodCalls()).hasSize(1);
+        EnvironmentNode creatorEnvironmentNode = root.getMethodCalls().getFirst().getDest();
+        assertThat(creatorEnvironmentNode.isTerminal()).isFalse();
+        assertThat(creatorEnvironmentNode.getRuntimeClass()).isEqualTo(MyObjectCreator.class);
+        Assertions.assertThat(creatorEnvironmentNode.getMethodCalls()).hasSize(1);
 
-        Node objectNode = creatorNode.getMethodCalls().getFirst().getDest();
-        assertThat(objectNode.isTerminal()).isFalse();
-        assertThat(objectNode.getRuntimeClass()).isEqualTo(MyObject.class);
-        Assertions.assertThat(objectNode.getMethodCalls()).hasSize(2);
+        EnvironmentNode objectEnvironmentNode = creatorEnvironmentNode.getMethodCalls().getFirst().getDest();
+        assertThat(objectEnvironmentNode.isTerminal()).isFalse();
+        assertThat(objectEnvironmentNode.getRuntimeClass()).isEqualTo(MyObject.class);
+        Assertions.assertThat(objectEnvironmentNode.getMethodCalls()).hasSize(2);
     }
 
     public class MyObject {

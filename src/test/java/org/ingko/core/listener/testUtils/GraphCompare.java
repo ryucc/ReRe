@@ -1,14 +1,14 @@
 package org.ingko.core.listener.testUtils;
 
-import org.ingko.core.data.methods.MethodCall;
-import org.ingko.core.data.objects.Node;
+import org.ingko.core.data.methods.EnvironmentMethodCall;
+import org.ingko.core.data.objects.EnvironmentNode;
 
 import java.io.PrintStream;
 import java.util.List;
 
 public class GraphCompare {
     PrintStream printStream = System.out;
-    public boolean diffMethod(MethodCall a, MethodCall b) {
+    public boolean diffMethod(EnvironmentMethodCall a, EnvironmentMethodCall b) {
         if(!a.getSignature().equals(b.getSignature())) {
             printStream.println("MethodCall Signatures differ");
             printStream.println(a.getSignature());
@@ -28,7 +28,7 @@ public class GraphCompare {
             }
         }
     }
-    public boolean diffNode(Node a, Node b) {
+    public boolean diffNode(EnvironmentNode a, EnvironmentNode b) {
         if(a.isTerminal() != b.isTerminal()) {
             printStream.println("One node is terminal while the other is not.");
             return false;
@@ -54,8 +54,8 @@ public class GraphCompare {
                 return false;
             }
         }
-        List<MethodCall> callsA = a.getMethodCalls();
-        List<MethodCall> callsB = b.getMethodCalls();
+        List<EnvironmentMethodCall> callsA = a.getMethodCalls();
+        List<EnvironmentMethodCall> callsB = b.getMethodCalls();
         if(callsB.size() != callsA.size()) {
             printStream.println("Number of method calls differ:");
             printStream.println(callsA.size());

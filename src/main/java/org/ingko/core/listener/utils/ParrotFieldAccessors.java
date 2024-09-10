@@ -1,13 +1,13 @@
 package org.ingko.core.listener.utils;
 
-import org.ingko.core.data.objects.Node;
+import org.ingko.core.data.objects.EnvironmentNode;
 
 import java.lang.reflect.InvocationTargetException;
 
 public class ParrotFieldAccessors {
-    public static Node getNode(Object self) {
+    public static EnvironmentNode getNode(Object self) {
         try {
-            return (Node) self.getClass().getMethod("getParrotNodePointer").invoke(self);
+            return (EnvironmentNode) self.getClass().getMethod("getParrotNodePointer").invoke(self);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             // Very bad exception. This means intercepted on wrapper object,
             // or the parrot pointer fields were not properlly created.
@@ -35,9 +35,9 @@ public class ParrotFieldAccessors {
         }
     }
 
-    public static void setNode(Object mocked, Node node) {
+    public static void setNode(Object mocked, EnvironmentNode environmentNode) {
         try {
-            mocked.getClass().getMethod("setParrotNodePointer", Node.class).invoke(mocked, node);
+            mocked.getClass().getMethod("setParrotNodePointer", EnvironmentNode.class).invoke(mocked, environmentNode);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             // Very bad exception. This means intercepted on wrapper object,
             // or the parrot pointer fields were not properlly created.
