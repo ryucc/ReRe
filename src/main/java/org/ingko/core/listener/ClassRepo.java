@@ -29,13 +29,16 @@ public class ClassRepo {
     private final Object interceptor;
     private final Map<Class<?>, Class<?>> classCache;
 
+    private final Map<String, Class<?>> fields;
+
     /**
      * The interceptor is used on every method call, except fillInStackTrace for Exceptions.
      * @param interceptor
      */
-    public ClassRepo(Object interceptor) {
+    public ClassRepo(Object interceptor, Map<String, Class<?>> fields) {
         this.interceptor = interceptor;
         this.classCache = new HashMap<>();
+        this.fields = fields;
     }
 
     /*
@@ -140,8 +143,9 @@ public class ClassRepo {
                             //.or(ElementMatchers.isHashCode().or(ElementMatchers.isEquals()))
                     )
                     .intercept(MethodDelegation.to(interceptor));
-            builder = addField(builder, "parrotNodePointer", EnvironmentNode.class);
-            builder = addField(builder, "parrotOriginObjectPointer", Object.class);
+            for(String fieldName: fields.keySet()) {
+                builder = addField(builder, fieldName, fields.get(fieldName));
+            }
 
             Class<?> newClass = builder.make()
                     .load(getClass().getClassLoader(), strategy)

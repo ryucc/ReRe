@@ -21,16 +21,14 @@ public class ListenerRecursiveTests {
         EnvironmentNode root = listener.getRoot();
         EnvironmentNode expectedRoot = EnvironmentNode.ofInternal(HttpClient.class);
         EnvironmentNode reponseEnvironmentNode = EnvironmentNode.ofInternal(HttpResponse.class);
-        EnvironmentMethodCall getCall = new EnvironmentMethodCall(HttpClient.class.getMethod("get"),
-                expectedRoot,
-                reponseEnvironmentNode,
-                MethodResult.RETURN);
+        EnvironmentMethodCall getCall = new EnvironmentMethodCall(HttpClient.class.getMethod("get"));
+        getCall.registerReturnNode(reponseEnvironmentNode);
+        getCall.setResult(MethodResult.RETURN);
         expectedRoot.addEdge(getCall);
         EnvironmentNode bodyEnvironmentNode = EnvironmentNode.ofPrimitive(String.class, "\"Hello World!\"");
-        EnvironmentMethodCall getBodyCall = new EnvironmentMethodCall(HttpResponse.class.getMethod("getBody"),
-                reponseEnvironmentNode,
-                bodyEnvironmentNode,
-                MethodResult.RETURN);
+        EnvironmentMethodCall getBodyCall = new EnvironmentMethodCall(HttpResponse.class.getMethod("getBody"));
+        getBodyCall.registerReturnNode(bodyEnvironmentNode);
+        getBodyCall.setResult(MethodResult.RETURN);
         reponseEnvironmentNode.addEdge(getBodyCall);
 
         GraphCompare graphCompare = new GraphCompare();

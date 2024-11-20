@@ -5,8 +5,10 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
 import org.ingko.core.data.methods.EnvironmentMethodCall;
+import org.ingko.core.data.methods.LocalSymbol;
 import org.ingko.core.data.methods.MethodResult;
 import org.ingko.core.data.objects.EnvironmentNode;
+import org.ingko.core.data.objects.UserNode;
 import org.ingko.core.listener.exceptions.InitializationException;
 import org.ingko.core.listener.utils.ClassUtils;
 import org.ingko.core.listener.utils.ParrotFieldAccessors;
@@ -22,6 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.ingko.core.listener.utils.ParrotFieldAccessors.PARROT_NODE_POINTER;
+import static org.ingko.core.listener.utils.ParrotFieldAccessors.PARROT_ORIGIN_OBJECT_POINTER;
+
 
 @SuppressWarnings("unchecked")
 public class Listener {
@@ -29,9 +34,13 @@ public class Listener {
     List<EnvironmentNode> roots;
     ClassRepo classRepo;
 
+    UserObjectListener userObjectListener;
+
     public Listener() {
         roots = new ArrayList<>();
-        classRepo = new ClassRepo(this);
+        classRepo = new ClassRepo(this,
+                Map.of(PARROT_NODE_POINTER, EnvironmentNode.class, PARROT_ORIGIN_OBJECT_POINTER, Object.class));
+        userObjectListener = new UserObjectListener(this);
     }
 
     public EnvironmentNode getRoot() {
@@ -54,7 +63,10 @@ public class Listener {
         return handleAnything(returnValue, targetClass, new HashMap<>());
     }
 
-    public <T> ListenResult<T> handleAnything(T returnValue, Class<?> targetClass, Map<Object, ListenResult<?>> explored) {
+    // question: do we wrap null values
+    public <T> ListenResult<T> handleAnything(T returnValue,
+                                              Class<?> targetClass,
+                                              Map<Object, ListenResult<?>> explored) {
         // Need to think more about this.
         // targetClass will be Object.class on generics.
         if (returnValue == null || ClassUtils.isStringOrPrimitive(returnValue.getClass())) {
@@ -70,7 +82,7 @@ public class Listener {
     }
 
     public <T> ListenResult<T> handleArray(T original, Class<?> clazz, Map<Object, ListenResult<?>> explored) {
-        if(explored.containsKey(original)) {
+        if (explored.containsKey(original)) {
             // Loop detection might cause duplicate record heads.
             // Should not be a problem.
             // Example
@@ -142,14 +154,29 @@ public class Listener {
         Object original = ParrotFieldAccessors.getOriginal(self);
         EnvironmentNode source = ParrotFieldAccessors.getNode(self);
 
+        EnvironmentMethodCall edge = new EnvironmentMethodCall(orignalMethod);
         Object returnValue;
+
+        Object[] wrappedArguments = new Object[allArguments.length];
+        List<UserNode> params = new ArrayList<>();
+
+        for(int i = 0; i < allArguments.length; i++) {
+            Object cur = allArguments[i];
+            Class<?> argClass = orignalMethod.getParameterTypes()[i];
+            UserObjectListener.ListenResult<?> result =
+                    userObjectListener.handleAnything(cur, argClass, edge, Map.of());
+            result.userNode().setSymbol(new LocalSymbol(LocalSymbol.Source.PARAMETER, i));
+            wrappedArguments[i] = result.wrapped();
+            params.add(result.userNode());
+        }
 
         try {
             orignalMethod.setAccessible(true);
-            returnValue = orignalMethod.invoke(original, allArguments);
+            returnValue = orignalMethod.invoke(original, wrappedArguments);
         } catch (InvocationTargetException e) {
             ListenResult<Throwable> result = handleAnything(e.getTargetException(), e.getTargetException().getClass());
-            EnvironmentMethodCall edge = new EnvironmentMethodCall(orignalMethod, source, result.dataEnvironmentNode, MethodResult.THROW);
+            edge.registerReturnNode(result.dataEnvironmentNode);
+            edge.setResult(MethodResult.THROW);
             source.addEdge(edge);
             throw result.wrapped();
         } catch (IllegalAccessException e) {
@@ -158,8 +185,28 @@ public class Listener {
             throw new RuntimeException(e);
         }
 
+        edge.setResult(MethodResult.RETURN);
+
+        if (ParrotFieldAccessors.isUserObject(returnValue)) {
+            UserNode returnedUserNode = ParrotFieldAccessors.getUserNode(returnValue);
+            LocalSymbol symbol = returnedUserNode.getSymbol();
+            edge.setReturnSymbol(symbol);
+            returnValue = ParrotFieldAccessors.getOriginal(returnValue);
+        } else if (ParrotFieldAccessors.isEnvironmentObject(returnValue)) {
+            edge.setReturnSymbol(new LocalSymbol(LocalSymbol.Source.LOCAL_ENV, 0));
+            returnValue = ParrotFieldAccessors.getOriginal(returnValue);
+        } else {
+            edge.setReturnSymbol(new LocalSymbol(LocalSymbol.Source.LOCAL_ENV, 0));
+        }
+
+        /*
+            User objects are wrapped here. At code synthesis, if return value only, return the mock.
+            Else return the reference.
+         */
+
         ListenResult<?> result = handleAnything(returnValue, orignalMethod.getReturnType());
-        EnvironmentMethodCall edge = new EnvironmentMethodCall(orignalMethod, source, result.dataEnvironmentNode, MethodResult.RETURN);
+        edge.registerReturnNode(result.dataEnvironmentNode());
+        edge.setResult(MethodResult.RETURN);
         source.addEdge(edge);
 
         return result.wrapped;

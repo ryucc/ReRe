@@ -31,16 +31,12 @@ public class ListenThrowTests {
         EnvironmentNode expectedRoot = EnvironmentNode.ofInternal(ErrorDice.class);
         EnvironmentNode returnEnvironmentNode = EnvironmentNode.ofPrimitive(int.class, "2");
         EnvironmentNode throwEnvironmentNode = EnvironmentNode.ofSerialized(RuntimeException.class, "dummySerialization");
-        EnvironmentMethodCall call1 = new EnvironmentMethodCall(ErrorDice.class.getMethod("roll"),
-                expectedRoot,
-                returnEnvironmentNode,
-                MethodResult.RETURN
-                );
-        EnvironmentMethodCall call2 = new EnvironmentMethodCall(ErrorDice.class.getMethod("roll"),
-                expectedRoot,
-                throwEnvironmentNode,
-                MethodResult.THROW
-        );
+        EnvironmentMethodCall call1 = new EnvironmentMethodCall(ErrorDice.class.getMethod("roll"));
+        call1.registerReturnNode(returnEnvironmentNode);
+        call1.setResult(MethodResult.RETURN);
+        EnvironmentMethodCall call2 = new EnvironmentMethodCall(ErrorDice.class.getMethod("roll"));
+        call2.registerReturnNode(throwEnvironmentNode);
+        call2.setResult(MethodResult.THROW);
         expectedRoot.addEdge(call1);
         expectedRoot.addEdge(call2);
 

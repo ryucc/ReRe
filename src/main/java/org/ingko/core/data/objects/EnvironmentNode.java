@@ -40,6 +40,19 @@ public class EnvironmentNode implements Serializable {
         this.directChildren = directChildren;
     }
 
+    public static EnvironmentNode ofNull(Class<?> clazz) {
+        return new EnvironmentNode(new ArrayList<>(),
+                UUID.randomUUID(),
+                "null",
+                true,
+                false,
+                false,
+                clazz,
+                clazz,
+                "",
+                new ArrayList<>());
+    }
+
     public static EnvironmentNode ofFailed(Class<?> clazz, String comments) {
         return new EnvironmentNode(new ArrayList<>(),
                 UUID.randomUUID(),
@@ -109,6 +122,10 @@ public class EnvironmentNode implements Serializable {
 
     public UUID getUuid() {
         return uuid;
+    }
+
+    public Class<?> getDeclaredClass() {
+        return runtimeClass;
     }
 
     public Class<?> getRuntimeClass() {

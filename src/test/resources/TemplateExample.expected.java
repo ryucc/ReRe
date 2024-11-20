@@ -10,13 +10,14 @@ Rolled 6
 goos 1
 package org.katie.orange.examples;
 
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 
-import org.mockito.Mockito;
 import org.ingko.core.serde.DefaultSerde;
 import org.ingko.examples.TemplateExample;
+import org.mockito.Mockito;
 
-public class MockTemplateDiceCreator {
+public class MockCreator {
   private static final DefaultSerde defaultSerde = new DefaultSerde();
 
   public static TemplateExample.TemplateDice create() {

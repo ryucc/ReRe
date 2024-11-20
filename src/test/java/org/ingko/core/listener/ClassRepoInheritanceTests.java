@@ -5,6 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.ingko.core.listener.testUtils.ReturnNullInterceptor;
 
+import java.util.Map;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 class ClassRepoInheritanceTests {
@@ -19,14 +21,14 @@ class ClassRepoInheritanceTests {
      */
     @Test
     public void testImplementInterface() throws Exception{
-        ClassRepo classRepo = new ClassRepo(new ReturnNullInterceptor());
+        ClassRepo classRepo = new ClassRepo(new ReturnNullInterceptor(), Map.of());
         Class<?> subClass = classRepo.getOrDefineSubclass(DiamondCommonParent.class);
         assertThat(DiamondCommonParent.class.isAssignableFrom(subClass)).isTrue();
     }
     @Test
     @DisplayName("in diamond inheritance, prioritize implementing the superclass")
     void testDiamondInheritanceSuperclassPriority() throws Exception {
-        ClassRepo classRepo = new ClassRepo(new ReturnNullInterceptor());
+        ClassRepo classRepo = new ClassRepo(new ReturnNullInterceptor(), Map.of());
         Class<?> subClass = classRepo.getOrDefineSubclass(DiamondFinalChild.class, DiamondCommonParent.class);
         assertThat(DiamondMiddleClass.class.isAssignableFrom(subClass)).isTrue();
     }
@@ -34,7 +36,7 @@ class ClassRepoInheritanceTests {
     @Test
     @DisplayName("in diamond inheritance, prioritize implementing the superclass")
     void testDiamondInheritanceSuperclassPriority2() throws Exception {
-        ClassRepo classRepo = new ClassRepo(new ReturnNullInterceptor());
+        ClassRepo classRepo = new ClassRepo(new ReturnNullInterceptor(), Map.of());
         Class<?> subClass = classRepo.getOrDefineSubclass(DiamondPrivateChild2.class, DiamondCommonParent.class);
         assertThat(DiamondMiddleInterface.class.isAssignableFrom(subClass)).isTrue();
     }
@@ -42,7 +44,7 @@ class ClassRepoInheritanceTests {
     @Test
     @DisplayName("in diamond inheritance, prioritize implementing the superclass")
     void testDiamondInheritanceSuperclassPriority3() throws Exception {
-        ClassRepo classRepo = new ClassRepo(new ReturnNullInterceptor());
+        ClassRepo classRepo = new ClassRepo(new ReturnNullInterceptor(), Map.of());
         Class<?> subClass = classRepo.getOrDefineSubclass(DiamondPrivateChild.class, DiamondCommonParent.class);
         assertThat(DiamondCommonParent.class.isAssignableFrom(subClass)).isTrue();
     }

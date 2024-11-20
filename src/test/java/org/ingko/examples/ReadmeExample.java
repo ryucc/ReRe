@@ -32,9 +32,12 @@ public class ReadmeExample {
         Listener listener = new Listener();
         PrivateDice wrappedDice = listener.createRoot(dice, PrivateDice.class);
 
+
+        System.out.println("/*");
         for (int i = 1; i <= 5; i++) {
             System.out.println("Rolled " + wrappedDice.roll());
         }
+        System.out.println("*/");
 
         MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.orange.examples", "create");
         System.out.println(mockitoSynthesizer.generateMockito(listener));
