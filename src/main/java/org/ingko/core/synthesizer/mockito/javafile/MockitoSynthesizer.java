@@ -1,11 +1,13 @@
-package org.ingko.core.synthesizer;
+package org.ingko.core.synthesizer.mockito.javafile;
 
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
+import com.palantir.javapoet.CodeBlock;
+import com.palantir.javapoet.FieldSpec;
+import com.palantir.javapoet.JavaFile;
+import com.palantir.javapoet.MethodSpec;
+import com.palantir.javapoet.TypeSpec;
 import org.ingko.core.data.objects.EnvironmentNode;
+import org.ingko.core.synthesizer.NamingStrategy;
+import org.ingko.core.synthesizer.OrderedNaming;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.ingko.core.data.methods.EnvironmentMethodCall;

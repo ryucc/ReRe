@@ -6,7 +6,25 @@ import org.ingko.core.data.methods.LocalSymbol;
 import java.util.UUID;
 
 public class UserNode {
+    /**
+     * Runtime class implements representing type.
+     *
+     * Will we ever need the runtime class?
+     * no. we only need the lower bound.
+     *
+     * Example:
+     *
+     * List<Integer> is upper bound
+     * ArrayList<Integer> is good lower bound
+     * ArrayList<Object> is bad lower bound(runtime)
+     *
+     *
+     * upper bound is good as long as user doesn't type cast downwards
+     */
     private final Class<?> runtimeClass;
+    /**
+     * Scope needs to change to a EnvironmentNode for stateful objects
+     */
     private final EnvironmentMethodCall scope;
     private final UUID uuid;
 

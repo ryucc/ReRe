@@ -33,7 +33,7 @@ dependencies {
     runtimeOnly group: 'net.bytebuddy', name: 'byte-buddy-gradle-plugin', version: '1.14.17'
     implementation 'net.bytebuddy:byte-buddy:1.14.17'
     // https://mvnrepository.com/artifact/com.squareup/javapoet
-    implementation group: 'com.squareup', name: 'javapoet', version: '1.13.0'
+    implementation group: 'com.palantir.javapoet', name: 'javapoet', version: '0.5.0'
 }
 
 test {

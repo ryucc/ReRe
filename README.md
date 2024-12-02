@@ -1,12 +1,9 @@
-# Record-Replay Mock Creator
+# Java's Little Parrot
 
-TODO: 
-array support
-loop detection
-custom serialization
-unit tests
-Override final public non-static fields for all classes
-BUG: private classes with no constructors declared will error
+## Introduction
+
+Java's little parrot is a tool to record and replay (most) Java objects.
+
 
 ## Basic Example
 
@@ -132,3 +129,13 @@ hashCode() and isEqual() might break, because we are subclassing.
 
 
 Array + Record loops
+
+
+
+TODO:
+array support
+loop detection
+custom serialization
+unit tests
+Override final public non-static fields for all classes
+BUG: private classes with no constructors declared will error

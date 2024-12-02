@@ -4,6 +4,7 @@ import org.ingko.core.data.objects.EnvironmentNode;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +25,7 @@ public class EnvironmentMethodCall implements Serializable {
     // Dynamic
     private final UUID uuid;
     private final List<UserMethodCall> userMethodCalls;
-    private final List<Class<?>> paramTypes;
+    private final List<Type> paramTypes;
     private EnvironmentNode mockReturn;
     /* TODO later: the return values need to be stored on the node.
         In case user objects are stored, then modified later across method calls.
@@ -34,8 +35,9 @@ public class EnvironmentMethodCall implements Serializable {
      */
     private LocalSymbol returnSymbol;
     private MethodResult result;
+
     public EnvironmentMethodCall(Method method) {
-        this.paramTypes = Arrays.asList(method.getParameterTypes());
+        this.paramTypes = Arrays.asList(method.getGenericParameterTypes());
         this.uuid = UUID.randomUUID();
         this.signature = new Signature(method);
         this.userMethodCalls = new ArrayList<>();
@@ -45,7 +47,7 @@ public class EnvironmentMethodCall implements Serializable {
         return userMethodCalls;
     }
 
-    public List<Class<?>> getParamTypes() {
+    public List<Type> getParamTypes() {
         return paramTypes;
     }
 

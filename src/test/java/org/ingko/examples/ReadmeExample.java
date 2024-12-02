@@ -1,7 +1,8 @@
 package org.ingko.examples;
 
 import org.ingko.core.listener.Listener;
-import org.ingko.core.synthesizer.MockitoSynthesizer;
+import org.ingko.core.synthesizer.mockito.javafile.MockitoSynthesizer;
+import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
 
 import java.util.Random;
 
@@ -40,7 +41,9 @@ public class ReadmeExample {
         System.out.println("*/");
 
         MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.orange.examples", "create");
+        ParameterModSynthesizer parameterModSynthesizer = new ParameterModSynthesizer("org.katie.orange.examples", "create");
         System.out.println(mockitoSynthesizer.generateMockito(listener));
+        System.out.println(parameterModSynthesizer.generateMockito(listener.getRoot()));
     }
 
     public static class PrivateDice {

@@ -1,7 +1,7 @@
 package org.ingko.examples;
 
 import org.ingko.core.listener.Listener;
-import org.ingko.core.synthesizer.MockitoSynthesizer;
+import org.ingko.core.synthesizer.mockito.javafile.MockitoSynthesizer;
 
 public class ReadmeRecursiveExample {
 

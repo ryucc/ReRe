@@ -2,21 +2,27 @@ package org.ingko.core.data.methods;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Signature implements Serializable {
     private final String returnType;
+    private final Type returnClass;
     private final String methodName;
     private final List<String> paramTypes;
     private final List<Class<?>> paramClasses;
-
     public Signature(Method method) {
         this.methodName = method.getName();
         this.returnType = method.getReturnType().getName();
+        this.returnClass = method.getGenericReturnType();
         this.paramTypes = Arrays.stream(method.getParameterTypes()).map(Class::getName).collect(Collectors.toList());
         this.paramClasses = Arrays.asList(method.getParameterTypes());
+    }
+
+    public Type getReturnClass() {
+        return returnClass;
     }
 
     public List<Class<?>> getParamClasses() {

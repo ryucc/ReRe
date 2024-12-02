@@ -11,16 +11,15 @@ import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.data.objects.UserNode;
 import org.ingko.core.listener.exceptions.InitializationException;
 import org.ingko.core.listener.utils.ClassUtils;
-import org.ingko.core.listener.utils.ParrotFieldAccessors;
+import org.ingko.core.listener.utils.EnvironmentObjectSpy;
+import org.ingko.core.listener.utils.ObjectSpy;
+import org.ingko.core.listener.utils.UserObjectSpy;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static org.ingko.core.listener.utils.ParrotFieldAccessors.PARROT_ORIGIN_OBJECT_POINTER;
-import static org.ingko.core.listener.utils.ParrotFieldAccessors.PARROT_USER_NODE;
 
 public class UserObjectListener {
 
@@ -31,7 +30,9 @@ public class UserObjectListener {
     public UserObjectListener(Listener listener) {
         this.listener = listener;
         classRepo = new ClassRepo(this,
-                Map.of(PARROT_ORIGIN_OBJECT_POINTER, Object.class, PARROT_USER_NODE, UserNode.class));
+                Map.of(ObjectSpy.FIELD, ObjectSpy.TYPE,
+                        UserObjectSpy.FIELD, UserObjectSpy.TYPE),
+                List.of(ObjectSpy.class, UserObjectSpy.class));
     }
 
     public <T> ListenResult<T> handlePrimitiveOrNull(T value, Class<?> clazz, EnvironmentMethodCall scope) {
@@ -48,9 +49,9 @@ public class UserObjectListener {
         // TODO: while final class, try to mock parent until parent == return class
         Class<?> mockedClass = classRepo.getOrDefineSubclass(original.getClass());
         T mocked = (T) ObjectInitializer.create(mockedClass);
-        ParrotFieldAccessors.setOriginal(mocked, original);
+        ((UserObjectSpy) mocked).setParrotOriginObject(original);
         UserNode node = new UserNode(original.getClass(), scope);
-        ParrotFieldAccessors.setUserNode(mocked, node);
+        ((UserObjectSpy) mocked).setParrotUserNode(node);
         return new ListenResult<>(mocked, node);
     }
 
@@ -93,18 +94,18 @@ public class UserObjectListener {
     public Object intercept(@AllArguments Object[] allArguments,
                             @Origin Method orignalMethod,
                             @This Object self) throws Throwable {
-        Object original = ParrotFieldAccessors.getOriginal(self);
+        Object original = ((UserObjectSpy) self).getParrotOriginObject();
 
         List<EnvironmentNode> environmentNodes = new ArrayList<>();
         List<Object> wrappedArguments = new ArrayList<>();
         List<LocalSymbol> parameterSourceList = new ArrayList<>();
         for (Object arg : allArguments) {
-            if (ParrotFieldAccessors.isUserObject(arg)) {
-                UserNode node = ParrotFieldAccessors.getUserNode(arg);
+            if (arg instanceof UserObjectSpy) {
+                UserNode node = ((UserObjectSpy) arg).getParrotUserNode();
                 parameterSourceList.add(node.getSymbol());
-                Object origin = ParrotFieldAccessors.getOriginal(arg);
+                Object origin = ((UserObjectSpy) arg).getParrotOriginObject();
                 wrappedArguments.add(origin);
-            } else if (ParrotFieldAccessors.isEnvironmentObject(arg)) {
+            } else if (arg instanceof EnvironmentObjectSpy) {
                 // should never happen?
                 // nope, this will happen
                 // Can ignore only if this is a stateless non user-environment node.
@@ -123,7 +124,7 @@ public class UserObjectListener {
         }
         // register method call to scope
 
-        UserNode userNode = ParrotFieldAccessors.getUserNode(self);
+        UserNode userNode = ((UserObjectSpy) self).getParrotUserNode();
         EnvironmentMethodCall scopeMethod = userNode.getScope();
 
         {
@@ -133,7 +134,7 @@ public class UserObjectListener {
                     methodName,
                     environmentNodes,
                     parameterSourceList,
-                    orignalMethod.getReturnType());
+                    orignalMethod.getGenericReturnType());
             scopeMethod.addUserMethodCall(userMethodCall);
         }
 
@@ -146,15 +147,15 @@ public class UserObjectListener {
             orignalMethod.setAccessible(true);
             Object ret = orignalMethod.invoke(original, wrappedArguments.toArray());
 
-            if (ParrotFieldAccessors.isEnvironmentObject(ret)) {
+            if (ret instanceof EnvironmentObjectSpy) {
                 // Environment object: untrack. Even if its member is user object, the method calls will be traced.
                 // Stateful: need to make it into a environment - user object
-                return ParrotFieldAccessors.getOriginal(ret);
+                return ((EnvironmentObjectSpy) ret).getParrotOriginObject();
             }
-            if (ParrotFieldAccessors.isUserObject(ret)) {
+            if (ret instanceof UserObjectSpy) {
                 // User Object: do nothing is okay, but rewrap is probably better. (Can register new localSymbol)
                 // Rewrapping makings synthesized code look closer to original code.
-                ret = ParrotFieldAccessors.getOriginal(ret);
+                ret = ((UserObjectSpy) ret).getParrotOriginObject();
             }
             ListenResult<?> result = handleAnything(ret, ret.getClass(), scopeMethod);
             LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.RETURN_VALUE, currentReturnIndex);

@@ -2,26 +2,25 @@ package org.ingko.examples;
 
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.Listener;
-import org.ingko.core.synthesizer.MockitoSynthesizer;
-import org.ingko.core.synthesizer.ParameterModSynthesizer;
+import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SortExample {
     public static void main(String[] args) {
-        List<Integer> arr = new ArrayList<>(List.of(3, 1, 2));
+        List<Integer> arr = new ArrayList<>(List.of(3, 1));
         BubbleSorter bubbleSorter = new BubbleSorter();
 
         Listener listener = new Listener();
         BubbleSorter wrapped = listener.createRoot(bubbleSorter, bubbleSorter.getClass());
         wrapped.sort(arr);
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
             System.out.println(arr.get(i));
         }
+        wrapped.sort(arr);
         EnvironmentNode node = listener.getRoot();
-        ParameterModSynthesizer.generateMockito(node);
-        return;
+        new ParameterModSynthesizer("pack", "method").generateMockito(node);
     }
 
     public static class BubbleSorter {

@@ -11,7 +11,9 @@ import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.data.objects.UserNode;
 import org.ingko.core.listener.exceptions.InitializationException;
 import org.ingko.core.listener.utils.ClassUtils;
-import org.ingko.core.listener.utils.ParrotFieldAccessors;
+import org.ingko.core.listener.utils.EnvironmentObjectSpy;
+import org.ingko.core.listener.utils.ObjectSpy;
+import org.ingko.core.listener.utils.UserObjectSpy;
 import org.ingko.core.serde.DefaultSerde;
 import org.ingko.core.serde.exceptions.SerializationException;
 
@@ -24,8 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.ingko.core.listener.utils.ParrotFieldAccessors.PARROT_NODE_POINTER;
-import static org.ingko.core.listener.utils.ParrotFieldAccessors.PARROT_ORIGIN_OBJECT_POINTER;
 
 
 @SuppressWarnings("unchecked")
@@ -39,7 +39,9 @@ public class Listener {
     public Listener() {
         roots = new ArrayList<>();
         classRepo = new ClassRepo(this,
-                Map.of(PARROT_NODE_POINTER, EnvironmentNode.class, PARROT_ORIGIN_OBJECT_POINTER, Object.class));
+                Map.of(EnvironmentObjectSpy.FIELD, EnvironmentObjectSpy.TYPE,
+                        ObjectSpy.FIELD, ObjectSpy.TYPE),
+                List.of(EnvironmentObjectSpy.class, ObjectSpy.class));
         userObjectListener = new UserObjectListener(this);
     }
 
@@ -56,6 +58,7 @@ public class Listener {
     public Object findClassThenInit(Object original, Class<?> clazz) throws InitializationException {
         // TODO: while final class, try to mock parent until parent == return class
         Class<?> mockedClass = classRepo.getOrDefineSubclass(original.getClass());
+        System.out.println(EnvironmentObjectSpy.class.isAssignableFrom(mockedClass));
         return ObjectInitializer.create(mockedClass);
     }
 
@@ -129,8 +132,8 @@ public class Listener {
         try {
             T mocked = (T) findClassThenInit(returnValue, targetClass);
             EnvironmentNode dest = EnvironmentNode.ofInternal(returnValue.getClass());
-            ParrotFieldAccessors.setOriginal(mocked, returnValue);
-            ParrotFieldAccessors.setNode(mocked, dest);
+            ((EnvironmentObjectSpy)mocked).setParrotNodePointer(dest);
+            ((EnvironmentObjectSpy)mocked).setParrotOriginObject(returnValue);
             return new ListenResult<>(mocked, dest);
         } catch (Exception e) {
             EnvironmentNode dest = EnvironmentNode.ofFailed(returnValue.getClass(), e.getMessage());
@@ -151,8 +154,8 @@ public class Listener {
     public Object intercept(@AllArguments Object[] allArguments,
                             @Origin Method orignalMethod,
                             @This Object self) throws Throwable {
-        Object original = ParrotFieldAccessors.getOriginal(self);
-        EnvironmentNode source = ParrotFieldAccessors.getNode(self);
+        Object original = ((EnvironmentObjectSpy) self).getParrotOriginObject();
+        EnvironmentNode source = ((EnvironmentObjectSpy) self).getParrotNodePointer();
 
         EnvironmentMethodCall edge = new EnvironmentMethodCall(orignalMethod);
         Object returnValue;
@@ -187,14 +190,15 @@ public class Listener {
 
         edge.setResult(MethodResult.RETURN);
 
-        if (ParrotFieldAccessors.isUserObject(returnValue)) {
-            UserNode returnedUserNode = ParrotFieldAccessors.getUserNode(returnValue);
+        if (returnValue instanceof UserObjectSpy) {
+            UserNode returnedUserNode = ((UserObjectSpy) returnValue).getParrotUserNode();
             LocalSymbol symbol = returnedUserNode.getSymbol();
             edge.setReturnSymbol(symbol);
-            returnValue = ParrotFieldAccessors.getOriginal(returnValue);
-        } else if (ParrotFieldAccessors.isEnvironmentObject(returnValue)) {
+            returnValue = ((UserObjectSpy) returnValue).getParrotOriginObject();
+        } else if (returnValue instanceof EnvironmentObjectSpy) {
             edge.setReturnSymbol(new LocalSymbol(LocalSymbol.Source.LOCAL_ENV, 0));
-            returnValue = ParrotFieldAccessors.getOriginal(returnValue);
+            returnValue = ((EnvironmentObjectSpy) returnValue).getParrotOriginObject();
+            // TODO: wrap into userNode?
         } else {
             edge.setReturnSymbol(new LocalSymbol(LocalSymbol.Source.LOCAL_ENV, 0));
         }
