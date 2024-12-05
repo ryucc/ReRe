@@ -1,6 +1,6 @@
 package org.ingko.examples;
 
-import org.ingko.core.listener.Listener;
+import org.ingko.core.listener.EnvironmentObjectListener;
 import org.ingko.core.synthesizer.mockito.javafile.MockitoSynthesizer;
 import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
 
@@ -30,8 +30,8 @@ public class ReadmeExample {
     public static void main(String[] args) {
 
         PrivateDice dice = new PrivateDice();
-        Listener listener = new Listener();
-        PrivateDice wrappedDice = listener.createRoot(dice, PrivateDice.class);
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
+        PrivateDice wrappedDice = environmentObjectListener.createRoot(dice, PrivateDice.class);
 
 
         System.out.println("/*");
@@ -42,8 +42,8 @@ public class ReadmeExample {
 
         MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.orange.examples", "create");
         ParameterModSynthesizer parameterModSynthesizer = new ParameterModSynthesizer("org.katie.orange.examples", "create");
-        System.out.println(mockitoSynthesizer.generateMockito(listener));
-        System.out.println(parameterModSynthesizer.generateMockito(listener.getRoot()));
+        System.out.println(mockitoSynthesizer.generateMockito(environmentObjectListener));
+        System.out.println(parameterModSynthesizer.generateMockito(environmentObjectListener.getRoot()));
     }
 
     public static class PrivateDice {

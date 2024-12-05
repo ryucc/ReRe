@@ -29,14 +29,14 @@ import java.util.Map;
 
 
 @SuppressWarnings("unchecked")
-public class Listener {
+public class EnvironmentObjectListener {
     private static final DefaultSerde defaultSerde = new DefaultSerde();
     List<EnvironmentNode> roots;
     ClassRepo classRepo;
 
     UserObjectListener userObjectListener;
 
-    public Listener() {
+    public EnvironmentObjectListener() {
         roots = new ArrayList<>();
         classRepo = new ClassRepo(this,
                 Map.of(EnvironmentObjectSpy.FIELD, EnvironmentObjectSpy.TYPE,

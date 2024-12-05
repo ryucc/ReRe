@@ -9,7 +9,7 @@ import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ListenerPrivateTests {
+public class EnvironmentObjectListenerPrivateTests {
     private static class PrivateDice {
 
         private final Random rand;
@@ -26,14 +26,14 @@ public class ListenerPrivateTests {
     public void test() {
 
         PrivateDice dice = new PrivateDice();
-        Listener listener = new Listener();
-        PrivateDice wrappedDice = listener.createRoot(dice, PrivateDice.class);
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
+        PrivateDice wrappedDice = environmentObjectListener.createRoot(dice, PrivateDice.class);
 
         for (int i = 1; i <= 5; i++) {
             wrappedDice.roll();
         }
 
-        EnvironmentNode root = listener.getRoot();
+        EnvironmentNode root = environmentObjectListener.getRoot();
         assertThat(root.getRuntimeClass()).isEqualTo(PrivateDice.class);
         assertThat(root.getMethodCalls()).hasSize(5)
                 .extracting(EnvironmentMethodCall::getResult)

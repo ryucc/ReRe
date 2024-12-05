@@ -16,8 +16,8 @@ public class ListenThrowTests {
 
         ErrorDice dice = new ErrorDice();
 
-        Listener listener = new Listener();
-        ErrorDice wrappedDice = listener.createRoot(dice, ErrorDice.class);
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
+        ErrorDice wrappedDice = environmentObjectListener.createRoot(dice, ErrorDice.class);
 
 
         for (int i = 1; i <= 2; i++) {
@@ -27,7 +27,7 @@ public class ListenThrowTests {
                 System.out.println("Caught Exception");
             }
         }
-        EnvironmentNode root = listener.getRoot();
+        EnvironmentNode root = environmentObjectListener.getRoot();
         EnvironmentNode expectedRoot = EnvironmentNode.ofInternal(ErrorDice.class);
         EnvironmentNode returnEnvironmentNode = EnvironmentNode.ofPrimitive(int.class, "2");
         EnvironmentNode throwEnvironmentNode = EnvironmentNode.ofSerialized(RuntimeException.class, "dummySerialization");

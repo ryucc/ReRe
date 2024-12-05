@@ -6,6 +6,7 @@ import com.palantir.javapoet.JavaFile;
 import com.palantir.javapoet.MethodSpec;
 import com.palantir.javapoet.TypeSpec;
 import org.ingko.core.data.objects.EnvironmentNode;
+import org.ingko.core.listener.EnvironmentObjectListener;
 import org.ingko.core.synthesizer.NamingStrategy;
 import org.ingko.core.synthesizer.OrderedNaming;
 import org.mockito.ArgumentMatchers;
@@ -13,7 +14,6 @@ import org.mockito.Mockito;
 import org.ingko.core.data.methods.EnvironmentMethodCall;
 import org.ingko.core.data.methods.MethodResult;
 import org.ingko.core.data.methods.Signature;
-import org.ingko.core.listener.Listener;
 import org.ingko.core.serde.DefaultSerde;
 
 import javax.lang.model.element.Modifier;
@@ -34,8 +34,8 @@ public class MockitoSynthesizer {
         namingStrategy = new OrderedNaming();
     }
 
-    public String generateMockito(Listener listener) {
-        EnvironmentNode root = listener.getRoot();
+    public String generateMockito(EnvironmentObjectListener environmentObjectListener) {
+        EnvironmentNode root = environmentObjectListener.getRoot();
         Class<?> clazz = root.getRuntimeClass();
         //String fileName = "Mock" + clazz.getSimpleName() + "Creator";
         String fileName = "Mock" + "Creator";

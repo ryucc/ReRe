@@ -1,7 +1,7 @@
 package org.ingko.examples;
 
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.Listener;
+import org.ingko.core.listener.EnvironmentObjectListener;
 import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
 
 import java.util.ArrayList;
@@ -12,14 +12,14 @@ public class SortExample {
         List<Integer> arr = new ArrayList<>(List.of(3, 1));
         BubbleSorter bubbleSorter = new BubbleSorter();
 
-        Listener listener = new Listener();
-        BubbleSorter wrapped = listener.createRoot(bubbleSorter, bubbleSorter.getClass());
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
+        BubbleSorter wrapped = environmentObjectListener.createRoot(bubbleSorter, bubbleSorter.getClass());
         wrapped.sort(arr);
         for (int i = 0; i < 2; i++) {
             System.out.println(arr.get(i));
         }
         wrapped.sort(arr);
-        EnvironmentNode node = listener.getRoot();
+        EnvironmentNode node = environmentObjectListener.getRoot();
         new ParameterModSynthesizer("pack", "method").generateMockito(node);
     }
 

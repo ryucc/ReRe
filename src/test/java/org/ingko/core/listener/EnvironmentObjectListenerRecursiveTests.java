@@ -8,17 +8,17 @@ import org.ingko.core.data.methods.MethodResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ListenerRecursiveTests {
+public class EnvironmentObjectListenerRecursiveTests {
 
     @Test
     public void test() throws Exception {
         HttpClient client = new HttpClient();
 
-        Listener listener = new Listener();
-        HttpClient wrappedClient = listener.createRoot(client, HttpClient.class);
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
+        HttpClient wrappedClient = environmentObjectListener.createRoot(client, HttpClient.class);
         String s = wrappedClient.get().getBody();
 
-        EnvironmentNode root = listener.getRoot();
+        EnvironmentNode root = environmentObjectListener.getRoot();
         EnvironmentNode expectedRoot = EnvironmentNode.ofInternal(HttpClient.class);
         EnvironmentNode reponseEnvironmentNode = EnvironmentNode.ofInternal(HttpResponse.class);
         EnvironmentMethodCall getCall = new EnvironmentMethodCall(HttpClient.class.getMethod("get"));

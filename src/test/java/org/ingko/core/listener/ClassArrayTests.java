@@ -13,11 +13,11 @@ class ClassArrayTests {
     public void test() throws Exception {
 
         Integer[] arr = {1, 2, 3, 4, 5};
-        Listener listener = new Listener();
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
 
-        listener.createRoot(arr, arr.getClass());
+        environmentObjectListener.createRoot(arr, arr.getClass());
 
-        EnvironmentNode root = listener.getRoot();
+        EnvironmentNode root = environmentObjectListener.getRoot();
         assertThat(root);
     }
 
@@ -25,11 +25,11 @@ class ClassArrayTests {
     public void test2D() throws Exception {
 
         Integer[][] arr = {{1, 2}, {1, 2}};
-        Listener listener = new Listener();
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
 
-        listener.createRoot(arr, arr.getClass());
+        environmentObjectListener.createRoot(arr, arr.getClass());
 
-        EnvironmentNode root = listener.getRoot();
+        EnvironmentNode root = environmentObjectListener.getRoot();
         assertThat(root);
     }
 
@@ -40,10 +40,10 @@ class ClassArrayTests {
         ArrayHolder holder = new ArrayHolder(arr);
         arr[0] = holder;
 
-        Listener listener = new Listener();
-        listener.createRoot(arr, arr.getClass());
-        listener.createRoot(holder, holder.getClass());
-        EnvironmentNode root1 = listener.getRoot();
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
+        environmentObjectListener.createRoot(arr, arr.getClass());
+        environmentObjectListener.createRoot(holder, holder.getClass());
+        EnvironmentNode root1 = environmentObjectListener.getRoot();
         new SimpleTreePrinter().printTree(root1);
     }
 

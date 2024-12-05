@@ -50,7 +50,7 @@ That's it!
 Example:
 
 ```java
-import listener.core.org.parrot.Listener;
+import environmentObjectListener.core.org.parrot.Listener;
 import synthesizer.core.org.parrot.CodeSynthesizer;
 
 public class Main {
@@ -58,13 +58,13 @@ public class Main {
 
         Dice dice = new Dice();
 
-        Listener listener = new Listener();
-        Dice wrappedDice = listener.wrap(dice);
+        Listener environmentObjectListener = new Listener();
+        Dice wrappedDice = environmentObjectListener.wrap(dice);
         for (int i = 1; i <= 5; i++) {
             wrappedDice.roll();
         }
         CodeSynthesizer synth = new CodeSynthesizer("org.katie.orange.examples", "create");
-        System.out.println(synth.generateMockito(listener));
+        System.out.println(synth.generateMockito(environmentObjectListener));
     }
 }
 ```

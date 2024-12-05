@@ -7,18 +7,18 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-public class ListenerTest {
+public class EnvironmentObjectListenerTest {
     @Test
     public void test() {
-        Listener listener = new Listener();
-        MyObjectCreatorFactory wrapped = listener.createRoot(new MyObjectCreatorFactory(), MyObjectCreatorFactory.class);
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
+        MyObjectCreatorFactory wrapped = environmentObjectListener.createRoot(new MyObjectCreatorFactory(), MyObjectCreatorFactory.class);
         MyObjectCreator creator = wrapped.build();
         MyObject myObject = creator.create();
 
         int id = myObject.getId();
         String value = myObject.getValue();
 
-        EnvironmentNode root = listener.getRoot();
+        EnvironmentNode root = environmentObjectListener.getRoot();
         assertThat(root.isTerminal()).isFalse();
         assertThat(root.getRuntimeClass()).isEqualTo(MyObjectCreatorFactory.class);
         Assertions.assertThat(root.getMethodCalls()).hasSize(1);

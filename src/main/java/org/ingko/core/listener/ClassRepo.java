@@ -157,10 +157,6 @@ public class ClassRepo {
 
             List<Method> selfDefinedMethods = interfaces.stream().flatMap(clazz -> Stream.of(clazz.getMethods()))
                     .toList();
-            for(Method method: selfDefinedMethods) {
-                System.out.println(method);
-            }
-
 
             DynamicType.Builder<?> builder = new ByteBuddy().subclass(target)
                     //TODO: only skip for Throwable

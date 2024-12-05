@@ -1,6 +1,6 @@
 package org.ingko.examples;
 
-import org.ingko.core.listener.Listener;
+import org.ingko.core.listener.EnvironmentObjectListener;
 import org.ingko.core.synthesizer.mockito.javafile.MockitoSynthesizer;
 
 import java.util.Random;
@@ -10,8 +10,8 @@ public class ThrowExample {
 
         ErrorDice dice = new ErrorDice();
 
-        Listener listener = new Listener();
-        ErrorDice wrappedDice = listener.createRoot(dice, ErrorDice.class);
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
+        ErrorDice wrappedDice = environmentObjectListener.createRoot(dice, ErrorDice.class);
 
 
         for (int i = 1; i <= 5; i++) {
@@ -23,7 +23,7 @@ public class ThrowExample {
         }
 
         MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.parrot.examples", "create");
-        String result = mockitoSynthesizer.generateMockito(listener);
+        String result = mockitoSynthesizer.generateMockito(environmentObjectListener);
         System.out.println(result);
     }
 

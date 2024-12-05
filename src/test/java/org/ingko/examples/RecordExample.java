@@ -1,6 +1,6 @@
 package org.ingko.examples;
 
-import org.ingko.core.listener.Listener;
+import org.ingko.core.listener.EnvironmentObjectListener;
 import org.ingko.core.synthesizer.mockito.javafile.MockitoSynthesizer;
 
 import java.util.Random;
@@ -10,8 +10,8 @@ public class RecordExample {
 
         TwoDice twoDice = new TwoDice(new Dice(), new Dice());
 
-        Listener listener = new Listener();
-        TwoDice wrappedDice = listener.createRoot(twoDice, TwoDice.class);
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
+        TwoDice wrappedDice = environmentObjectListener.createRoot(twoDice, TwoDice.class);
 
         for (int i = 1; i <= 5; i++) {
             System.out.println("Rolled " + wrappedDice.dice1().roll());
@@ -19,7 +19,7 @@ public class RecordExample {
         }
 
         MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.orange.examples", "create");
-        System.out.println(mockitoSynthesizer.generateMockito(listener));
+        System.out.println(mockitoSynthesizer.generateMockito(environmentObjectListener));
     }
 
     public static class Dice {

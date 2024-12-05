@@ -7,7 +7,7 @@ import org.ingko.core.data.methods.MethodResult;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ListenerNullTests {
+public class EnvironmentObjectListenerNullTests {
     private static class NullDice {
         // TODO: can't mock with out declared constructor
         NullDice(){}
@@ -33,12 +33,12 @@ public class ListenerNullTests {
     public void testNull() {
 
         NullDice dice = new NullDice();
-        Listener listener = new Listener();
-        NullDice wrappedDice = listener.createRoot(dice, NullDice.class);
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
+        NullDice wrappedDice = environmentObjectListener.createRoot(dice, NullDice.class);
 
         wrappedDice.rollNull();
 
-        EnvironmentNode root = listener.getRoot();
+        EnvironmentNode root = environmentObjectListener.getRoot();
         assertThat(root.getRuntimeClass()).isEqualTo(NullDice.class);
         assertThat(root.getMethodCalls()).hasSize(1)
                 .extracting(EnvironmentMethodCall::getResult)
@@ -52,12 +52,12 @@ public class ListenerNullTests {
     public void testVoid() throws Exception {
 
         NullDice dice = new NullDice();
-        Listener listener = new Listener();
-        NullDice wrappedDice = listener.createRoot(dice, NullDice.class);
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
+        NullDice wrappedDice = environmentObjectListener.createRoot(dice, NullDice.class);
 
         wrappedDice.rollVoid();
 
-        EnvironmentNode root = listener.getRoot();
+        EnvironmentNode root = environmentObjectListener.getRoot();
         assertThat(root.getRuntimeClass()).isEqualTo(NullDice.class);
         assertThat(root.getMethodCalls()).hasSize(1)
                 .extracting(EnvironmentMethodCall::getResult)

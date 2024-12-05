@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ListenerRecordTests {
+public class EnvironmentObjectListenerRecordTests {
     public record RecordA (int a, RecordB recordB){}
     public record RecordB (int a, int b){
     }
@@ -17,9 +17,9 @@ public class ListenerRecordTests {
     public void test() {
         RecordB b = new RecordB(1,3);
         RecordA a = new RecordA(1, b);
-        Listener listener = new Listener();
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
 
-        Listener.ListenResult<?> aa = listener.handleRecord(a, RecordA.class, new HashMap<>());
+        EnvironmentObjectListener.ListenResult<?> aa = environmentObjectListener.handleRecord(a, RecordA.class, new HashMap<>());
         EnvironmentNode environmentNode = aa.dataEnvironmentNode();
         RecordA wrappedA = (RecordA) aa.wrapped();
         assertThat(wrappedA).isEqualTo(a);

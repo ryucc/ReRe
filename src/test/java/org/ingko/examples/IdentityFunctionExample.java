@@ -1,7 +1,7 @@
 package org.ingko.examples;
 
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.Listener;
+import org.ingko.core.listener.EnvironmentObjectListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,13 +11,13 @@ public class IdentityFunctionExample {
         List<Integer> arr = new ArrayList<>(List.of(3, 1, 2));
         SortExample.BubbleSorter bubbleSorter = new SortExample.BubbleSorter();
 
-        Listener listener = new Listener();
-        SortExample.BubbleSorter wrapped = listener.createRoot(bubbleSorter, bubbleSorter.getClass());
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
+        SortExample.BubbleSorter wrapped = environmentObjectListener.createRoot(bubbleSorter, bubbleSorter.getClass());
         wrapped.sort(arr);
         for (int i = 0; i < 3; i++) {
             System.out.println(arr.get(i));
         }
-        EnvironmentNode node = listener.getRoot();
+        EnvironmentNode node = environmentObjectListener.getRoot();
         return;
     }
 

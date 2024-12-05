@@ -23,12 +23,12 @@ import java.util.Map;
 
 public class UserObjectListener {
 
-    private final Listener listener;
+    private final EnvironmentObjectListener environmentObjectListener;
 
     private final ClassRepo classRepo;
 
-    public UserObjectListener(Listener listener) {
-        this.listener = listener;
+    public UserObjectListener(EnvironmentObjectListener environmentObjectListener) {
+        this.environmentObjectListener = environmentObjectListener;
         classRepo = new ClassRepo(this,
                 Map.of(ObjectSpy.FIELD, ObjectSpy.TYPE,
                         UserObjectSpy.FIELD, UserObjectSpy.TYPE),
@@ -72,7 +72,7 @@ public class UserObjectListener {
     public <T> ListenResult<T> handleAnything(T returnValue,
                                               Class<?> targetClass,
                                               EnvironmentMethodCall scope,
-                                              Map<Object, Listener.ListenResult<?>> explored) {
+                                              Map<Object, EnvironmentObjectListener.ListenResult<?>> explored) {
         // Need to think more about this.
         // targetClass will be Object.class on generics.
         if (returnValue == null || ClassUtils.isStringOrPrimitive(returnValue.getClass())) {
@@ -112,7 +112,7 @@ public class UserObjectListener {
                 // Let's assume environments are stateless first... handle this later.
                 System.err.println("User method call received environment object as parameter.");
             } else {
-                Listener.ListenResult<?> listenResult = listener.handleAnything(arg, arg.getClass());
+                EnvironmentObjectListener.ListenResult<?> listenResult = environmentObjectListener.handleAnything(arg, arg.getClass());
 
                 int curIndex = environmentNodes.size();
                 LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.LOCAL_ENV, curIndex);
