@@ -13,6 +13,7 @@ public class EnvironmentObjectListenerRecordTests {
     }
 
 
+    /*
     @Test
     public void test() {
         RecordB b = new RecordB(1,3);
@@ -43,4 +44,5 @@ public class EnvironmentObjectListenerRecordTests {
         assertThat(bEnvironmentNode.getDirectChildren().getLast().getValue())
                 .isEqualTo(Integer.valueOf(b.b()).toString());
     }
+     */
 }

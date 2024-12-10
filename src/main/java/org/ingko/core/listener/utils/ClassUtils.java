@@ -59,6 +59,9 @@ public class ClassUtils {
         return clazz.isPrimitive() || wrappers.contains(clazz);
     }
 
+    public static boolean isString(Class<?> clazz) {
+        return String.class.equals(clazz);
+    }
     public static boolean isStringOrPrimitive(Class<?> clazz) {
         return String.class.equals(clazz) || isWrapperOrPrimitive(clazz);
     }

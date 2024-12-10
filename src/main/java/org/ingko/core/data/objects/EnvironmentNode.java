@@ -10,14 +10,19 @@ import java.util.UUID;
 public class EnvironmentNode implements Serializable {
     private final List<EnvironmentMethodCall> environmentMethodCalls;
     private final UUID uuid;
-    private final String value;
-    private final boolean terminal;
-    private final boolean serialized;
-    private final boolean failedNode;
     private final Class<?> runtimeClass;
     private final Class<?> representingClass;
-    private final String comments;
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    private String comments;
     private final List<EnvironmentNode> directChildren;
+    private String value;
+    private boolean terminal;
+    private boolean serialized;
+    private boolean failedNode;
     public EnvironmentNode(List<EnvironmentMethodCall> environmentMethodCalls,
                            UUID uuid,
                            String value,
@@ -78,6 +83,7 @@ public class EnvironmentNode implements Serializable {
                 "",
                 new ArrayList<>());
     }
+
     public static EnvironmentNode ofInternal(Class<?> clazz) {
         return new EnvironmentNode(new ArrayList<>(),
                 UUID.randomUUID(),
@@ -108,6 +114,10 @@ public class EnvironmentNode implements Serializable {
         return serialized;
     }
 
+    public void setSerialized(boolean serialized) {
+        this.serialized = serialized;
+    }
+
     public String getComments() {
         return comments;
     }
@@ -116,8 +126,16 @@ public class EnvironmentNode implements Serializable {
         return failedNode;
     }
 
+    public void setFailedNode(boolean failedNode) {
+        this.failedNode = failedNode;
+    }
+
     public String getValue() {
         return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public UUID getUuid() {
@@ -138,6 +156,10 @@ public class EnvironmentNode implements Serializable {
 
     public boolean isTerminal() {
         return this.terminal;
+    }
+
+    public void setTerminal(boolean terminal) {
+        this.terminal = terminal;
     }
 
     public void addEdge(EnvironmentMethodCall environmentMethodCall) {
