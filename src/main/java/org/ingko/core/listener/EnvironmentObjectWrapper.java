@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+//TODO make template
+// T, Setter<T>, create interface for setter
 public class EnvironmentObjectWrapper {
     private static final DefaultSerde defaultSerde = new DefaultSerde();
     private final EnvironmentObjectListener environmentObjectListener;
@@ -63,6 +65,8 @@ public class EnvironmentObjectWrapper {
     }
 
     /**
+     *
+     * Kahn's algorithm
      * DFS for topological sort
      * 1. Explore all reachable nodes.
      * 2. Count (hard) children.

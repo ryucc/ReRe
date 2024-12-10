@@ -101,24 +101,6 @@ public class ClassRepo {
         throw new SubclassingException("Can not subclass any suitable interface. The following classes were attempted: " + finalReason);
     }
 
-    /**
-     * Utility method to add a field with name and class.
-     * @param builder
-     * @param fieldName name of the new field.
-     * @param fieldType type of the new field.
-     * @return the updated builder.
-     * @param <T>
-     */
-    private <T> DynamicType.Builder<T> addField(DynamicType.Builder<T> builder, String fieldName, Class<?> fieldType) {
-        String getterMethodName = "get" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-        String setterMethodName = "set" + fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1);
-        return builder.defineField(fieldName, fieldType, Visibility.PRIVATE)
-                .defineMethod(getterMethodName, fieldType, Visibility.PUBLIC)
-                .intercept(FieldAccessor.ofField(fieldName))
-                .defineMethod(setterMethodName, void.class, Visibility.PUBLIC)
-                .withParameter(fieldType)
-                .intercept(FieldAccessor.ofField(fieldName));
-    }
 
     public Class<?> getOrDefineSubclass(Class<?> target) throws SubclassingException {
         if (Modifier.isFinal(target.getModifiers())) {
@@ -165,7 +147,7 @@ public class ClassRepo {
                     )
                     .intercept(MethodDelegation.to(interceptor));
             for(String fieldName: fields.keySet()) {
-                builder = addField(builder, fieldName, fields.get(fieldName));
+                builder = builder.defineProperty(fieldName, fields.get(fieldName));
             }
             for(Type type: interfaces) {
                 builder = builder.implement(type);
