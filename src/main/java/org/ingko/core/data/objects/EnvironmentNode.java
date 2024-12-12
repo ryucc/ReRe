@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class EnvironmentNode implements Serializable {
+public class EnvironmentNode implements Serializable, ParrotObjectNode {
     private final List<EnvironmentMethodCall> environmentMethodCalls;
     private final UUID uuid;
     private final Class<?> runtimeClass;

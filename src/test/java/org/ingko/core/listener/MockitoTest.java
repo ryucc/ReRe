@@ -13,6 +13,15 @@ import static org.mockito.Mockito.mock;
 
 public class MockitoTest {
 
+    interface GenInt<T> {
+        T accept(T t);
+    }
+
+    class A<E,T extends GenInt<E>> {
+        void meth(E a, T b) {
+            b.accept(a);
+        }
+    }
 
     public static class Dice {
 

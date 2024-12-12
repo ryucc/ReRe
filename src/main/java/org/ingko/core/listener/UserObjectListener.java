@@ -23,11 +23,11 @@ import java.util.Map;
 
 public class UserObjectListener {
 
-    private final EnvironmentObjectWrapper environmentObjectWrapper;
+    private final EnvironmentObjectWrapper<EnvironmentNode, EnvironmentNodeManager> environmentObjectWrapper;
 
     private final ClassRepo classRepo;
 
-    public UserObjectListener(EnvironmentObjectWrapper environmentObjectWrapper) {
+    public UserObjectListener(EnvironmentObjectWrapper<EnvironmentNode, EnvironmentNodeManager> environmentObjectWrapper) {
         this.environmentObjectWrapper = environmentObjectWrapper;
         classRepo = new ClassRepo(this,
                 Map.of(ObjectSpy.FIELD, ObjectSpy.TYPE,
@@ -112,7 +112,7 @@ public class UserObjectListener {
                 // Let's assume environments are stateless first... handle this later.
                 System.err.println("User method call received environment object as parameter.");
             } else {
-                EnvironmentObjectWrapper.WrapResult<?> listenResult = environmentObjectWrapper.createRoot(arg, arg.getClass());
+                EnvironmentObjectWrapper.WrapResult<?, EnvironmentNode> listenResult = environmentObjectWrapper.createRoot(arg, arg.getClass());
 
                 int curIndex = environmentNodes.size();
                 LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.LOCAL_ENV, curIndex);

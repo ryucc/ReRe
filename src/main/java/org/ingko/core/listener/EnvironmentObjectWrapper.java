@@ -1,12 +1,8 @@
 package org.ingko.core.listener;
 
-import org.ingko.core.data.objects.EnvironmentNode;
+import org.ingko.core.data.objects.ParrotObjectNode;
 import org.ingko.core.listener.exceptions.InitializationException;
-import org.ingko.core.listener.utils.ClassUtils;
 import org.ingko.core.listener.utils.EnvironmentObjectSpy;
-import org.ingko.core.listener.utils.ObjectSpy;
-import org.ingko.core.serde.DefaultSerde;
-import org.ingko.core.serde.exceptions.SerializationException;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -20,33 +16,18 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-//TODO make template
-// T, Setter<T>, create interface for setter
-public class EnvironmentObjectWrapper {
-    private static final DefaultSerde defaultSerde = new DefaultSerde();
-    private final EnvironmentObjectListener environmentObjectListener;
-    ClassRepo classRepo;
+/**
+ *
+ * @param <NODE>
+ * @param <MANAGER>
+ */
+public class EnvironmentObjectWrapper<NODE extends ParrotObjectNode, MANAGER extends NodeManager<EnvironmentObjectSpy, NODE>> {
+    private final MANAGER nodeManager;
 
-    public EnvironmentObjectWrapper(EnvironmentObjectListener environmentObjectListener) {
-
-        classRepo = new ClassRepo(environmentObjectListener,
-                Map.of(EnvironmentObjectSpy.FIELD, EnvironmentObjectSpy.TYPE, ObjectSpy.FIELD, ObjectSpy.TYPE),
-                List.of(EnvironmentObjectSpy.class, ObjectSpy.class));
-        this.environmentObjectListener = environmentObjectListener;
+    public EnvironmentObjectWrapper(MANAGER nodeManager) {
+        this.nodeManager = nodeManager;
     }
 
-    public <T> T handleInternal(T returnValue, EnvironmentNode node) {
-        try {
-            Class<?> mockedClass = classRepo.getOrDefineSubclass(returnValue.getClass());
-            T mocked = (T) ObjectInitializer.create(mockedClass);
-            ((EnvironmentObjectSpy) mocked).setParrotNodePointer(node);
-            ((EnvironmentObjectSpy) mocked).setParrotOriginObject(returnValue);
-            return mocked;
-        } catch (Exception e) {
-            node.setFailedNode(true);
-            return returnValue;
-        }
-    }
 
     public List<Object> getRecordFields(Object cur) throws InitializationException {
         RecordComponent[] recordComponents = cur.getClass().getRecordComponents();
@@ -65,14 +46,13 @@ public class EnvironmentObjectWrapper {
     }
 
     /**
-     *
      * Kahn's algorithm
      * DFS for topological sort
      * 1. Explore all reachable nodes.
      * 2. Count (hard) children.
      * 3. Count nodes able to initialize
      */
-    private TopSortData buildGraph(Object original, Class<?> targetClass) throws InitializationException {
+    private TopSortData<NODE> buildGraph(Object original, Class<?> targetClass) throws InitializationException {
 
         Queue<Object> front = new ArrayDeque<>();
         Set<Object> explored = new HashSet<>();
@@ -82,13 +62,13 @@ public class EnvironmentObjectWrapper {
         Map<Object, List<Object>> parents = new HashMap<>();
 
         front.add(original);
-        EnvironmentNode rootNode = EnvironmentNode.ofInternal(targetClass);
-        Map<Object, EnvironmentNode> nodeMap = new HashMap<>();
+        NODE rootNode = nodeManager.createEmpty(targetClass);
+        Map<Object, NODE> nodeMap = new HashMap<>();
         nodeMap.put(original, rootNode);
         while (!front.isEmpty()) {
             Object cur = front.poll();
             System.out.println(cur);
-            EnvironmentNode curNode = nodeMap.get(cur);
+            NODE curNode = nodeMap.get(cur);
             if (explored.contains(cur)) {
                 continue;
             }
@@ -107,15 +87,15 @@ public class EnvironmentObjectWrapper {
                     parents.get(child).add(cur);
                     front.add(child);
                     // Build object graph
-                    EnvironmentNode childNode = EnvironmentNode.ofInternal(recordComponent.getType());
-                    curNode.addDirectChild(childNode);
+                    NODE childNode = nodeManager.createEmpty(recordComponent.getType());
+                    nodeManager.addChild(curNode, childNode);
                     nodeMap.put(child, childNode);
                 }
             } else {
                 if (cur.getClass().isArray()) {
                     for (int i = 0; i < Array.getLength(cur); i++) {
                         Object child = Array.get(cur, i);
-                        EnvironmentNode childNode = EnvironmentNode.ofInternal(cur.getClass().getComponentType());
+                        NODE childNode = nodeManager.createEmpty(targetClass);
                         nodeMap.put(child, childNode);
                         front.add(child);
                     }
@@ -123,15 +103,15 @@ public class EnvironmentObjectWrapper {
                 topologicalReady.add(cur);
             }
         }
-        return new TopSortData(topologicalReady, childCount, parents, nodeMap);
+        return new TopSortData<>(topologicalReady, childCount, parents, nodeMap);
     }
 
-    public Map<Object, Object> topOrderInit(TopSortData topSortData) throws InitializationException {
+    private Map<Object, Object> topOrderInit(TopSortData<NODE> topSortData) throws InitializationException {
 
         Queue<Object> ready = topSortData.topologicalReady();
         Map<Object, Integer> childCount = topSortData.childCount();
         Map<Object, Object> toWrapped = new HashMap<>();
-        Map<Object, EnvironmentNode> toNode = topSortData.nodeMap();
+        Map<Object, NODE> toNode = topSortData.nodeMap();
 
         while (!ready.isEmpty()) {
             Object cur = ready.poll();
@@ -140,33 +120,11 @@ public class EnvironmentObjectWrapper {
                 wrapped = Array.newInstance(cur.getClass().getComponentType(), Array.getLength(cur));
             } else if (cur.getClass().isRecord()) {
                 List<Object> components = getRecordFields(cur);
-                List<Object> wrappedComponents = components.stream()
-                        .map(component -> toWrapped.get(component))
-                        .toList();
+                List<Object> wrappedComponents = components.stream().map(toWrapped::get).toList();
                 wrapped = ObjectInitializer.initRecord(cur.getClass(), wrappedComponents);
-            } else if (ClassUtils.isString(cur.getClass())) {
-                EnvironmentNode curNode = toNode.get(cur);
-                curNode.setValue("\"" + cur + "\"");
-                curNode.setTerminal(true);
-                wrapped = cur;
-            } else if (ClassUtils.isStringOrPrimitive(cur.getClass())) {
-                EnvironmentNode curNode = toNode.get(cur);
-                curNode.setValue(cur.toString());
-                curNode.setTerminal(true);
-                wrapped = cur;
-            } else if (Throwable.class.isAssignableFrom(cur.getClass())) {
-                EnvironmentNode curNode = toNode.get(cur);
-                curNode.setTerminal(true);
-                curNode.setSerialized(true);
-                try {
-                    curNode.setValue(defaultSerde.serialize(cur));
-                } catch (SerializationException e) {
-                    curNode.setFailedNode(true);
-                    curNode.setComments(e.getMessage());
-                }
-                wrapped = cur;
             } else {
-                wrapped = handleInternal(cur, toNode.get(cur));
+                NODE node = toNode.get(cur);
+                wrapped = nodeManager.synthesizeLeafNode(cur, node);
             }
             toWrapped.put(cur, wrapped);
             if (topSortData.parents().containsKey(cur)) {
@@ -201,32 +159,32 @@ public class EnvironmentObjectWrapper {
         }
     }
 
-    public <T> WrapResult<T> createRoot(Object original, Class<T> targetClass) {
+    public <T> WrapResult<T, NODE> createRoot(Object original, Class<T> targetClass) {
         /*
          *  1. DFS to find all objects in component.
          *  2. sort by child count
          *  3. create object map
          */
         if (original == null) {
-            EnvironmentNode node = EnvironmentNode.ofNull(targetClass);
+            NODE node = nodeManager.createNull(targetClass);
             return new WrapResult<>(null, node);
         }
         try {
-            TopSortData data = buildGraph(original, targetClass);
+            TopSortData<NODE> data = buildGraph(original, targetClass);
             Map<Object, Object> stuff = topOrderInit(data);
             postAssignChildren(stuff);
             T wrapped = (T) stuff.get(original);
             return new WrapResult<>(wrapped, data.nodeMap().get(original));
         } catch (InitializationException e) {
-            return new WrapResult<>((T) original, EnvironmentNode.ofFailed(targetClass, ""));
+            return new WrapResult<>((T) original, nodeManager.createFailed(targetClass, ""));
         }
     }
 
-    record TopSortData(Queue<Object> topologicalReady, Map<Object, Integer> childCount,
-                       Map<Object, List<Object>> parents, Map<Object, EnvironmentNode> nodeMap) {
+    record TopSortData<NODE>(Queue<Object> topologicalReady, Map<Object, Integer> childCount,
+                             Map<Object, List<Object>> parents, Map<Object, NODE> nodeMap) {
     }
 
-    public record WrapResult<T>(T wrapped, EnvironmentNode dataEnvironmentNode) {
+    public record WrapResult<T, NODE>(T wrapped, NODE dataEnvironmentNode) {
     }
 
 }

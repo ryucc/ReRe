@@ -10,6 +10,7 @@ import org.ingko.core.data.methods.MethodResult;
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.data.objects.UserNode;
 import org.ingko.core.listener.utils.EnvironmentObjectSpy;
+import org.ingko.core.listener.utils.ObjectSpy;
 import org.ingko.core.listener.utils.UserObjectSpy;
 
 import java.lang.reflect.InvocationTargetException;
@@ -27,11 +28,14 @@ public class EnvironmentObjectListener {
     private final List<EnvironmentNode> roots;
 
     private final UserObjectListener userObjectListener;
-    private final EnvironmentObjectWrapper wrapper;
+    private final EnvironmentObjectWrapper<EnvironmentNode, EnvironmentNodeManager> wrapper;
 
     public EnvironmentObjectListener() {
         roots = new ArrayList<>();
-        wrapper = new EnvironmentObjectWrapper(this);
+        ClassRepo classRepo = new ClassRepo(this,
+                Map.of(EnvironmentObjectSpy.FIELD, EnvironmentObjectSpy.TYPE, ObjectSpy.FIELD, ObjectSpy.TYPE),
+                List.of(EnvironmentObjectSpy.class, ObjectSpy.class));
+        wrapper = new EnvironmentObjectWrapper<>(new EnvironmentNodeManager(classRepo));
         userObjectListener = new UserObjectListener(wrapper);
     }
 
@@ -40,7 +44,7 @@ public class EnvironmentObjectListener {
     }
 
     public <T> T createRoot(Object original, Class<T> targetClass) {
-        EnvironmentObjectWrapper.WrapResult<T> result = wrapper.createRoot(original, targetClass);
+        EnvironmentObjectWrapper.WrapResult<T,EnvironmentNode> result = wrapper.createRoot(original, targetClass);
         roots.add(result.dataEnvironmentNode());
         return result.wrapped();
     }
@@ -74,7 +78,7 @@ public class EnvironmentObjectListener {
             orignalMethod.setAccessible(true);
             returnValue = orignalMethod.invoke(original, wrappedArguments);
         } catch (InvocationTargetException e) {
-            EnvironmentObjectWrapper.WrapResult<?> result = wrapper.createRoot(e.getTargetException(),
+            EnvironmentObjectWrapper.WrapResult<?, EnvironmentNode> result = wrapper.createRoot(e.getTargetException(),
                     e.getTargetException().getClass());
             edge.registerReturnNode(result.dataEnvironmentNode());
             edge.setResult(MethodResult.THROW);
@@ -106,7 +110,7 @@ public class EnvironmentObjectListener {
             Else return the reference.
          */
 
-        EnvironmentObjectWrapper.WrapResult<?> result = wrapper.createRoot(returnValue, orignalMethod.getReturnType());
+        EnvironmentObjectWrapper.WrapResult<?, EnvironmentNode> result = wrapper.createRoot(returnValue, orignalMethod.getReturnType());
         edge.registerReturnNode(result.dataEnvironmentNode());
         edge.setResult(MethodResult.RETURN);
         source.addEdge(edge);
