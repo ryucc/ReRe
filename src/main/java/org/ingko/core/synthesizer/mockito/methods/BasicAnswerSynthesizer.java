@@ -8,6 +8,7 @@ import org.ingko.core.data.methods.EnvironmentMethodCall;
 import org.ingko.core.data.methods.LocalSymbol;
 import org.ingko.core.data.methods.UserMethodCall;
 import org.ingko.core.data.objects.EnvironmentNode;
+import org.ingko.core.data.objects.Member;
 import org.ingko.core.listener.utils.ClassUtils;
 import org.ingko.core.synthesizer.mockito.nodes.EnvironmentNodeSynthesizer;
 import org.mockito.invocation.InvocationOnMock;
@@ -35,7 +36,7 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
             case PARAMETER -> "param";
             case RETURN_VALUE -> "return";
             default -> "";
-        } + s.getIndex();
+        } + s.getIndex() + s.getAccessPath().stream().map(Member::getPath).collect(Collectors.joining());
     }
 
     public Set<LocalSymbol> exploredUsedSymbols(List<UserMethodCall> userMethodCalls) {
@@ -91,36 +92,31 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
 
         Type returnType = userMethodCall.getReturnType();
 
-        if (returnType.equals(void.class) || returnType.equals(Void.class)) {
-            methodBuilder.addStatement(userMethodCall.getMethodName());
-        } else {
-            String source = symbolNamer(userMethodCall.getSource());
-            List<EnvironmentNode> locals = userMethodCall.getLocalParameters();
-            // Generate parameter string
-            List<String> params = new ArrayList<>();
-            for (int i = 0; i < locals.size(); i++) {
-                LocalSymbol symbol = userMethodCall.getParameters().get(i);
-                //environmentNodeSynthesizer.generateEnvironmentNode(typeBuilder, locals.get(i));
-                if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV && locals.get(symbol.getIndex()).isTerminal()) {
-                    params.add(locals.get(symbol.getIndex()).getValue());
-                } else {
-
-                    params.add(symbolNamer(symbol));
-                }
-            }
-            String paramString = String.join(", ", params);
-            String returnName = symbolNamer(returnSymbol);
-            if (explored.contains(returnSymbol)) {
-                methodBuilder.addStatement("$T $L = $L.$L($L)",
-                        returnType,
-                        returnName,
-                        source,
-                        userMethodCall.getMethodName(),
-                        paramString);
+        String source = symbolNamer(userMethodCall.getSource());
+        List<EnvironmentNode> locals = userMethodCall.getLocalParameters();
+        // Generate parameter string
+        List<String> params = new ArrayList<>();
+        for (int i = 0; i < locals.size(); i++) {
+            LocalSymbol symbol = userMethodCall.getParameters().get(i);
+            //environmentNodeSynthesizer.generateEnvironmentNode(typeBuilder, locals.get(i));
+            if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV && locals.get(symbol.getIndex()).isTerminal()) {
+                params.add(locals.get(symbol.getIndex()).getValue());
             } else {
-                methodBuilder.addStatement("$L.$L($L)", source, userMethodCall.getMethodName(), paramString);
 
+                params.add(symbolNamer(symbol));
             }
+        }
+        String paramString = String.join(", ", params);
+        String returnName = symbolNamer(returnSymbol);
+        if (returnType.equals(void.class) || returnType.equals(Void.class) ||!explored.contains(returnSymbol)) {
+            methodBuilder.addStatement("$L.$L($L)", source, userMethodCall.getMethodName(), paramString);
+        } else {
+            methodBuilder.addStatement("$T $L = $L.$L($L)",
+                    returnType,
+                    returnName,
+                    source,
+                    userMethodCall.getMethodName(),
+                    paramString);
         }
     }
 

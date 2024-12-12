@@ -95,6 +95,7 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode, MANAGER extends 
                     for (int i = 0; i < Array.getLength(cur); i++) {
                         Object child = Array.get(cur, i);
                         NODE childNode = nodeManager.createEmpty(targetClass);
+                        nodeManager.addChild(curNode, childNode);
                         nodeMap.put(child, childNode);
                         front.add(child);
                     }

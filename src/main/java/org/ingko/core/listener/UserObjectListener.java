@@ -7,7 +7,9 @@ import net.bytebuddy.implementation.bind.annotation.This;
 import org.ingko.core.data.methods.EnvironmentMethodCall;
 import org.ingko.core.data.methods.LocalSymbol;
 import org.ingko.core.data.methods.UserMethodCall;
+import org.ingko.core.data.objects.ArrayMember;
 import org.ingko.core.data.objects.EnvironmentNode;
+import org.ingko.core.data.objects.RecordMember;
 import org.ingko.core.data.objects.UserNode;
 import org.ingko.core.listener.utils.EnvironmentObjectSpy;
 import org.ingko.core.listener.utils.ObjectSpy;
@@ -15,6 +17,7 @@ import org.ingko.core.listener.utils.UserObjectSpy;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.RecordComponent;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -52,9 +55,27 @@ public class UserObjectListener {
             UserNode cur = nodeQueue.poll();
             cur.setScope(scope);
             explored.add(cur);
-            for(UserNode child: cur.getDirectChildren()) {
-                if(!explored.contains(child)) {
-                    nodeQueue.add(child);
+            if(cur.getDeclaredClass().isArray()) {
+                for(int i = 0; i < cur.getDirectChildren().size(); i++) {
+                    UserNode child = cur.getDirectChildren().get(i);
+                    if(!explored.contains(child)) {
+                        LocalSymbol childSymbol = cur.getSymbol().copy();
+                        childSymbol.appendPath(new ArrayMember(i));
+                        child.setSymbol(childSymbol);
+                        nodeQueue.add(child);
+                    }
+                }
+            } else if(cur.getDeclaredClass().isRecord()) {
+                RecordComponent[] recordComponents = cur.getDeclaredClass().getRecordComponents();
+                for(int i = 0; i < cur.getDirectChildren().size(); i++) {
+                    UserNode child = cur.getDirectChildren().get(i);
+                    if(!explored.contains(child)) {
+                        LocalSymbol childSymbol = cur.getSymbol().copy();
+                        RecordComponent component = recordComponents[i];
+                        childSymbol.appendPath(new RecordMember(component.getName()));
+                        child.setSymbol(childSymbol);
+                        nodeQueue.add(child);
+                    }
                 }
             }
         }
@@ -129,7 +150,7 @@ public class UserObjectListener {
                 ret = ((UserObjectSpy) ret).getParrotOriginObject();
             }
             LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.RETURN_VALUE, currentReturnIndex);
-            ListenResult<?> result = createRoot(ret, ret.getClass(), scopeMethod, symbol);
+            ListenResult<?> result = createRoot(ret, orignalMethod.getReturnType(), scopeMethod, symbol);
             return result.wrapped();
         } catch (InvocationTargetException e) {
             Throwable real = e.getTargetException();
