@@ -2,7 +2,6 @@ package org.ingko.core.listener;
 
 import org.ingko.core.data.objects.ParrotObjectNode;
 import org.ingko.core.listener.exceptions.InitializationException;
-import org.ingko.core.listener.utils.EnvironmentObjectSpy;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -21,10 +20,10 @@ import java.util.Set;
  * @param <NODE>
  * @param <MANAGER>
  */
-public class EnvironmentObjectWrapper<NODE extends ParrotObjectNode, MANAGER extends NodeManager<EnvironmentObjectSpy, NODE>> {
+public class ParrotObjectWrapper<NODE extends ParrotObjectNode, MANAGER extends NodeManager<NODE>> {
     private final MANAGER nodeManager;
 
-    public EnvironmentObjectWrapper(MANAGER nodeManager) {
+    public ParrotObjectWrapper(MANAGER nodeManager) {
         this.nodeManager = nodeManager;
     }
 
@@ -184,7 +183,7 @@ public class EnvironmentObjectWrapper<NODE extends ParrotObjectNode, MANAGER ext
                              Map<Object, List<Object>> parents, Map<Object, NODE> nodeMap) {
     }
 
-    public record WrapResult<T, NODE>(T wrapped, NODE dataEnvironmentNode) {
+    public record WrapResult<T, NODE>(T wrapped, NODE node) {
     }
 
 }

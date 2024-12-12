@@ -9,86 +9,57 @@ import org.ingko.core.data.methods.LocalSymbol;
 import org.ingko.core.data.methods.UserMethodCall;
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.data.objects.UserNode;
-import org.ingko.core.listener.exceptions.InitializationException;
-import org.ingko.core.listener.utils.ClassUtils;
 import org.ingko.core.listener.utils.EnvironmentObjectSpy;
 import org.ingko.core.listener.utils.ObjectSpy;
 import org.ingko.core.listener.utils.UserObjectSpy;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 public class UserObjectListener {
 
-    private final EnvironmentObjectWrapper<EnvironmentNode, EnvironmentNodeManager> environmentObjectWrapper;
+    private final ParrotObjectWrapper<EnvironmentNode, EnvironmentNodeManager> environmentObjectWrapper;
+    private final ParrotObjectWrapper<UserNode, UserNodeManager> userObjectWrapper;
 
     private final ClassRepo classRepo;
 
-    public UserObjectListener(EnvironmentObjectWrapper<EnvironmentNode, EnvironmentNodeManager> environmentObjectWrapper) {
+    public UserObjectListener(ParrotObjectWrapper<EnvironmentNode, EnvironmentNodeManager> environmentObjectWrapper) {
         this.environmentObjectWrapper = environmentObjectWrapper;
         classRepo = new ClassRepo(this,
                 Map.of(ObjectSpy.FIELD, ObjectSpy.TYPE,
                         UserObjectSpy.FIELD, UserObjectSpy.TYPE),
                 List.of(ObjectSpy.class, UserObjectSpy.class));
+        this.userObjectWrapper = new ParrotObjectWrapper<>(new UserNodeManager(classRepo));
     }
 
-    public <T> ListenResult<T> handlePrimitiveOrNull(T value, Class<?> clazz, EnvironmentMethodCall scope) {
-        // Primitives are passed by value
-        // The local changes will not affect the method caller.
-        // Thus, we don't need to track them.
-        UserNode node = new UserNode(value.getClass(), scope);
-        return new ListenResult<>(value, node);
-    }
+    public ListenResult<?> createRoot(Object original, Class<?> type, EnvironmentMethodCall scope, LocalSymbol symbol) {
+        ParrotObjectWrapper.WrapResult<?, UserNode> wrapped = userObjectWrapper.createRoot(original, type);
 
-    public <T> ListenResult<T> findClassThenInit(T original,
-                                                 Class<?> clazz,
-                                                 EnvironmentMethodCall scope) throws InitializationException {
-        // TODO: while final class, try to mock parent until parent == return class
-        Class<?> mockedClass = classRepo.getOrDefineSubclass(original.getClass());
-        T mocked = (T) ObjectInitializer.create(mockedClass);
-        ((UserObjectSpy) mocked).setParrotOriginObject(original);
-        UserNode node = new UserNode(original.getClass(), scope);
-        ((UserObjectSpy) mocked).setParrotUserNode(node);
-        return new ListenResult<>(mocked, node);
-    }
+        // DFS
+        Queue<UserNode> nodeQueue = new ArrayDeque<>();
+        Set<UserNode> explored = new HashSet<>();
+        nodeQueue.add(wrapped.node());
+        wrapped.node().setSymbol(symbol);
 
-    public <T> ListenResult<T> handleInternal(T returnValue, Class<?> clazz, EnvironmentMethodCall scope) {
-        try {
-            return findClassThenInit(returnValue, clazz, scope);
-        } catch (Exception e) {
-            UserNode node = new UserNode(returnValue.getClass(), scope);
-            node.setComments("Failed node");
-            return new ListenResult<>(returnValue, node);
+        while(!nodeQueue.isEmpty()) {
+            UserNode cur = nodeQueue.poll();
+            cur.setScope(scope);
+            explored.add(cur);
+            for(UserNode child: cur.getDirectChildren()) {
+                if(!explored.contains(child)) {
+                    nodeQueue.add(child);
+                }
+            }
         }
+        return new ListenResult<>(wrapped.wrapped(), wrapped.node());
     }
-
-    public <T> ListenResult<T> handleAnything(T returnValue, Class<?> targetClass, EnvironmentMethodCall scope) {
-        return handleAnything(returnValue, targetClass, scope, Map.of());
-    }
-
-    public <T> ListenResult<T> handleAnything(T returnValue,
-                                              Class<?> targetClass,
-                                              EnvironmentMethodCall scope,
-                                              Map<Object, EnvironmentObjectListener.ListenResult<?>> explored) {
-        // Need to think more about this.
-        // targetClass will be Object.class on generics.
-        if (returnValue == null || ClassUtils.isStringOrPrimitive(returnValue.getClass())) {
-            return handlePrimitiveOrNull(returnValue, targetClass, scope);
-        } else if (Throwable.class.isAssignableFrom(targetClass)) {
-            // Don't track for now...
-            UserNode userNode = new UserNode(returnValue.getClass(), scope);
-            return new ListenResult<>(returnValue, userNode);
-        } else if (returnValue.getClass().isRecord()) {
-            //return handleRecord(returnValue, targetClass, explored);
-        } else if (returnValue.getClass().isArray()) { // TODO: componentType or runtime type?
-            //return handleArray(returnValue, targetClass, explored);
-        }
-        return handleInternal(returnValue, targetClass, scope);
-    }
-
 
     @RuntimeType
     public Object intercept(@AllArguments Object[] allArguments,
@@ -112,13 +83,13 @@ public class UserObjectListener {
                 // Let's assume environments are stateless first... handle this later.
                 System.err.println("User method call received environment object as parameter.");
             } else {
-                EnvironmentObjectWrapper.WrapResult<?, EnvironmentNode> listenResult = environmentObjectWrapper.createRoot(arg, arg.getClass());
+                ParrotObjectWrapper.WrapResult<?, EnvironmentNode> listenResult = environmentObjectWrapper.createRoot(arg, arg.getClass());
 
                 int curIndex = environmentNodes.size();
                 LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.LOCAL_ENV, curIndex);
                 parameterSourceList.add(symbol);
 
-                environmentNodes.add(listenResult.dataEnvironmentNode());
+                environmentNodes.add(listenResult.node());
                 wrappedArguments.add(listenResult.wrapped());
             }
         }
@@ -157,16 +128,15 @@ public class UserObjectListener {
                 // Rewrapping makings synthesized code look closer to original code.
                 ret = ((UserObjectSpy) ret).getParrotOriginObject();
             }
-            ListenResult<?> result = handleAnything(ret, ret.getClass(), scopeMethod);
             LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.RETURN_VALUE, currentReturnIndex);
-            result.userNode().setSymbol(symbol);
+            ListenResult<?> result = createRoot(ret, ret.getClass(), scopeMethod, symbol);
             return result.wrapped();
         } catch (InvocationTargetException e) {
             Throwable real = e.getTargetException();
-            ListenResult<Throwable> result = handleAnything(real, real.getClass(), scopeMethod);
             LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.THROW, currentReturnIndex);
+            ListenResult<?> result = createRoot(real, real.getClass(), scopeMethod, symbol);
             result.userNode().setSymbol(symbol);
-            throw result.wrapped();
+            throw (Throwable) result.wrapped();
         } catch (IllegalAccessException e) {
             // Parrot does not have permissions to invoke the method.
             // should never happen?

@@ -21,7 +21,7 @@ public class EnvironmentObjectListenerRecordTests {
         EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
 
         EnvironmentObjectListener.ListenResult<?> aa = environmentObjectListener.handleRecord(a, RecordA.class, new HashMap<>());
-        EnvironmentNode environmentNode = aa.dataEnvironmentNode();
+        EnvironmentNode environmentNode = aa.node();
         RecordA wrappedA = (RecordA) aa.wrapped();
         assertThat(wrappedA).isEqualTo(a);
 

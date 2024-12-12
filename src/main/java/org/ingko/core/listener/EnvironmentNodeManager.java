@@ -6,7 +6,7 @@ import org.ingko.core.listener.utils.EnvironmentObjectSpy;
 import org.ingko.core.serde.DefaultSerde;
 import org.ingko.core.serde.exceptions.SerializationException;
 
-public class EnvironmentNodeManager implements NodeManager<EnvironmentObjectSpy, EnvironmentNode>{
+public class EnvironmentNodeManager implements NodeManager<EnvironmentNode>{
     private static final DefaultSerde defaultSerde = new DefaultSerde();
 
     public EnvironmentNodeManager(ClassRepo classRepo) {
