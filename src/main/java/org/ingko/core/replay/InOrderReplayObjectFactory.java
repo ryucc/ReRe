@@ -1,7 +1,6 @@
 package org.ingko.core.replay;
 
-import org.ingko.core.listener.ClassRepo;
-import org.ingko.core.listener.ObjectInitializer;
+import org.ingko.core.listener.wrap.bytebuddy.ClassRepo;
 
 public class InOrderReplayObjectFactory implements EmptyObjectFactory {
 

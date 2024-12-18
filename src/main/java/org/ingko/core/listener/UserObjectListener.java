@@ -14,6 +14,8 @@ import org.ingko.core.data.objects.UserNode;
 import org.ingko.core.listener.utils.EnvironmentObjectSpy;
 import org.ingko.core.listener.utils.ObjectSpy;
 import org.ingko.core.listener.utils.UserObjectSpy;
+import org.ingko.core.listener.wrap.ParrotObjectWrapper;
+import org.ingko.core.listener.wrap.bytebuddy.ClassRepo;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

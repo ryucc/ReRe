@@ -1,6 +1,8 @@
-package org.ingko.core.listener;
+package org.ingko.core.listener.wrap;
 
 import org.ingko.core.data.objects.ParrotObjectNode;
+import org.ingko.core.listener.NodeManager;
+import org.ingko.core.listener.ObjectInitializer;
 import org.ingko.core.listener.exceptions.InitializationException;
 
 import java.lang.reflect.Array;

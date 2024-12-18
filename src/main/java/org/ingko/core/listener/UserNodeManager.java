@@ -2,14 +2,15 @@ package org.ingko.core.listener;
 
 import org.ingko.core.data.objects.UserNode;
 import org.ingko.core.listener.utils.ClassUtils;
-import org.ingko.core.listener.utils.UserObjectSpy;
+import org.ingko.core.listener.wrap.SingleUserNodeWrapper;
+import org.ingko.core.listener.wrap.bytebuddy.ClassRepo;
 
 public class UserNodeManager implements NodeManager<UserNode> {
 
-    private final ClassRepo classRepo;
+    private final SingleUserNodeWrapper wrapper;
 
     public UserNodeManager(ClassRepo classRepo) {
-        this.classRepo = classRepo;
+        this.wrapper = new SingleUserNodeWrapper(classRepo);
     }
 
     @Override
@@ -31,30 +32,14 @@ public class UserNodeManager implements NodeManager<UserNode> {
         parent.addDirectChild(child);
     }
 
-    public void updateNodePointer(UserObjectSpy spied, UserNode node) {
-        spied.setParrotUserNode(node);
-    }
 
     public Object synthesizeLeafNode(Object original, UserNode node) {
         Object wrapped;
         if (ClassUtils.isStringOrPrimitive(original.getClass())) {
             wrapped = original;
         } else {
-            wrapped = initiateSpied(original, node);
+            wrapped = wrapper.initiateSpied(original, node);
         }
         return wrapped;
-    }
-
-    public <T> T initiateSpied(T returnValue, UserNode node) {
-        try {
-            Class<?> mockedClass = classRepo.getOrDefineSubclass(returnValue.getClass());
-            T mocked = (T) ObjectInitializer.create(mockedClass);
-            updateNodePointer((UserObjectSpy) mocked, node);
-            ((UserObjectSpy) mocked).setParrotOriginObject(returnValue);
-            return mocked;
-        } catch (Exception e) {
-            node.setFailedNode(true);
-            return returnValue;
-        }
     }
 }

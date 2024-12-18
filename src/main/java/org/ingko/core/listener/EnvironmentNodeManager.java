@@ -2,37 +2,43 @@ package org.ingko.core.listener;
 
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.utils.ClassUtils;
-import org.ingko.core.listener.utils.EnvironmentObjectSpy;
+import org.ingko.core.listener.wrap.ByteBuddySingleEnvironmentNodeWrapper;
+import org.ingko.core.listener.wrap.MockitoSingleEnvironmentNodeWrapper;
+import org.ingko.core.listener.wrap.SingleNodeWrapper;
+import org.ingko.core.listener.wrap.bytebuddy.ClassRepo;
 import org.ingko.core.serde.DefaultSerde;
 import org.ingko.core.serde.exceptions.SerializationException;
 
-public class EnvironmentNodeManager implements NodeManager<EnvironmentNode>{
+public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
     private static final DefaultSerde defaultSerde = new DefaultSerde();
+    private final SingleNodeWrapper<EnvironmentNode> wrapper;
+    //private final MockitoSingleEnvironmentNodeWrapper wrapper;
 
-    public EnvironmentNodeManager(ClassRepo classRepo) {
-        this.classRepo = classRepo;
+    public EnvironmentNodeManager(EnvironmentObjectListener listener) {
+        //this.wrapper = new ByteBuddySingleEnvironmentNodeWrapper(listener);
+        this.wrapper = new MockitoSingleEnvironmentNodeWrapper(listener);
     }
 
-    private final ClassRepo classRepo;
     @Override
     public EnvironmentNode createEmpty(Class<?> clazz) {
         return EnvironmentNode.ofInternal(clazz);
     }
+
     @Override
     public EnvironmentNode createNull(Class<?> clazz) {
         return EnvironmentNode.ofNull(clazz);
     }
+
     @Override
     public EnvironmentNode createFailed(Class<?> clazz, String comments) {
         return EnvironmentNode.ofFailed(clazz, comments);
     }
+
     public void addChild(EnvironmentNode parent, EnvironmentNode child) {
         parent.addDirectChild(child);
     }
-    public void updateNodePointer(EnvironmentObjectSpy spied, EnvironmentNode node) {
-        spied.setParrotNodePointer(node);
-    }
-    public Object synthesizeLeafNode(Object original, EnvironmentNode node){
+
+    public Object synthesizeLeafNode(Object original, EnvironmentNode node) {
         Object wrapped;
         if (ClassUtils.isString(original.getClass())) {
             node.setValue("\"" + original + "\"");
@@ -53,21 +59,8 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode>{
             }
             wrapped = original;
         } else {
-            wrapped = initiateSpied(original, node);
+            wrapped = wrapper.initiateSpied(original, node);
         }
         return wrapped;
-    }
-
-    public <T> T initiateSpied(T returnValue, EnvironmentNode node) {
-        try {
-            Class<?> mockedClass = classRepo.getOrDefineSubclass(returnValue.getClass());
-            T mocked = (T) ObjectInitializer.create(mockedClass);
-            updateNodePointer((EnvironmentObjectSpy) mocked, node);
-            ((EnvironmentObjectSpy) mocked).setParrotOriginObject(returnValue);
-            return mocked;
-        } catch (Exception e) {
-            node.setFailedNode(true);
-            return returnValue;
-        }
     }
 }

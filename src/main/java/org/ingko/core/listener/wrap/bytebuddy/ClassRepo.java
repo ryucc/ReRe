@@ -1,15 +1,11 @@
-package org.ingko.core.listener;
+package org.ingko.core.listener.wrap.bytebuddy;
 
 import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.description.modifier.Visibility;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.loading.ClassInjector;
 import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
-import net.bytebuddy.implementation.FieldAccessor;
 import net.bytebuddy.implementation.MethodDelegation;
-import net.bytebuddy.matcher.ElementMatcher;
 import net.bytebuddy.matcher.ElementMatchers;
-import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.exceptions.SubclassingException;
 
 import java.lang.reflect.Method;
@@ -21,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.bytebuddy.matcher.ElementMatchers.anyOf;
@@ -37,9 +32,7 @@ public class ClassRepo {
     private final Map<String, Class<?>> fields;
     private final List<Class<?>> interfaces;
 
-    public ClassRepo(Object interceptor,
-                     Map<String, Class<?>> fields,
-                     List<Class<?>> interfaces) {
+    public ClassRepo(Object interceptor, Map<String, Class<?>> fields, List<Class<?>> interfaces) {
         this.interceptor = interceptor;
         this.classCache = new HashMap<>();
         this.fields = fields;
@@ -49,6 +42,7 @@ public class ClassRepo {
 
     /**
      * The interceptor is used on every method call, except fillInStackTrace for Exceptions.
+     *
      * @param interceptor
      */
     public ClassRepo(Object interceptor, Map<String, Class<?>> fields) {
@@ -137,25 +131,24 @@ public class ClassRepo {
                 return classCache.get(target);
             }
 
-            List<Method> selfDefinedMethods = interfaces.stream().flatMap(clazz -> Stream.of(clazz.getMethods()))
+            List<Method> selfDefinedMethods = interfaces.stream()
+                    .flatMap(clazz -> Stream.of(clazz.getMethods()))
                     .toList();
 
             DynamicType.Builder<?> builder = new ByteBuddy().subclass(target)
                     //TODO: only skip for Throwable
-                    .method(anyOf(selfDefinedMethods.toArray()).or(not(ElementMatchers.isToString()).and(not(ElementMatchers.hasMethodName("fillInStackTrace"))))
+                    .method(anyOf(selfDefinedMethods.toArray()).or(not(ElementMatchers.isToString()).and(not(
+                                    ElementMatchers.hasMethodName("fillInStackTrace"))))
                             //.or(ElementMatchers.isHashCode().or(ElementMatchers.isEquals()))
-                    )
-                    .intercept(MethodDelegation.to(interceptor));
-            for(String fieldName: fields.keySet()) {
+                    ).intercept(MethodDelegation.to(interceptor));
+            for (String fieldName : fields.keySet()) {
                 builder = builder.defineProperty(fieldName, fields.get(fieldName));
             }
-            for(Type type: interfaces) {
+            for (Type type : interfaces) {
                 builder = builder.implement(type);
             }
 
-            Class<?> newClass = builder.make()
-                    .load(getClass().getClassLoader(), strategy)
-                    .getLoaded();
+            Class<?> newClass = builder.make().load(getClass().getClassLoader(), strategy).getLoaded();
             classCache.put(target, newClass);
             return newClass;
         } catch (Throwable t) {

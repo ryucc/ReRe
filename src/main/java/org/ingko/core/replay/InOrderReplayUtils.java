@@ -1,7 +1,7 @@
 package org.ingko.core.replay;
 
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.ClassRepo;
+import org.ingko.core.listener.wrap.bytebuddy.ClassRepo;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;

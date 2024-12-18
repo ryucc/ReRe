@@ -5,7 +5,7 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.ClassRepo;
+import org.ingko.core.listener.wrap.bytebuddy.ClassRepo;
 import org.ingko.core.listener.ObjectInitializer;
 import org.ingko.core.listener.exceptions.InitializationException;
 import org.ingko.core.listener.exceptions.SubclassingException;
