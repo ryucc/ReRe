@@ -17,6 +17,7 @@ import org.mockito.stubbing.Answer;
 import javax.lang.model.element.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,22 +40,34 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
         } + s.getIndex() + s.getAccessPath().stream().map(Member::getPath).collect(Collectors.joining());
     }
 
-    public Set<LocalSymbol> exploredUsedSymbols(List<UserMethodCall> userMethodCalls) {
-        return userMethodCalls.stream()
+    public Set<LocalSymbol> exploredUsedSymbols(EnvironmentMethodCall rootMethodCall, List<UserMethodCall> userMethodCalls) {
+        Set<LocalSymbol> usedAsParam = userMethodCalls.stream()
                 .flatMap(s -> s.getParameters().stream())
                 .filter(localSymbol -> localSymbol.getSource().equals(LocalSymbol.Source.RETURN_VALUE))
                 .collect(Collectors.toSet());
+        Set<LocalSymbol> usedAsSource = userMethodCalls.stream()
+                .map(UserMethodCall::getSource)
+                .filter(localSymbol -> localSymbol.getSource().equals(LocalSymbol.Source.RETURN_VALUE))
+                .collect(Collectors.toSet());
+        Set<LocalSymbol> anyUse = new HashSet<>();
+        anyUse.addAll(usedAsParam);
+        anyUse.addAll(usedAsSource);
+        if(rootMethodCall.getReturnSymbol().getSource().equals(LocalSymbol.Source.RETURN_VALUE)) {
+            anyUse.add(rootMethodCall.getReturnSymbol());
+        }
+        return anyUse;
     }
 
     @Override
     public SynthResult generateAnswer(TypeSpec.Builder typeBuilder, EnvironmentMethodCall rootMethodCall) {
         String answerName = "getAnswer" + answerId;
+        answerId++;
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(answerName)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .returns(ParameterizedTypeName.get(Answer.class,
                         ClassUtils.getWrapped(rootMethodCall.getSignature().getReturnClass())));
-        methodBuilder.beginControlFlow("return ($T invocation) -> ", InvocationOnMock.class);
-        List<Type> paramTypes = rootMethodCall.getParamTypes();
+        methodBuilder.beginControlFlow("return ($T invocation) ->", InvocationOnMock.class);
+        List<Type> paramTypes = rootMethodCall.getGenericParamTypes();
         for (int i = 0; i < paramTypes.size(); i++) {
             String paramName = symbolNamer(new LocalSymbol(LocalSymbol.Source.PARAMETER, i));
             Type rawType = paramTypes.get(i);
@@ -63,7 +76,7 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
             methodBuilder.addStatement("$T $L = invocation.getArgument($L)", type, paramName, String.valueOf(i));
         }
 
-        Set<LocalSymbol> explored = exploredUsedSymbols(rootMethodCall.getUserMethodCalls());
+        Set<LocalSymbol> explored = exploredUsedSymbols(rootMethodCall, rootMethodCall.getUserMethodCalls());
 
         List<UserMethodCall> userMethodCalls = rootMethodCall.getUserMethodCalls();
         for (int i = 0; i < userMethodCalls.size(); i++) {
@@ -74,13 +87,22 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
                     explored);
         }
         if (!rootMethodCall.isVoid()) {
-            methodBuilder.addStatement("return $L", symbolNamer(rootMethodCall.getReturnSymbol()));
+
+            LocalSymbol symbol = rootMethodCall.getReturnSymbol();
+            EnvironmentNode returnNode = rootMethodCall.getDest();
+            if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV && !returnNode.isTerminal()) {
+                String method = environmentNodeSynthesizer.generateEnvironmentNode(typeBuilder, rootMethodCall.getDest()).methodName();
+                methodBuilder.addStatement("return $L()", method);
+            } else if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV && returnNode.isTerminal()) {
+                methodBuilder.addStatement("return $L", returnNode.getValue());
+            } else {
+                methodBuilder.addStatement("return $L", symbolNamer(rootMethodCall.getReturnSymbol()));
+            }
         } else {
             methodBuilder.addStatement("return null");
         }
-        methodBuilder.endControlFlow();
+        methodBuilder.endControlFlow("");
         typeBuilder.addMethod(methodBuilder.build());
-        answerId++;
         return new SynthResult(answerName);
     }
 
@@ -98,11 +120,12 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
         List<String> params = new ArrayList<>();
         for (int i = 0; i < locals.size(); i++) {
             LocalSymbol symbol = userMethodCall.getParameters().get(i);
-            //environmentNodeSynthesizer.generateEnvironmentNode(typeBuilder, locals.get(i));
             if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV && locals.get(symbol.getIndex()).isTerminal()) {
                 params.add(locals.get(symbol.getIndex()).getValue());
+            } else if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV) {
+                String method = environmentNodeSynthesizer.generateEnvironmentNode(typeBuilder, locals.get(i)).methodName();
+                params.add(method + "()");
             } else {
-
                 params.add(symbolNamer(symbol));
             }
         }

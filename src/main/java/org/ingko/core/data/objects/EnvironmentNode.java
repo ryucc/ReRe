@@ -12,13 +12,8 @@ public class EnvironmentNode implements Serializable, ParrotObjectNode {
     private final UUID uuid;
     private final Class<?> runtimeClass;
     private final Class<?> representingClass;
-
-    public void setComments(String comments) {
-        this.comments = comments;
-    }
-
-    private String comments;
     private final List<EnvironmentNode> directChildren;
+    private String comments;
     private String value;
     private boolean terminal;
     private boolean serialized;
@@ -122,6 +117,10 @@ public class EnvironmentNode implements Serializable, ParrotObjectNode {
         return comments;
     }
 
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
     public boolean isFailedNode() {
         return failedNode;
     }
@@ -162,7 +161,7 @@ public class EnvironmentNode implements Serializable, ParrotObjectNode {
         this.terminal = terminal;
     }
 
-    public void addEdge(EnvironmentMethodCall environmentMethodCall) {
+    public void addMethodCall(EnvironmentMethodCall environmentMethodCall) {
         environmentMethodCalls.add(environmentMethodCall);
     }
 

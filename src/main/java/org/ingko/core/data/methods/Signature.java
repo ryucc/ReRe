@@ -11,13 +11,13 @@ public class Signature implements Serializable {
     private final String returnType;
     private final Type returnClass;
     private final String methodName;
-    private final List<String> paramTypes;
+    private final List<Type> paramTypes;
     private final List<Class<?>> paramClasses;
     public Signature(Method method) {
         this.methodName = method.getName();
         this.returnType = method.getReturnType().getName();
         this.returnClass = method.getGenericReturnType();
-        this.paramTypes = Arrays.stream(method.getParameterTypes()).map(Class::getName).collect(Collectors.toList());
+        this.paramTypes = Arrays.asList(method.getGenericParameterTypes());
         this.paramClasses = Arrays.asList(method.getParameterTypes());
     }
 
@@ -37,7 +37,7 @@ public class Signature implements Serializable {
         return methodName;
     }
 
-    public List<String> getParamTypes() {
+    public List<Type> getParamTypes() {
         return paramTypes;
     }
 
@@ -45,7 +45,7 @@ public class Signature implements Serializable {
     public int hashCode() {
         int hash = 0;
         hash += methodName.hashCode();
-        for (String param : paramTypes) {
+        for (Type param : paramTypes) {
             hash += param.hashCode();
         }
         return hash;

@@ -1,4 +1,4 @@
-package org.ingko.core.listener;
+package org.ingko.core.listener.graph.returnOnly;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;

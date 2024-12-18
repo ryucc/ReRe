@@ -9,6 +9,7 @@ import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.EnvironmentObjectListener;
 import org.ingko.core.synthesizer.NamingStrategy;
 import org.ingko.core.synthesizer.OrderedNaming;
+import org.ingko.core.synthesizer.mockito.CodeUtils;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.ingko.core.data.methods.EnvironmentMethodCall;
@@ -151,7 +152,6 @@ public class MockitoSynthesizer {
         methodBuilder.addStatement("$T $L = $T.mock($T.class)", clazz, mockName, Mockito.class, clazz);
 
         for (Signature key : methodActions.keySet()) {
-            //System.out.println(key);
             CodeBlock.Builder statement = CodeBlock.builder();
             List<String> actions = methodActions.get(key);
             for (String action : actions) {
@@ -159,37 +159,10 @@ public class MockitoSynthesizer {
             }
             statement.add("when($L).", namingStrategy.getUniqueMockName(objectEnvironmentNode));
 
-            statement.add("$L($L)", key.getMethodName(), generateParamString(key.getParamClasses()));
+            statement.add("$L($L)", key.getMethodName(), CodeUtils.generateParamString(key.getParamTypes()));
             methodBuilder.addStatement(statement.build());
         }
     }
 
-    private String generateParamString(List<Class<?>> paramTypes) {
-        List<String> params = new ArrayList<>();
-        for (Class<?> clazz : paramTypes) {
-            if (clazz.equals(Integer.class) || clazz.equals(int.class)) {
-                params.add("anyInt()");
-            } else if (clazz.equals(Double.class) || clazz.equals(double.class)) {
-                params.add("anyDouble()");
-            } else if (clazz.equals(Long.class) || clazz.equals(long.class)) {
-                params.add("anyLong()");
-            } else if (clazz.equals(Short.class) || clazz.equals(short.class)) {
-                params.add("anyShort()");
-            } else if (clazz.equals(Character.class) || clazz.equals(char.class)) {
-                params.add("anyChar()");
-            } else if (clazz.equals(Byte.class) || clazz.equals(byte.class)) {
-                params.add("anyByte()");
-            } else if (clazz.equals(Boolean.class) || clazz.equals(boolean.class)) {
-                params.add("anyBoolean()");
-            } else if (clazz.equals(Float.class) || clazz.equals(float.class)) {
-                params.add("anyFloat()");
-            } else if (clazz.equals(String.class)) {
-                params.add("anyString()");
-            } else {
-                params.add("any()");
-            }
-        }
 
-        return String.join(", ", params);
-    }
 }

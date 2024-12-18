@@ -16,6 +16,7 @@ import static org.ingko.core.synthesizer.mockito.CodeUtils.declareMock;
 import static org.ingko.core.synthesizer.mockito.CodeUtils.generateDo;
 import static org.ingko.core.synthesizer.mockito.CodeUtils.groupMethods;
 
+//TODO topological sort again.
 public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
 
     private final EnvironmentAnswerSynthesizer answerSynthesizer;
@@ -32,6 +33,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
     public SynthResult generateEnvironmentNode(TypeSpec.Builder typeBuilder, EnvironmentNode root) {
 
         String methodName = "environmentNode" + environmentId;
+        environmentId++;
 
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
@@ -56,7 +58,6 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         }
         typeBuilder.addMethod(methodBuilder.build());
 
-        environmentId++;
         return new SynthResult(methodName);
     }
 }

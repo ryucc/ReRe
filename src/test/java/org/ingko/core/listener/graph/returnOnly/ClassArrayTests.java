@@ -1,11 +1,12 @@
-package org.ingko.core.listener;
+package org.ingko.core.listener.graph.returnOnly;
 
 
 import org.ingko.core.data.objects.EnvironmentNode;
+import org.ingko.core.listener.EnvironmentObjectListener;
 import org.junit.jupiter.api.Test;
 import org.ingko.testUtils.SimpleTreePrinter;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 class ClassArrayTests {
 
@@ -18,7 +19,8 @@ class ClassArrayTests {
         environmentObjectListener.createRoot(arr, arr.getClass());
 
         EnvironmentNode root = environmentObjectListener.getRoot();
-        assertThat(root);
+        assertThat(root.getDirectChildren()).hasSize(5);
+
     }
 
     @Test
@@ -30,7 +32,7 @@ class ClassArrayTests {
         environmentObjectListener.createRoot(arr, arr.getClass());
 
         EnvironmentNode root = environmentObjectListener.getRoot();
-        assertThat(root);
+        assertThat(root.getDirectChildren()).hasSize(2);
     }
 
     @Test
@@ -48,13 +50,4 @@ class ClassArrayTests {
     }
 
     record ArrayHolder(Object[] arr) {}
-
-    public static class Dice {
-        public Dice() {
-        }
-
-        public int roll() {
-            return 0;
-        }
-    }
 }

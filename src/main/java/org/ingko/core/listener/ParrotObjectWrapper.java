@@ -66,7 +66,6 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode, MANAGER extends 
         nodeMap.put(original, rootNode);
         while (!front.isEmpty()) {
             Object cur = front.poll();
-            System.out.println(cur);
             NODE curNode = nodeMap.get(cur);
             if (explored.contains(cur)) {
                 continue;
@@ -86,6 +85,7 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode, MANAGER extends 
                     parents.get(child).add(cur);
                     front.add(child);
                     // Build object graph
+                    // Use runtimeType due to type erasure
                     NODE childNode = nodeManager.createEmpty(recordComponent.getType());
                     nodeManager.addChild(curNode, childNode);
                     nodeMap.put(child, childNode);
@@ -159,7 +159,7 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode, MANAGER extends 
         }
     }
 
-    public <T> WrapResult<T, NODE> createRoot(Object original, Class<T> targetClass) {
+    public <T> WrapResult<T, NODE> createRoot(Object original, Class<?> targetClass) {
         /*
          *  1. DFS to find all objects in component.
          *  2. sort by child count

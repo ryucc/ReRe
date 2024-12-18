@@ -1,9 +1,4 @@
-package org.ingko.core.listener;
-
-import org.junit.jupiter.api.Test;
-import org.ingko.core.data.objects.EnvironmentNode;
-
-import java.util.HashMap;
+package org.ingko.core.listener.graph.returnOnly;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

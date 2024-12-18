@@ -64,7 +64,8 @@ public class EnvironmentObjectListener {
 
         for (int i = 0; i < allArguments.length; i++) {
             Object cur = allArguments[i];
-            Class<?> argClass = orignalMethod.getParameterTypes()[i];
+            //Class<?> argClass = orignalMethod.getParameterTypes()[i];
+            Class<?> argClass = cur.getClass();
             LocalSymbol accessSymbol = new LocalSymbol(LocalSymbol.Source.PARAMETER, i);
             UserObjectListener.ListenResult<?> result = userObjectListener.createRoot(cur,
                     argClass,
@@ -80,9 +81,9 @@ public class EnvironmentObjectListener {
         } catch (InvocationTargetException e) {
             ParrotObjectWrapper.WrapResult<?, EnvironmentNode> result = wrapper.createRoot(e.getTargetException(),
                     e.getTargetException().getClass());
-            edge.registerReturnNode(result.node());
+            edge.setReturnNode(result.node());
             edge.setResult(MethodResult.THROW);
-            source.addEdge(edge);
+            source.addMethodCall(edge);
             throw (Throwable) result.wrapped();
         } catch (IllegalAccessException e) {
             // Parrot does not have permissions to invoke the method.
@@ -110,10 +111,13 @@ public class EnvironmentObjectListener {
             Else return the reference.
          */
 
-        ParrotObjectWrapper.WrapResult<?, EnvironmentNode> result = wrapper.createRoot(returnValue, orignalMethod.getReturnType());
-        edge.registerReturnNode(result.node());
+        // Due to type erasure
+        Class<?> returnType = returnValue == null ? orignalMethod.getReturnType(): returnValue.getClass();
+
+        ParrotObjectWrapper.WrapResult<?, EnvironmentNode> result = wrapper.createRoot(returnValue, returnType);
+        edge.setReturnNode(result.node());
         edge.setResult(MethodResult.RETURN);
-        source.addEdge(edge);
+        source.addMethodCall(edge);
 
         return result.wrapped();
     }

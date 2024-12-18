@@ -47,11 +47,11 @@ public class EnvironmentMethodCall implements Serializable {
         return userMethodCalls;
     }
 
-    public List<Type> getParamTypes() {
+    public List<Type> getGenericParamTypes() {
         return paramTypes;
     }
 
-    public void registerReturnNode(EnvironmentNode node) {
+    public void setReturnNode(EnvironmentNode node) {
 
         mockReturn = node;
     }

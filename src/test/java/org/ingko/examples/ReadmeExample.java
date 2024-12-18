@@ -41,9 +41,9 @@ public class ReadmeExample {
         System.out.println("*/");
 
         MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.orange.examples", "create");
-        ParameterModSynthesizer parameterModSynthesizer = new ParameterModSynthesizer("org.katie.orange.examples", "create");
+        //ParameterModSynthesizer parameterModSynthesizer = new ParameterModSynthesizer("org.katie.orange.examples", "create");
         System.out.println(mockitoSynthesizer.generateMockito(environmentObjectListener));
-        System.out.println(parameterModSynthesizer.generateMockito(environmentObjectListener.getRoot()));
+        //System.out.println(parameterModSynthesizer.generateMockito(environmentObjectListener.getRoot()));
     }
 
     public static class PrivateDice {

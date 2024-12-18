@@ -14,7 +14,6 @@ import java.nio.file.Path;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
-@Disabled
 public class ExampleTests {
     private static final boolean RESET_TESTS = false;
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();

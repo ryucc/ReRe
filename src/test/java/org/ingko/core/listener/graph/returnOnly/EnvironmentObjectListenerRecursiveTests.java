@@ -1,6 +1,7 @@
-package org.ingko.core.listener;
+package org.ingko.core.listener.graph.returnOnly;
 
 import org.ingko.core.data.objects.EnvironmentNode;
+import org.ingko.core.listener.EnvironmentObjectListener;
 import org.ingko.core.listener.testUtils.GraphCompare;
 import org.junit.jupiter.api.Test;
 import org.ingko.core.data.methods.EnvironmentMethodCall;
@@ -22,14 +23,14 @@ public class EnvironmentObjectListenerRecursiveTests {
         EnvironmentNode expectedRoot = EnvironmentNode.ofInternal(HttpClient.class);
         EnvironmentNode reponseEnvironmentNode = EnvironmentNode.ofInternal(HttpResponse.class);
         EnvironmentMethodCall getCall = new EnvironmentMethodCall(HttpClient.class.getMethod("get"));
-        getCall.registerReturnNode(reponseEnvironmentNode);
+        getCall.setReturnNode(reponseEnvironmentNode);
         getCall.setResult(MethodResult.RETURN);
-        expectedRoot.addEdge(getCall);
+        expectedRoot.addMethodCall(getCall);
         EnvironmentNode bodyEnvironmentNode = EnvironmentNode.ofPrimitive(String.class, "\"Hello World!\"");
         EnvironmentMethodCall getBodyCall = new EnvironmentMethodCall(HttpResponse.class.getMethod("getBody"));
-        getBodyCall.registerReturnNode(bodyEnvironmentNode);
+        getBodyCall.setReturnNode(bodyEnvironmentNode);
         getBodyCall.setResult(MethodResult.RETURN);
-        reponseEnvironmentNode.addEdge(getBodyCall);
+        reponseEnvironmentNode.addMethodCall(getBodyCall);
 
         GraphCompare graphCompare = new GraphCompare();
         assertThat(graphCompare.diffNode(root, expectedRoot)).isTrue();
