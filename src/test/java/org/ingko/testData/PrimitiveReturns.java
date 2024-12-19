@@ -1,10 +1,9 @@
 package org.ingko.testData;
 
 import org.ingko.core.data.methods.EnvironmentMethodCall;
-import org.ingko.core.data.methods.LocalSymbol;
 import org.ingko.core.data.methods.MethodResult;
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.EnvironmentObjectListener;
+import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
 import org.ingko.core.listener.testUtils.GraphCompare;
 import org.junit.jupiter.api.Test;
 

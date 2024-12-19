@@ -1,7 +1,7 @@
 package org.ingko.examples;
 
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.EnvironmentObjectListener;
+import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,13 +1,15 @@
-package org.ingko.core.listener;
+package org.ingko.core.listener.interceptor;
 
 import org.ingko.core.data.methods.EnvironmentMethodCall;
 import org.ingko.core.data.methods.LocalSymbol;
 import org.ingko.core.data.methods.MethodResult;
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.data.objects.UserNode;
+import org.ingko.core.listener.EnvironmentNodeManager;
 import org.ingko.core.listener.utils.EnvironmentObjectSpy;
 import org.ingko.core.listener.utils.UserObjectSpy;
 import org.ingko.core.listener.wrap.ParrotObjectWrapper;
+import org.ingko.core.listener.wrap.ParrotWrapResult;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,7 +20,7 @@ import java.util.List;
 TODO: better type inference
  */
 //@SuppressWarnings("unchecked")
-public class EnvironmentObjectListener {
+public class EnvironmentObjectListener implements ParrotMethodInterceptor<EnvironmentNode> {
     private final List<EnvironmentNode> roots;
 
     private final UserObjectListener userObjectListener;
@@ -35,7 +37,7 @@ public class EnvironmentObjectListener {
     }
 
     public <T> T createRoot(Object original, Class<T> targetClass) {
-        ParrotObjectWrapper.WrapResult<T, EnvironmentNode> result = wrapper.createRoot(original, targetClass);
+        ParrotWrapResult<T, EnvironmentNode> result = wrapper.createRoot(original, targetClass);
         roots.add(result.node());
         return result.wrapped();
     }
@@ -57,10 +59,7 @@ public class EnvironmentObjectListener {
             //Class<?> argClass = orignalMethod.getParameterTypes()[i];
             Class<?> argClass = cur.getClass();
             LocalSymbol accessSymbol = new LocalSymbol(LocalSymbol.Source.PARAMETER, i);
-            UserObjectListener.ListenResult<?> result = userObjectListener.createRoot(cur,
-                    argClass,
-                    edge,
-                    accessSymbol);
+            ParrotWrapResult<?, UserNode> result = userObjectListener.createRoot(cur, argClass, edge, accessSymbol);
             wrappedArguments[i] = result.wrapped();
             //params.add(result.userNode());
         }
@@ -69,7 +68,7 @@ public class EnvironmentObjectListener {
             orignalMethod.setAccessible(true);
             returnValue = orignalMethod.invoke(original, wrappedArguments);
         } catch (InvocationTargetException e) {
-            ParrotObjectWrapper.WrapResult<?, EnvironmentNode> result = wrapper.createRoot(e.getTargetException(),
+            ParrotWrapResult<?, EnvironmentNode> result = wrapper.createRoot(e.getTargetException(),
                     e.getTargetException().getClass());
             edge.setReturnNode(result.node());
             edge.setResult(MethodResult.THROW);
@@ -104,7 +103,7 @@ public class EnvironmentObjectListener {
         // Due to type erasure
         Class<?> returnType = returnValue == null ? orignalMethod.getReturnType() : returnValue.getClass();
 
-        ParrotObjectWrapper.WrapResult<?, EnvironmentNode> result = wrapper.createRoot(returnValue, returnType);
+        ParrotWrapResult<?, EnvironmentNode> result = wrapper.createRoot(returnValue, returnType);
         edge.setReturnNode(result.node());
         edge.setResult(MethodResult.RETURN);
         sourceNode.addMethodCall(edge);

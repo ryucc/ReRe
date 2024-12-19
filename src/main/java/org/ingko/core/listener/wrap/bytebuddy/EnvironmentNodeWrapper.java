@@ -1,24 +1,24 @@
-package org.ingko.core.listener.wrap;
+package org.ingko.core.listener.wrap.bytebuddy;
 
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.EnvironmentObjectListener;
 import org.ingko.core.listener.ObjectInitializer;
+import org.ingko.core.listener.interceptor.ParrotMethodInterceptor;
 import org.ingko.core.listener.utils.EnvironmentObjectSpy;
 import org.ingko.core.listener.utils.ObjectSpy;
-import org.ingko.core.listener.wrap.bytebuddy.ClassRepo;
+import org.ingko.core.listener.wrap.SingleNodeWrapper;
 
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-public class ByteBuddySingleEnvironmentNodeWrapper implements SingleNodeWrapper<EnvironmentNode> {
+public class EnvironmentNodeWrapper implements SingleNodeWrapper<EnvironmentNode> {
     private final ClassRepo classRepo;
 
-    public ByteBuddySingleEnvironmentNodeWrapper(EnvironmentObjectListener listener) {
+    public EnvironmentNodeWrapper(ParrotMethodInterceptor<EnvironmentNode> listener) {
         this.classRepo = new ClassRepo(new Listener(listener),
                 Map.of(EnvironmentObjectSpy.FIELD, EnvironmentObjectSpy.TYPE, ObjectSpy.FIELD, ObjectSpy.TYPE),
                 List.of(EnvironmentObjectSpy.class, ObjectSpy.class));
@@ -41,9 +41,9 @@ public class ByteBuddySingleEnvironmentNodeWrapper implements SingleNodeWrapper<
 
     public static class Listener {
 
-        private final EnvironmentObjectListener environmentObjectListener;
+        private final ParrotMethodInterceptor<EnvironmentNode> environmentObjectListener;
 
-        public Listener(EnvironmentObjectListener environmentObjectListener) {
+        public Listener(ParrotMethodInterceptor<EnvironmentNode> environmentObjectListener) {
             this.environmentObjectListener = environmentObjectListener;
         }
 

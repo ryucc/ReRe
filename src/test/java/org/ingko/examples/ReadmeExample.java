@@ -1,8 +1,7 @@
 package org.ingko.examples;
 
-import org.ingko.core.listener.EnvironmentObjectListener;
+import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
 import org.ingko.core.synthesizer.mockito.javafile.MockitoSynthesizer;
-import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
 
 import java.util.Random;
 

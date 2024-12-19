@@ -5,7 +5,7 @@ import org.ingko.core.data.methods.LocalSymbol;
 import org.ingko.core.data.methods.MethodResult;
 import org.ingko.core.data.methods.UserMethodCall;
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.EnvironmentObjectListener;
+import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
 import org.ingko.core.listener.testUtils.GraphCompare;
 import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
 import org.junit.jupiter.api.Test;

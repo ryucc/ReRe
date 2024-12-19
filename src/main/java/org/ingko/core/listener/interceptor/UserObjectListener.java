@@ -1,4 +1,4 @@
-package org.ingko.core.listener;
+package org.ingko.core.listener.interceptor;
 
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
@@ -11,11 +11,12 @@ import org.ingko.core.data.objects.ArrayMember;
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.data.objects.RecordMember;
 import org.ingko.core.data.objects.UserNode;
+import org.ingko.core.listener.EnvironmentNodeManager;
+import org.ingko.core.listener.UserNodeManager;
 import org.ingko.core.listener.utils.EnvironmentObjectSpy;
-import org.ingko.core.listener.utils.ObjectSpy;
 import org.ingko.core.listener.utils.UserObjectSpy;
 import org.ingko.core.listener.wrap.ParrotObjectWrapper;
-import org.ingko.core.listener.wrap.bytebuddy.ClassRepo;
+import org.ingko.core.listener.wrap.ParrotWrapResult;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -24,28 +25,24 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
-public class UserObjectListener {
+public class UserObjectListener implements ParrotMethodInterceptor<UserNode> {
 
     private final ParrotObjectWrapper<EnvironmentNode, EnvironmentNodeManager> environmentObjectWrapper;
     private final ParrotObjectWrapper<UserNode, UserNodeManager> userObjectWrapper;
 
-    private final ClassRepo classRepo;
-
     public UserObjectListener(ParrotObjectWrapper<EnvironmentNode, EnvironmentNodeManager> environmentObjectWrapper) {
         this.environmentObjectWrapper = environmentObjectWrapper;
-        classRepo = new ClassRepo(this,
-                Map.of(ObjectSpy.FIELD, ObjectSpy.TYPE,
-                        UserObjectSpy.FIELD, UserObjectSpy.TYPE),
-                List.of(ObjectSpy.class, UserObjectSpy.class));
-        this.userObjectWrapper = new ParrotObjectWrapper<>(new UserNodeManager(classRepo));
+        this.userObjectWrapper = new ParrotObjectWrapper<>(new UserNodeManager(this));
     }
 
-    public ListenResult<?> createRoot(Object original, Class<?> type, EnvironmentMethodCall scope, LocalSymbol symbol) {
-        ParrotObjectWrapper.WrapResult<?, UserNode> wrapped = userObjectWrapper.createRoot(original, type);
+    public ParrotWrapResult<?, UserNode> createRoot(Object original,
+                                                    Class<?> type,
+                                                    EnvironmentMethodCall scope,
+                                                    LocalSymbol symbol) {
+        ParrotWrapResult<?, UserNode> wrapped = userObjectWrapper.createRoot(original, type);
 
         // DFS
         Queue<UserNode> nodeQueue = new ArrayDeque<>();
@@ -53,25 +50,25 @@ public class UserObjectListener {
         nodeQueue.add(wrapped.node());
         wrapped.node().setSymbol(symbol);
 
-        while(!nodeQueue.isEmpty()) {
+        while (!nodeQueue.isEmpty()) {
             UserNode cur = nodeQueue.poll();
             cur.setScope(scope);
             explored.add(cur);
-            if(cur.getDeclaredClass().isArray()) {
-                for(int i = 0; i < cur.getDirectChildren().size(); i++) {
+            if (cur.getDeclaredClass().isArray()) {
+                for (int i = 0; i < cur.getDirectChildren().size(); i++) {
                     UserNode child = cur.getDirectChildren().get(i);
-                    if(!explored.contains(child)) {
+                    if (!explored.contains(child)) {
                         LocalSymbol childSymbol = cur.getSymbol().copy();
                         childSymbol.appendPath(new ArrayMember(i));
                         child.setSymbol(childSymbol);
                         nodeQueue.add(child);
                     }
                 }
-            } else if(cur.getDeclaredClass().isRecord()) {
+            } else if (cur.getDeclaredClass().isRecord()) {
                 RecordComponent[] recordComponents = cur.getDeclaredClass().getRecordComponents();
-                for(int i = 0; i < cur.getDirectChildren().size(); i++) {
+                for (int i = 0; i < cur.getDirectChildren().size(); i++) {
                     UserNode child = cur.getDirectChildren().get(i);
-                    if(!explored.contains(child)) {
+                    if (!explored.contains(child)) {
                         LocalSymbol childSymbol = cur.getSymbol().copy();
                         RecordComponent component = recordComponents[i];
                         childSymbol.appendPath(new RecordMember(component.getName()));
@@ -81,15 +78,13 @@ public class UserObjectListener {
                 }
             }
         }
-        return new ListenResult<>(wrapped.wrapped(), wrapped.node());
+        return new ParrotWrapResult<>(wrapped.wrapped(), wrapped.node());
     }
 
-    @RuntimeType
-    public Object intercept(@AllArguments Object[] allArguments,
-                            @Origin Method orignalMethod,
-                            @This Object self) throws Throwable {
-        Object original = ((UserObjectSpy) self).getParrotOriginObject();
-
+    public Object interceptInterface(Object original,
+                                     Method orignalMethod,
+                                     UserNode userNode,
+                                     Object[] allArguments) throws Throwable {
         List<EnvironmentNode> environmentNodes = new ArrayList<>();
         List<Object> wrappedArguments = new ArrayList<>();
         List<LocalSymbol> parameterSourceList = new ArrayList<>();
@@ -106,7 +101,8 @@ public class UserObjectListener {
                 // Let's assume environments are stateless first... handle this later.
                 System.err.println("User method call received environment object as parameter.");
             } else {
-                ParrotObjectWrapper.WrapResult<?, EnvironmentNode> listenResult = environmentObjectWrapper.createRoot(arg, arg.getClass());
+                ParrotWrapResult<?, EnvironmentNode> listenResult = environmentObjectWrapper.createRoot(arg,
+                        arg.getClass());
 
                 int curIndex = environmentNodes.size();
                 LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.LOCAL_ENV, curIndex);
@@ -118,7 +114,6 @@ public class UserObjectListener {
         }
         // register method call to scope
 
-        UserNode userNode = ((UserObjectSpy) self).getParrotUserNode();
         EnvironmentMethodCall scopeMethod = userNode.getScope();
 
         {
@@ -152,13 +147,13 @@ public class UserObjectListener {
                 ret = ((UserObjectSpy) ret).getParrotOriginObject();
             }
             LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.RETURN_VALUE, currentReturnIndex);
-            ListenResult<?> result = createRoot(ret, orignalMethod.getReturnType(), scopeMethod, symbol);
+            ParrotWrapResult<?, UserNode> result = createRoot(ret, orignalMethod.getReturnType(), scopeMethod, symbol);
             return result.wrapped();
         } catch (InvocationTargetException e) {
             Throwable real = e.getTargetException();
             LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.THROW, currentReturnIndex);
-            ListenResult<?> result = createRoot(real, real.getClass(), scopeMethod, symbol);
-            result.userNode().setSymbol(symbol);
+            ParrotWrapResult<?, UserNode> result = createRoot(real, real.getClass(), scopeMethod, symbol);
+            result.node().setSymbol(symbol);
             throw (Throwable) result.wrapped();
         } catch (IllegalAccessException e) {
             // Parrot does not have permissions to invoke the method.
@@ -167,6 +162,13 @@ public class UserObjectListener {
         }
     }
 
-    public record ListenResult<T>(T wrapped, UserNode userNode) {
+    @RuntimeType
+    public Object intercept(@AllArguments Object[] allArguments,
+                            @Origin Method orignalMethod,
+                            @This Object self) throws Throwable {
+        Object original = ((UserObjectSpy) self).getParrotOriginObject();
+        UserNode userNode = ((UserObjectSpy) self).getParrotUserNode();
+
+        return interceptInterface(original, orignalMethod, userNode, allArguments);
     }
 }

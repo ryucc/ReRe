@@ -1,7 +1,7 @@
 package org.ingko.examples;
 
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.EnvironmentObjectListener;
+import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
 import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
 
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
 package org.ingko.core.listener.graph.returnOnly;
 
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.EnvironmentObjectListener;
+import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
 import org.ingko.core.listener.testUtils.GraphCompare;
 import org.junit.jupiter.api.Test;
 import org.ingko.core.data.methods.EnvironmentMethodCall;

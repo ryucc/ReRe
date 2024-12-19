@@ -6,7 +6,7 @@ import com.palantir.javapoet.JavaFile;
 import com.palantir.javapoet.MethodSpec;
 import com.palantir.javapoet.TypeSpec;
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.EnvironmentObjectListener;
+import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
 import org.ingko.core.synthesizer.NamingStrategy;
 import org.ingko.core.synthesizer.OrderedNaming;
 import org.ingko.core.synthesizer.mockito.CodeUtils;

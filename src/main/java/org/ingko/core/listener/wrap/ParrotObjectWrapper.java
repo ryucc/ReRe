@@ -161,7 +161,7 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode, MANAGER extends 
         }
     }
 
-    public <T> WrapResult<T, NODE> createRoot(Object original, Class<?> targetClass) {
+    public <T> ParrotWrapResult<T, NODE> createRoot(Object original, Class<?> targetClass) {
         /*
          *  1. DFS to find all objects in component.
          *  2. sort by child count
@@ -169,24 +169,21 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode, MANAGER extends 
          */
         if (original == null) {
             NODE node = nodeManager.createNull(targetClass);
-            return new WrapResult<>(null, node);
+            return new ParrotWrapResult<>(null, node);
         }
         try {
             TopSortData<NODE> data = buildGraph(original, targetClass);
             Map<Object, Object> stuff = topOrderInit(data);
             postAssignChildren(stuff);
             T wrapped = (T) stuff.get(original);
-            return new WrapResult<>(wrapped, data.nodeMap().get(original));
+            return new ParrotWrapResult<>(wrapped, data.nodeMap().get(original));
         } catch (InitializationException e) {
-            return new WrapResult<>((T) original, nodeManager.createFailed(targetClass, ""));
+            return new ParrotWrapResult<>((T) original, nodeManager.createFailed(targetClass, ""));
         }
     }
 
     record TopSortData<NODE>(Queue<Object> topologicalReady, Map<Object, Integer> childCount,
                              Map<Object, List<Object>> parents, Map<Object, NODE> nodeMap) {
-    }
-
-    public record WrapResult<T, NODE>(T wrapped, NODE node) {
     }
 
 }
