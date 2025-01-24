@@ -11,14 +11,19 @@ import java.lang.reflect.Method;
 @SuppressWarnings("unchecked")
 public class MockitoSingleNodeWrapper<NODE> implements SingleNodeWrapper<NODE> {
     private final ParrotMethodInterceptor<NODE> listener;
-    public MockitoSingleNodeWrapper(ParrotMethodInterceptor<NODE> listener) {
+    private final Class<?> extraInterface;
+
+    public MockitoSingleNodeWrapper(ParrotMethodInterceptor<NODE> listener, Class<?> extraInterface) {
         this.listener = listener;
+        this.extraInterface = extraInterface;
     }
 
     @Override
     public <T> T initiateSpied(T returnValue, NODE node) {
         return (T) Mockito.mock(returnValue.getClass(),
-                Mockito.withSettings().defaultAnswer(new EnvAns(returnValue, node)).extraInterfaces(EnvironmentObjectSpy.class));
+                Mockito.withSettings()
+                        .defaultAnswer(new EnvAns(returnValue, node))
+                        .extraInterfaces(extraInterface));
     }
 
     /*
@@ -41,9 +46,9 @@ public class MockitoSingleNodeWrapper<NODE> implements SingleNodeWrapper<NODE> {
                 TODO: code smell.
                 This piece only applies to UserNodes
              */
-            if(method.getName().equals("getParrotOriginObject")) {
+            if (method.getName().equals("getParrotOriginObject")) {
                 return original;
-            } else if(method.getName().equals("getParrotUserNode")) {
+            } else if (method.getName().equals("getParrotUserNode")) {
                 return node;
             }
             return listener.interceptInterface(original, method, node, invocationOnMock.getRawArguments());

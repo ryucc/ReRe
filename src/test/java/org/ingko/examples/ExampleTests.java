@@ -1,8 +1,15 @@
 package org.ingko.examples;
 
+import org.ingko.examples.arrayExample.ArrayExample;
+import org.ingko.examples.exception.ThrowExample;
+import org.ingko.examples.genericTemplate.TemplateExample;
+import org.ingko.examples.identityFunction.IdentityFunctionExample;
+import org.ingko.examples.parameterMatching.ParameterMatchingExample;
+import org.ingko.examples.readme.ReadmeExample;
+import org.ingko.examples.recordExample.RecordExample;
+import org.ingko.examples.sort.SortExample;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
@@ -37,7 +44,7 @@ public class ExampleTests {
     public void testReadmeExample() throws IOException {
         String[] args = {};
         ReadmeExample.main(args);
-        Path output = Path.of("src/test/resources/ReadmeOutput.expected.java");
+        Path output = Path.of("src/test/java/org/ingko/examples/readme/ReadmeExampleExpected.java");
         if (RESET_TESTS) {
             Files.writeString(output, outContent.toString());
             return;
@@ -47,10 +54,34 @@ public class ExampleTests {
     }
 
     @Test
+    public void testArrayExample() throws IOException {
+        String[] args = {};
+        ArrayExample.main(args);
+        Path output = Path.of("src/test/java/org/ingko/examples/arrayExample/ArrayExampleExpected.java");
+        if (true) {
+            Files.writeString(output, outContent.toString());
+            return;
+        }
+        String expected = Files.readString(output);
+        assertThat(outContent.toString()).isEqualTo(expected);
+    }
+    @Test
     public void testRecordExample() throws IOException {
         String[] args = {};
         RecordExample.main(args);
-        Path output = Path.of("src/test/resources/RecordExample.expected.java");
+        Path output = Path.of("src/test/java/org/ingko/examples/recordExample/RecordExampleExpected.java");
+        if (RESET_TESTS) {
+            Files.writeString(output, outContent.toString());
+            return;
+        }
+        String expected = Files.readString(output);
+        assertThat(outContent.toString()).isEqualTo(expected);
+    }
+    @Test
+    public void testIdentityFunctionExample() throws IOException {
+        String[] args = {};
+        IdentityFunctionExample.main(args);
+        Path output = Path.of("src/test/java/org/ingko/examples/identityFunction/IdentityFunctionExampleExpected.java");
         if (RESET_TESTS) {
             Files.writeString(output, outContent.toString());
             return;
@@ -62,8 +93,8 @@ public class ExampleTests {
     @Test
     public void testParameterExample() throws IOException {
         String[] args = {};
-        ParameterExample.main(args);
-        Path output = Path.of("src/test/resources/ParameterExample.expected.java");
+        ParameterMatchingExample.main(args);
+        Path output = Path.of("src/test/java/org/ingko/examples/parameterMatching/ParameterMatchingExampleExpected.java");
         if (RESET_TESTS) {
             Files.writeString(output, outContent.toString());
             return;
@@ -76,7 +107,7 @@ public class ExampleTests {
     public void testTemplateExample() throws IOException {
         String[] args = {};
         TemplateExample.main(args);
-        Path output = Path.of("src/test/resources/TemplateExample.expected.java");
+        Path output = Path.of("src/test/java/org/ingko/examples/genericTemplate/TemplateExampleExpected.java");
         if (RESET_TESTS) {
             Files.writeString(output, outContent.toString());
             return;
@@ -86,12 +117,22 @@ public class ExampleTests {
     }
 
     @Test
+    public void testSortExample() throws IOException {
+        String[] args = {};
+        SortExample.main(args);
+        Path output = Path.of("src/test/java/org/ingko/examples/sort/SortExampleExpected.java");
+        if (RESET_TESTS) {
+            Files.writeString(output, outContent.toString());
+            return;
+        }
+        String expected = Files.readString(output);
+        assertThat(outContent.toString()).isEqualTo(expected);
+    }
+    @Test
     public void testThrowExample() throws Exception {
         String[] args = {};
         ThrowExample.main(args);
-        Path output = Path.of("src/test/resources/ThrowExample.expected.java");
-        Path actualoutput = Path.of("src/test/resources/ThrowExample.actual.java");
-        Files.writeString(actualoutput, outContent.toString());
+        Path output = Path.of("src/test/java/org/ingko/examples/exception/ThrowExampleExpected.java");
         if (RESET_TESTS) {
             Files.writeString(output, outContent.toString());
             return;
@@ -105,6 +146,6 @@ public class ExampleTests {
                 diff++;
             }
         }
-        assertThat(diff).isEqualTo(1);
+        assertThat(diff).isEqualTo(0);
     }
 }

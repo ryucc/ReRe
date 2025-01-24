@@ -1,7 +1,7 @@
-package org.ingko.examples;
+package org.ingko.examples.readme;
 
 import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.javafile.MockitoSynthesizer;
+import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
 
 import java.util.Random;
 
@@ -34,14 +34,17 @@ public class ReadmeExample {
 
 
         System.out.println("/*");
+        wrappedDice.chill();
         for (int i = 1; i <= 5; i++) {
             System.out.println("Rolled " + wrappedDice.roll());
         }
         System.out.println("*/");
 
-        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.orange.examples", "create");
+        ParameterModSynthesizer mockitoSynthesizer = new ParameterModSynthesizer("org.ingko.examples.readme",
+                "create",
+                "ReadmeExampleExpected");
         //ParameterModSynthesizer parameterModSynthesizer = new ParameterModSynthesizer("org.katie.orange.examples", "create");
-        System.out.println(mockitoSynthesizer.generateMockito(environmentObjectListener));
+        System.out.println(mockitoSynthesizer.generateMockito(environmentObjectListener.getRoot()));
         //System.out.println(parameterModSynthesizer.generateMockito(environmentObjectListener.getRoot()));
     }
 
@@ -51,6 +54,8 @@ public class ReadmeExample {
         public PrivateDice() {
             rand = new Random(1);
         }
+
+        public void chill(){}
 
         public int roll() {
             return rand.nextInt(6) + 1;

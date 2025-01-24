@@ -93,6 +93,9 @@ public class MagicNumbersSimple {
             methodCall.setReturnNode(EnvironmentNode.ofInternal(MyInt.class));
             root.addMethodCall(methodCall);
 
+            methodCall.setReturnClass(MyInt.class);
+            methodCall.setParamClasses(List.of(MyInt.class));
+
             return root;
         } catch (Exception e) {
             throw new RuntimeException();

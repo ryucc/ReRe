@@ -5,20 +5,19 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Signature implements Serializable {
     private final String returnType;
     private final Type returnClass;
     private final String methodName;
     private final List<Type> paramTypes;
-    private final List<Class<?>> paramClasses;
+    private List<Class<?>> paramClasses;
+
     public Signature(Method method) {
         this.methodName = method.getName();
         this.returnType = method.getReturnType().getName();
         this.returnClass = method.getGenericReturnType();
         this.paramTypes = Arrays.asList(method.getGenericParameterTypes());
-        this.paramClasses = Arrays.asList(method.getParameterTypes());
     }
 
     public Type getReturnClass() {
@@ -27,6 +26,10 @@ public class Signature implements Serializable {
 
     public List<Class<?>> getParamClasses() {
         return paramClasses;
+    }
+
+    public void setParamClasses(List<Class<?>> paramClasses) {
+        this.paramClasses = paramClasses;
     }
 
     public String getReturnType() {

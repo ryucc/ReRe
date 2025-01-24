@@ -1,16 +1,17 @@
 package org.ingko.core.synthesizer.mockito.javafile;
 
+import com.palantir.javapoet.FieldSpec;
 import com.palantir.javapoet.JavaFile;
 import com.palantir.javapoet.MethodSpec;
 import com.palantir.javapoet.TypeSpec;
 import org.ingko.core.data.methods.EnvironmentMethodCall;
 import org.ingko.core.data.methods.Signature;
 import org.ingko.core.data.objects.EnvironmentNode;
+import org.ingko.core.serde.DefaultSerde;
 import org.ingko.core.synthesizer.NamingStrategy;
 import org.ingko.core.synthesizer.OrderedNaming;
 import org.ingko.core.synthesizer.mockito.nodes.EnvironmentNodeSynthesizer;
 import org.ingko.core.synthesizer.mockito.nodes.ParamModdingNodeSynthesizer;
-import org.ingko.core.synthesizer.mockito.nodes.ReturnOnlyNodeSynthesizer;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -27,6 +28,7 @@ public class ParameterModSynthesizer {
 
     private final String packageName;
     private final String methodName;
+    private final String fileName;
     private final NamingStrategy namingStrategy;
 
     private final EnvironmentNodeSynthesizer environmentNodeSynthesizer;
@@ -34,12 +36,16 @@ public class ParameterModSynthesizer {
     private int environmentId;
     private int answerId;
 
-    public ParameterModSynthesizer(String packageName, String methodName) {
+    public ParameterModSynthesizer(String packageName, String methodName, String fileName) {
         this.packageName = packageName;
         this.methodName = methodName;
         namingStrategy = new OrderedNaming();
         environmentId = 0;
+        this.fileName = fileName;
         this.environmentNodeSynthesizer = new ParamModdingNodeSynthesizer();
+    }
+    public ParameterModSynthesizer(String packageName, String methodName) {
+        this(packageName, methodName, "MockCreator");
     }
 
     public static void declareMock(Class<?> clazz, String name, MethodSpec.Builder methodBuilder) {
@@ -60,11 +66,15 @@ public class ParameterModSynthesizer {
 
     public String generateMockito(EnvironmentNode root) {
 
-        String fileName = "Mock" + "Creator";
         TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(fileName).addModifiers(Modifier.PUBLIC);
 
         environmentNodeSynthesizer.generateEnvironmentNode(typeBuilder, root);
 
+        FieldSpec defaultSerde = FieldSpec.builder(DefaultSerde.class, "defaultSerde")
+                .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+                .initializer("new $T()", DefaultSerde.class)
+                .build();
+        typeBuilder.addField(defaultSerde);
         /*
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("testMethodName")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
@@ -79,9 +89,9 @@ public class ParameterModSynthesizer {
                 .addStaticImport(ArgumentMatchers.class, "*")
                 .addStaticImport(Mockito.class, "doReturn")
                 .addStaticImport(Mockito.class, "doAnswer")
+                .addStaticImport(Mockito.class, "doNothing")
                 .addStaticImport(Mockito.class, "mock")
                 .build();
-        System.out.println(javaFile);
         return javaFile.toString();
     }
 

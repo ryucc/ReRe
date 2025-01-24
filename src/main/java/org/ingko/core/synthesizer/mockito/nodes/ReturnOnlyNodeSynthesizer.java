@@ -40,7 +40,7 @@ public class ReturnOnlyNodeSynthesizer implements EnvironmentNodeSynthesizer {
             List<String> answerList = new ArrayList<>();
             for (EnvironmentMethodCall methodCall : methodGroup.methodCalls()) {
                 String returnName = generateEnvironmentNode(typeBuilder, methodCall.getDest()).methodName();
-                String doAnswer = String.format("doReturn(%s())", returnName);
+                String doAnswer = String.format("doReturn(%s)", returnName);
                 answerList.add(doAnswer);
             }
             generateDo(methodBuilder, answerList, methodGroup.signature());

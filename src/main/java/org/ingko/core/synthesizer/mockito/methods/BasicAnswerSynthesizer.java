@@ -62,12 +62,15 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
     public SynthResult generateAnswer(TypeSpec.Builder typeBuilder, EnvironmentMethodCall rootMethodCall) {
         String answerName = "getAnswer" + answerId;
         answerId++;
+        /*
+
+         */
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(answerName)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .returns(ParameterizedTypeName.get(Answer.class,
-                        ClassUtils.getWrapped(rootMethodCall.getSignature().getReturnClass())));
+                        ClassUtils.getWrapped(rootMethodCall.getReturnClass())));
         methodBuilder.beginControlFlow("return ($T invocation) ->", InvocationOnMock.class);
-        List<Type> paramTypes = rootMethodCall.getGenericParamTypes();
+        List<Class<?>> paramTypes = rootMethodCall.getSignature().getParamClasses();
         for (int i = 0; i < paramTypes.size(); i++) {
             String paramName = symbolNamer(new LocalSymbol(LocalSymbol.Source.PARAMETER, i));
             Type rawType = paramTypes.get(i);
@@ -92,7 +95,7 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
             EnvironmentNode returnNode = rootMethodCall.getDest();
             if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV && !returnNode.isTerminal()) {
                 String method = environmentNodeSynthesizer.generateEnvironmentNode(typeBuilder, rootMethodCall.getDest()).methodName();
-                methodBuilder.addStatement("return $L()", method);
+                methodBuilder.addStatement("return $L", method);
             } else if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV && returnNode.isTerminal()) {
                 methodBuilder.addStatement("return $L", returnNode.getValue());
             } else {
@@ -124,7 +127,7 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
                 params.add(locals.get(symbol.getIndex()).getValue());
             } else if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV) {
                 String method = environmentNodeSynthesizer.generateEnvironmentNode(typeBuilder, locals.get(i)).methodName();
-                params.add(method + "()");
+                params.add(method);
             } else {
                 params.add(symbolNamer(symbol));
             }

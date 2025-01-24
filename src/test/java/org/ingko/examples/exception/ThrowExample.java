@@ -1,7 +1,7 @@
-package org.ingko.examples;
+package org.ingko.examples.exception;
 
 import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.javafile.MockitoSynthesizer;
+import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
 
 import java.util.Random;
 
@@ -14,16 +14,21 @@ public class ThrowExample {
         ErrorDice wrappedDice = environmentObjectListener.createRoot(dice, ErrorDice.class);
 
 
+        System.out.println("/*");
         for (int i = 1; i <= 5; i++) {
             try {
                 System.out.println("Rolled " + wrappedDice.roll());
             } catch (Exception e) {
+                System.out.println("Exception thrown.");
                 e.printStackTrace();
             }
         }
+        System.out.println("*/");
 
-        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.parrot.examples", "create");
-        String result = mockitoSynthesizer.generateMockito(environmentObjectListener);
+        ParameterModSynthesizer mockitoSynthesizer = new ParameterModSynthesizer("org.ingko.examples.exception",
+                "create",
+                "ThrowExampleExpected");
+        String result = mockitoSynthesizer.generateMockito(environmentObjectListener.getRoot());
         System.out.println(result);
     }
 

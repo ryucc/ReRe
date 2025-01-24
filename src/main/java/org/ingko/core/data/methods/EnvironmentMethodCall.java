@@ -22,6 +22,10 @@ public class EnvironmentMethodCall implements Serializable {
      */
 
     private final Signature signature;
+
+    public void setParamClasses(List<Class<?>> paramClasses) {
+        this.signature.setParamClasses(paramClasses);
+    }
     // Dynamic
     private final UUID uuid;
     private final List<UserMethodCall> userMethodCalls;
@@ -34,6 +38,7 @@ public class EnvironmentMethodCall implements Serializable {
         envObj.modifyObject(obj);
      */
     private LocalSymbol returnSymbol;
+    private Class<?> returnClass;
     private MethodResult result;
 
     public EnvironmentMethodCall(Method method) {
@@ -41,6 +46,14 @@ public class EnvironmentMethodCall implements Serializable {
         this.uuid = UUID.randomUUID();
         this.signature = new Signature(method);
         this.userMethodCalls = new ArrayList<>();
+    }
+
+    public Class<?> getReturnClass() {
+        return returnClass;
+    }
+
+    public void setReturnClass(Class<?> returnClass) {
+        this.returnClass = returnClass;
     }
 
     public List<UserMethodCall> getUserMethodCalls() {

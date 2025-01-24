@@ -1,7 +1,7 @@
-package org.ingko.examples;
+package org.ingko.examples.recordExample;
 
 import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.javafile.MockitoSynthesizer;
+import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
 
 import java.util.Random;
 
@@ -13,13 +13,17 @@ public class RecordExample {
         EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
         TwoDice wrappedDice = environmentObjectListener.createRoot(twoDice, TwoDice.class);
 
+        System.out.println("/*");
         for (int i = 1; i <= 5; i++) {
             System.out.println("Rolled " + wrappedDice.dice1().roll());
             System.out.println("Rolled " + wrappedDice.dice2().roll());
         }
+        System.out.println("*/");
 
-        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.orange.examples", "create");
-        System.out.println(mockitoSynthesizer.generateMockito(environmentObjectListener));
+        ParameterModSynthesizer mockitoSynthesizer = new ParameterModSynthesizer("org.ingko.examples.recordExample",
+                "create",
+                "RecordExampleExpected");
+        System.out.println(mockitoSynthesizer.generateMockito(environmentObjectListener.getRoot()));
     }
 
     public static class Dice {

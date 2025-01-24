@@ -3,6 +3,7 @@ package org.ingko.core.listener;
 import org.ingko.core.data.objects.UserNode;
 import org.ingko.core.listener.interceptor.ParrotMethodInterceptor;
 import org.ingko.core.listener.utils.ClassUtils;
+import org.ingko.core.listener.utils.UserObjectSpy;
 import org.ingko.core.listener.wrap.MockitoSingleNodeWrapper;
 import org.ingko.core.listener.wrap.SingleNodeWrapper;
 
@@ -12,7 +13,7 @@ public class UserNodeManager implements NodeManager<UserNode> {
 
     public UserNodeManager(ParrotMethodInterceptor<UserNode> listener) {
         //this.wrapper = new ByteBuddyUserNodeWrapper(listener);
-        this.wrapper = new MockitoSingleNodeWrapper<>(listener);
+        this.wrapper = new MockitoSingleNodeWrapper<>(listener, UserObjectSpy.class);
     }
 
     @Override

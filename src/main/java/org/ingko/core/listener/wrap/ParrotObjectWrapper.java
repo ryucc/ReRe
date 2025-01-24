@@ -96,7 +96,9 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode, MANAGER extends 
                 if (cur.getClass().isArray()) {
                     for (int i = 0; i < Array.getLength(cur); i++) {
                         Object child = Array.get(cur, i);
-                        NODE childNode = nodeManager.createEmpty(targetClass);
+                        // TODO when null, get from cur.getClass().getComponentTpe
+                        Class<?> childClass = child.getClass();
+                        NODE childNode = nodeManager.createEmpty(childClass);
                         nodeManager.addChild(curNode, childNode);
                         nodeMap.put(child, childNode);
                         front.add(child);
@@ -172,7 +174,7 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode, MANAGER extends 
             return new ParrotWrapResult<>(null, node);
         }
         try {
-            TopSortData<NODE> data = buildGraph(original, targetClass);
+            TopSortData<NODE> data = buildGraph(original, original.getClass());
             Map<Object, Object> stuff = topOrderInit(data);
             postAssignChildren(stuff);
             T wrapped = (T) stuff.get(original);

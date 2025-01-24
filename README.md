@@ -1,5 +1,7 @@
 # Java's Little Parrot
 
+TODO: always handle null as a literal
+
 ## Introduction
 
 Java's little parrot is a tool to record and replay (most) Java objects.

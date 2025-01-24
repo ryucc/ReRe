@@ -3,8 +3,11 @@ package org.ingko.core.listener;
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.interceptor.ParrotMethodInterceptor;
 import org.ingko.core.listener.utils.ClassUtils;
+import org.ingko.core.listener.utils.EnvironmentObjectSpy;
 import org.ingko.core.listener.wrap.MockitoSingleNodeWrapper;
 import org.ingko.core.listener.wrap.SingleNodeWrapper;
+import org.ingko.core.listener.wrap.bytebuddy.EnvironmentNodeWrapper;
+import org.ingko.core.listener.wrap.javaproxy.JavaProxySingleNodeWrapper;
 import org.ingko.core.serde.DefaultSerde;
 import org.ingko.core.serde.exceptions.SerializationException;
 
@@ -14,8 +17,9 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
     //private final MockitoSingleEnvironmentNodeWrapper wrapper;
 
     public EnvironmentNodeManager(ParrotMethodInterceptor<EnvironmentNode> listener) {
-        //this.wrapper = new ByteBuddySingleEnvironmentNodeWrapper(listener);
-        this.wrapper = new MockitoSingleNodeWrapper<>(listener);
+        //this.wrapper = new EnvironmentNodeWrapper(listener);
+        //this.wrapper = new JavaProxySingleNodeWrapper<>(listener);
+        this.wrapper = new MockitoSingleNodeWrapper<>(listener, EnvironmentObjectSpy.class);
     }
 
     @Override

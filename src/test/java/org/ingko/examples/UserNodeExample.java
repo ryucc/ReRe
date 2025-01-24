@@ -19,7 +19,7 @@ public class UserNodeExample {
         MyRecord myRecord = new MyRecord(myClasses);
         wrapped.modify(myRecord);
         EnvironmentNode node = environmentObjectListener.getRoot();
-        new ParameterModSynthesizer("pack", "method").generateMockito(node);
+        System.out.println(new ParameterModSynthesizer("pack", "method").generateMockito(node));
     }
 
     public static class MyClass {

@@ -6,6 +6,7 @@ import org.ingko.core.listener.ObjectInitializer;
 import org.ingko.core.listener.exceptions.InitializationException;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

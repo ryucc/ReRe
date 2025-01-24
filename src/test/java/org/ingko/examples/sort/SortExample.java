@@ -1,4 +1,4 @@
-package org.ingko.examples;
+package org.ingko.examples.sort;
 
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
@@ -9,18 +9,22 @@ import java.util.List;
 
 public class SortExample {
     public static void main(String[] args) {
-        List<Integer> arr = new ArrayList<>(List.of(3, 1));
+        List<Integer> arr = new ArrayList<>(List.of(3, 1, 2,4));
         BubbleSorter bubbleSorter = new BubbleSorter();
 
         EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
         BubbleSorter wrapped = environmentObjectListener.createRoot(bubbleSorter, bubbleSorter.getClass());
         wrapped.sort(arr);
-        for (int i = 0; i < 2; i++) {
+        System.out.println("/*");
+        for (int i = 0; i < 4; i++) {
             System.out.println(arr.get(i));
         }
-        wrapped.sort(arr);
+        System.out.println("*/");
         EnvironmentNode node = environmentObjectListener.getRoot();
-        new ParameterModSynthesizer("pack", "method").generateMockito(node);
+        System.out.println(new ParameterModSynthesizer(
+                "org.ingko.examples.sortExample",
+                "method",
+                "SortExampleExpected").generateMockito(node));
     }
 
     public static class BubbleSorter {

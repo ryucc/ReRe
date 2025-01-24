@@ -14,6 +14,7 @@ import org.ingko.core.listener.wrap.ParrotWrapResult;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -52,6 +53,8 @@ public class EnvironmentObjectListener implements ParrotMethodInterceptor<Enviro
         Object returnValue;
 
         Object[] wrappedArguments = new Object[allArguments.length];
+        Class<?>[] argClasses = new Class[allArguments.length];
+
         //List<UserNode> params = new ArrayList<>();
 
         for (int i = 0; i < allArguments.length; i++) {
@@ -61,8 +64,10 @@ public class EnvironmentObjectListener implements ParrotMethodInterceptor<Enviro
             LocalSymbol accessSymbol = new LocalSymbol(LocalSymbol.Source.PARAMETER, i);
             ParrotWrapResult<?, UserNode> result = userObjectListener.createRoot(cur, argClass, edge, accessSymbol);
             wrappedArguments[i] = result.wrapped();
+            argClasses[i] = argClass;
             //params.add(result.userNode());
         }
+        edge.setParamClasses(Arrays.asList(argClasses));
 
         try {
             orignalMethod.setAccessible(true);
@@ -105,6 +110,7 @@ public class EnvironmentObjectListener implements ParrotMethodInterceptor<Enviro
 
         ParrotWrapResult<?, EnvironmentNode> result = wrapper.createRoot(returnValue, returnType);
         edge.setReturnNode(result.node());
+        edge.setReturnClass(returnType);
         edge.setResult(MethodResult.RETURN);
         sourceNode.addMethodCall(edge);
 
