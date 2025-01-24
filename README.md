@@ -135,8 +135,6 @@ Array + Record loops
 
 
 TODO:
-array support
-loop detection
 custom serialization
 unit tests
 Override final public non-static fields for all classes
