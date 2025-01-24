@@ -1,4 +1,4 @@
-package org.ingko.core.synthesizer;
+package org.ingko.testUtils;
 
 import org.ingko.core.data.objects.EnvironmentNode;
 

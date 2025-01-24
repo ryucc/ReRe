@@ -1,4 +1,4 @@
-package org.ingko.core.synthesizer.mockito.javafile;
+package org.ingko.core.synthesizer.mockito;
 
 import com.palantir.javapoet.FieldSpec;
 import com.palantir.javapoet.JavaFile;
@@ -8,8 +8,6 @@ import org.ingko.core.data.methods.EnvironmentMethodCall;
 import org.ingko.core.data.methods.Signature;
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.serde.DefaultSerde;
-import org.ingko.core.synthesizer.NamingStrategy;
-import org.ingko.core.synthesizer.OrderedNaming;
 import org.ingko.core.synthesizer.mockito.nodes.EnvironmentNodeSynthesizer;
 import org.ingko.core.synthesizer.mockito.nodes.ParamModdingNodeSynthesizer;
 import org.mockito.ArgumentMatchers;
@@ -24,27 +22,25 @@ import java.util.stream.Collectors;
  * Expect not to be thread safe.
  * It's a single document... not considering the need to parallel generate right now.
  */
-public class ParameterModSynthesizer {
+public class MockitoSynthesizer {
 
     private final String packageName;
     private final String methodName;
     private final String fileName;
-    private final NamingStrategy namingStrategy;
 
     private final EnvironmentNodeSynthesizer environmentNodeSynthesizer;
 
     private int environmentId;
     private int answerId;
 
-    public ParameterModSynthesizer(String packageName, String methodName, String fileName) {
+    public MockitoSynthesizer(String packageName, String methodName, String fileName) {
         this.packageName = packageName;
         this.methodName = methodName;
-        namingStrategy = new OrderedNaming();
         environmentId = 0;
         this.fileName = fileName;
         this.environmentNodeSynthesizer = new ParamModdingNodeSynthesizer();
     }
-    public ParameterModSynthesizer(String packageName, String methodName) {
+    public MockitoSynthesizer(String packageName, String methodName) {
         this(packageName, methodName, "MockCreator");
     }
 

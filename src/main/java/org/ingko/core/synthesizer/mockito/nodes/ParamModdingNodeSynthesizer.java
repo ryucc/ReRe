@@ -7,7 +7,7 @@ import org.ingko.core.data.methods.LocalSymbol;
 import org.ingko.core.data.methods.MethodResult;
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.utils.ClassUtils;
-import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
+import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
 import org.ingko.core.synthesizer.mockito.methods.BasicAnswerSynthesizer;
 import org.ingko.core.synthesizer.mockito.methods.EnvironmentAnswerSynthesizer;
 
@@ -148,8 +148,8 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
 
         declareMock(root.getRuntimeClass(), "mockObject", methodBuilder);
 
-        List<ParameterModSynthesizer.MethodGroup> methodGroups = groupMethods(root.getMethodCalls());
-        for (ParameterModSynthesizer.MethodGroup methodGroup : methodGroups) {
+        List<MockitoSynthesizer.MethodGroup> methodGroups = groupMethods(root.getMethodCalls());
+        for (MockitoSynthesizer.MethodGroup methodGroup : methodGroups) {
             List<String> answerList = new ArrayList<>();
             // TODO better grouping
             for (EnvironmentMethodCall methodCall : methodGroup.methodCalls()) {

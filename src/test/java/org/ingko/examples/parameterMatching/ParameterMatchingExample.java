@@ -1,7 +1,7 @@
 package org.ingko.examples.parameterMatching;
 
 import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
+import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
 
 public class ParameterMatchingExample {
 
@@ -25,7 +25,7 @@ public class ParameterMatchingExample {
         System.out.println("Rolled " + wrappedDice.roll(1, 1.0, 1L, (short) 1, 'a', (byte)0, true, 1, "abc"));
         System.out.println("*/");
 
-        ParameterModSynthesizer mockitoSynthesizer = new ParameterModSynthesizer(
+        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer(
                 "org.ingko.examples.parameterMatching",
                 "create",
                 "ParameterMatchingExampleExpected");

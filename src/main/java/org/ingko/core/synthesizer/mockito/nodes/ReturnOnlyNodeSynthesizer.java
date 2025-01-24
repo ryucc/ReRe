@@ -4,7 +4,7 @@ import com.palantir.javapoet.MethodSpec;
 import com.palantir.javapoet.TypeSpec;
 import org.ingko.core.data.methods.EnvironmentMethodCall;
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
+import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
 
 import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
@@ -35,8 +35,8 @@ public class ReturnOnlyNodeSynthesizer implements EnvironmentNodeSynthesizer {
         // TODO: don't declare if primitive
         declareMock(root.getRuntimeClass(), "mockObject", methodBuilder);
 
-        List<ParameterModSynthesizer.MethodGroup> methodGroups = groupMethods(root.getMethodCalls());
-        for (ParameterModSynthesizer.MethodGroup methodGroup : methodGroups) {
+        List<MockitoSynthesizer.MethodGroup> methodGroups = groupMethods(root.getMethodCalls());
+        for (MockitoSynthesizer.MethodGroup methodGroup : methodGroups) {
             List<String> answerList = new ArrayList<>();
             for (EnvironmentMethodCall methodCall : methodGroup.methodCalls()) {
                 String returnName = generateEnvironmentNode(typeBuilder, methodCall.getDest()).methodName();

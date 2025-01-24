@@ -3,7 +3,6 @@ package org.ingko.testUtils;
 
 import org.ingko.core.data.methods.EnvironmentMethodCall;
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.synthesizer.SimpleUUIDNaming;
 
 import java.util.Stack;
 

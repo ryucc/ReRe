@@ -1,7 +1,7 @@
 package org.ingko.examples.readme;
 
 import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
+import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
 
 import java.util.Random;
 
@@ -40,7 +40,7 @@ public class ReadmeExample {
         }
         System.out.println("*/");
 
-        ParameterModSynthesizer mockitoSynthesizer = new ParameterModSynthesizer("org.ingko.examples.readme",
+        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.ingko.examples.readme",
                 "create",
                 "ReadmeExampleExpected");
         //ParameterModSynthesizer parameterModSynthesizer = new ParameterModSynthesizer("org.katie.orange.examples", "create");

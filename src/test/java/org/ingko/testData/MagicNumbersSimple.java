@@ -7,7 +7,7 @@ import org.ingko.core.data.methods.UserMethodCall;
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
 import org.ingko.core.listener.testUtils.GraphCompare;
-import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
+import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -114,7 +114,7 @@ public class MagicNumbersSimple {
         wrapped.magic(a);
 
         EnvironmentNode node = environmentObjectListener.getRoot();
-        ParameterModSynthesizer synthesizer = new ParameterModSynthesizer("asd", "asdf");
+        MockitoSynthesizer synthesizer = new MockitoSynthesizer("asd", "asdf");
         synthesizer.generateMockito(getExpectedNode());
         GraphCompare graphCompare = new GraphCompare();
 

@@ -1,7 +1,7 @@
-package org.ingko.examples;
+package org.ingko.examples.readmeRecursive;
 
 import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.javafile.MockitoSynthesizer;
+import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
 
 public class ReadmeRecursiveExample {
 
@@ -29,10 +29,14 @@ public class ReadmeRecursiveExample {
         EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
         HttpClient wrappedClient = environmentObjectListener.createRoot(client, HttpClient.class);
 
+        System.out.println("/*");
         System.out.println(wrappedClient.get(0).getBody());
+        System.out.println("*/");
 
-        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.katie.orange.examples", "create");
+        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.ingko.examples.readmeRecursive",
+                "create",
+                "ReadmeRecursiveExampleExpected");
 
-        System.out.println(mockitoSynthesizer.generateMockito(environmentObjectListener));
+        System.out.println(mockitoSynthesizer.generateMockito(environmentObjectListener.getRoot()));
     }
 }

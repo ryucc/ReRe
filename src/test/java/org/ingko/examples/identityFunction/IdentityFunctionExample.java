@@ -2,7 +2,7 @@ package org.ingko.examples.identityFunction;
 
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
+import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ public class IdentityFunctionExample {
         IdentityFunction wrapped = environmentObjectListener.createRoot(identityFunction, identityFunction.getClass());
         wrapped.call(arr);
         EnvironmentNode node = environmentObjectListener.getRoot();
-        ParameterModSynthesizer mockitoSynthesizer = new ParameterModSynthesizer(
+        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer(
                 "org.ingko.examples.identityFunction",
                 "create",
                 "IdentityFunctionExampleExpected");

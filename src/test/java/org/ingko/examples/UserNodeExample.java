@@ -2,7 +2,7 @@ package org.ingko.examples;
 
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
+import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public class UserNodeExample {
         MyRecord myRecord = new MyRecord(myClasses);
         wrapped.modify(myRecord);
         EnvironmentNode node = environmentObjectListener.getRoot();
-        System.out.println(new ParameterModSynthesizer("pack", "method").generateMockito(node));
+        System.out.println(new MockitoSynthesizer("pack", "method").generateMockito(node));
     }
 
     public static class MyClass {

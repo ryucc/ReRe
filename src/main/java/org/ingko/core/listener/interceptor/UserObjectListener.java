@@ -161,14 +161,4 @@ public class UserObjectListener implements ParrotMethodInterceptor<UserNode> {
             throw new RuntimeException(e);
         }
     }
-
-    @RuntimeType
-    public Object intercept(@AllArguments Object[] allArguments,
-                            @Origin Method orignalMethod,
-                            @This Object self) throws Throwable {
-        Object original = ((UserObjectSpy) self).getParrotOriginObject();
-        UserNode userNode = ((UserObjectSpy) self).getParrotUserNode();
-
-        return interceptInterface(original, orignalMethod, userNode, allArguments);
-    }
 }

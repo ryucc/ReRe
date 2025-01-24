@@ -2,7 +2,7 @@ package org.ingko.examples.sort;
 
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
+import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ public class SortExample {
         }
         System.out.println("*/");
         EnvironmentNode node = environmentObjectListener.getRoot();
-        System.out.println(new ParameterModSynthesizer(
+        System.out.println(new MockitoSynthesizer(
                 "org.ingko.examples.sortExample",
                 "method",
                 "SortExampleExpected").generateMockito(node));

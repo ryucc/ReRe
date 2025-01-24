@@ -1,7 +1,7 @@
 package org.ingko.examples.arrayExample;
 
 import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
+import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
 
 import java.util.Random;
 
@@ -20,7 +20,7 @@ public class ArrayExample {
         }
         System.out.println("*/");
 
-        ParameterModSynthesizer mockitoSynthesizer = new ParameterModSynthesizer("org.ingko.examples.arrayExample",
+        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.ingko.examples.arrayExample",
                 "create",
                 "ArrayExampleExpected");
         System.out.println(mockitoSynthesizer.generateMockito(environmentObjectListener.getRoot()));

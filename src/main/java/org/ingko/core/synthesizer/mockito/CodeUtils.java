@@ -3,7 +3,6 @@ package org.ingko.core.synthesizer.mockito;
 import com.palantir.javapoet.MethodSpec;
 import org.ingko.core.data.methods.EnvironmentMethodCall;
 import org.ingko.core.data.methods.Signature;
-import org.ingko.core.synthesizer.mockito.javafile.ParameterModSynthesizer;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -13,12 +12,12 @@ import java.util.stream.Collectors;
 
 public class CodeUtils {
 
-    public static List<ParameterModSynthesizer.MethodGroup> groupMethods(List<EnvironmentMethodCall> environmentMethodCalls) {
+    public static List<MockitoSynthesizer.MethodGroup> groupMethods(List<EnvironmentMethodCall> environmentMethodCalls) {
         Map<Signature, List<EnvironmentMethodCall>> m = environmentMethodCalls.stream()
                 .collect(Collectors.groupingBy(EnvironmentMethodCall::getSignature));
         return m.entrySet()
                 .stream()
-                .map(e -> new ParameterModSynthesizer.MethodGroup(e.getKey(), e.getValue()))
+                .map(e -> new MockitoSynthesizer.MethodGroup(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
     }
     public static void declareMock(Class<?> clazz, String name, MethodSpec.Builder methodBuilder) {
