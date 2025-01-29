@@ -30,13 +30,10 @@ public class MockitoSynthesizer {
 
     private final EnvironmentNodeSynthesizer environmentNodeSynthesizer;
 
-    private int environmentId;
-    private int answerId;
 
     public MockitoSynthesizer(String packageName, String methodName, String fileName) {
         this.packageName = packageName;
         this.methodName = methodName;
-        environmentId = 0;
         this.fileName = fileName;
         this.environmentNodeSynthesizer = new ParamModdingNodeSynthesizer();
     }

@@ -1,7 +1,6 @@
 package org.ingko.examples.exception;
 
-import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
+import org.ingko.api.Parrot;
 
 import java.util.Random;
 
@@ -10,8 +9,8 @@ public class ThrowExample {
 
         ErrorDice dice = new ErrorDice();
 
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        ErrorDice wrappedDice = environmentObjectListener.createRoot(dice, ErrorDice.class);
+        Parrot parrot = Parrot.newSession();
+        ErrorDice wrappedDice = parrot.createRoot(dice, ErrorDice.class);
 
 
         System.out.println("/*");
@@ -25,11 +24,8 @@ public class ThrowExample {
         }
         System.out.println("*/");
 
-        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.ingko.examples.exception",
-                "create",
-                "ThrowExampleExpected");
-        String result = mockitoSynthesizer.generateMockito(environmentObjectListener.getRoot());
-        System.out.println(result);
+        String code = parrot.createMockito("org.ingko.examples.exception", "create", "ThrowExampleExpected");
+        System.out.println(code);
     }
 
     public static class ErrorDice {

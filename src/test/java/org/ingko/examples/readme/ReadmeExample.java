@@ -1,7 +1,6 @@
 package org.ingko.examples.readme;
 
-import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
+import org.ingko.api.Parrot;
 
 import java.util.Random;
 
@@ -29,8 +28,8 @@ public class ReadmeExample {
     public static void main(String[] args) {
 
         PrivateDice dice = new PrivateDice();
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        PrivateDice wrappedDice = environmentObjectListener.createRoot(dice, PrivateDice.class);
+        Parrot parrot = Parrot.newSession();
+        PrivateDice wrappedDice = parrot.createRoot(dice, PrivateDice.class);
 
 
         System.out.println("/*");
@@ -40,12 +39,8 @@ public class ReadmeExample {
         }
         System.out.println("*/");
 
-        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.ingko.examples.readme",
-                "create",
-                "ReadmeExampleExpected");
-        //ParameterModSynthesizer parameterModSynthesizer = new ParameterModSynthesizer("org.katie.orange.examples", "create");
-        System.out.println(mockitoSynthesizer.generateMockito(environmentObjectListener.getRoot()));
-        //System.out.println(parameterModSynthesizer.generateMockito(environmentObjectListener.getRoot()));
+        String code = parrot.createMockito("org.ingko.examples.readme", "create", "ReadmeExampleExpected");
+        System.out.println(code);
     }
 
     public static class PrivateDice {
@@ -55,7 +50,8 @@ public class ReadmeExample {
             rand = new Random(1);
         }
 
-        public void chill(){}
+        public void chill() {
+        }
 
         public int roll() {
             return rand.nextInt(6) + 1;

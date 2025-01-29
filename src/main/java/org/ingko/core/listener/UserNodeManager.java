@@ -31,11 +31,6 @@ public class UserNodeManager implements NodeManager<UserNode> {
         return new UserNode(clazz, comments);
     }
 
-    public void addChild(UserNode parent, UserNode child) {
-        parent.addDirectChild(child);
-    }
-
-
     public Object synthesizeLeafNode(Object original, UserNode node) {
         Object wrapped;
         if (ClassUtils.isStringOrPrimitive(original.getClass())) {

@@ -1,7 +1,6 @@
 package org.ingko.examples.arrayExample;
 
-import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
+import org.ingko.api.Parrot;
 
 import java.util.Random;
 
@@ -10,8 +9,8 @@ public class ArrayExample {
 
         Dice[] twoDice = {new Dice(), new Dice()};
 
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        Dice[] wrappedDice = environmentObjectListener.createRoot(twoDice, twoDice.getClass());
+        Parrot parrot = Parrot.newSession();
+        Dice[] wrappedDice = parrot.createRoot(twoDice, twoDice.getClass());
 
         System.out.println("/*");
         for (int i = 1; i <= 5; i++) {
@@ -19,11 +18,8 @@ public class ArrayExample {
             System.out.println("Rolled " + wrappedDice[1].roll());
         }
         System.out.println("*/");
-
-        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.ingko.examples.arrayExample",
-                "create",
-                "ArrayExampleExpected");
-        System.out.println(mockitoSynthesizer.generateMockito(environmentObjectListener.getRoot()));
+        String code = parrot.createMockito("org.ingko.examples.arrayExample", "create", "ArrayExampleExpected");
+        System.out.println(code);
     }
 
     public static class Dice {

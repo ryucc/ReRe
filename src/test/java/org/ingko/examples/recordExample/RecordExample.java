@@ -1,7 +1,6 @@
 package org.ingko.examples.recordExample;
 
-import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
+import org.ingko.api.Parrot;
 
 import java.util.Random;
 
@@ -10,8 +9,8 @@ public class RecordExample {
 
         TwoDice twoDice = new TwoDice(new Dice(), new Dice());
 
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        TwoDice wrappedDice = environmentObjectListener.createRoot(twoDice, TwoDice.class);
+        Parrot parrot = Parrot.newSession();
+        TwoDice wrappedDice = parrot.createRoot(twoDice, TwoDice.class);
 
         System.out.println("/*");
         for (int i = 1; i <= 5; i++) {
@@ -20,10 +19,8 @@ public class RecordExample {
         }
         System.out.println("*/");
 
-        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.ingko.examples.recordExample",
-                "create",
-                "RecordExampleExpected");
-        System.out.println(mockitoSynthesizer.generateMockito(environmentObjectListener.getRoot()));
+        String code = parrot.createMockito("org.ingko.examples.recordExample", "create", "RecordExampleExpected");
+        System.out.println(code);
     }
 
     public static class Dice {

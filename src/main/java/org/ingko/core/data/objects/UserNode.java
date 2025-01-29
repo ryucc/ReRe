@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class UserNode implements ParrotObjectNode {
+public class UserNode implements ParrotObjectNode<UserNode> {
     /**
      * Runtime class implements representing type.
      * <p>
@@ -25,30 +25,23 @@ public class UserNode implements ParrotObjectNode {
      */
     private final Class<?> runtimeClass;
     private final UUID uuid;
+    private final List<UserNode> directChildren;
     /**
      * Scope needs to change to a EnvironmentNode for stateful objects
      */
     private EnvironmentMethodCall scope;
     private LocalSymbol symbol;
     private String comments;
-
-    public List<UserNode> getDirectChildren() {
-        return directChildren;
-    }
-
-    private final List<UserNode> directChildren;
     private boolean failedNode;
-
-    public void addDirectChild(UserNode child) {
-        directChildren.add(child);
-    }
 
     public UserNode(Class<?> runtimeClass) {
         this(runtimeClass, null, UUID.randomUUID());
     }
+
     public UserNode(Class<?> runtimeClass, String comments) {
         this(runtimeClass, null, UUID.randomUUID(), comments);
     }
+
     public UserNode(Class<?> runtimeClass, EnvironmentMethodCall scope) {
         this(runtimeClass, scope, UUID.randomUUID());
     }
@@ -68,6 +61,10 @@ public class UserNode implements ParrotObjectNode {
         directChildren = new ArrayList<>();
     }
 
+    public List<UserNode> getDirectChildren() {
+        return directChildren;
+    }
+
     public LocalSymbol getSymbol() {
         return symbol;
     }
@@ -78,6 +75,11 @@ public class UserNode implements ParrotObjectNode {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    @Override
+    public void addChild(UserNode child) {
+        directChildren.add(child);
     }
 
     @Override

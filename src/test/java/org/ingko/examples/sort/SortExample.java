@@ -1,30 +1,24 @@
 package org.ingko.examples.sort;
 
-import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
+import org.ingko.api.Parrot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SortExample {
     public static void main(String[] args) {
-        List<Integer> arr = new ArrayList<>(List.of(3, 1, 2,4));
+        List<Integer> arr = new ArrayList<>(List.of(3, 1, 2, 4));
         BubbleSorter bubbleSorter = new BubbleSorter();
 
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        BubbleSorter wrapped = environmentObjectListener.createRoot(bubbleSorter, bubbleSorter.getClass());
+        Parrot parrot = Parrot.newSession();
+        BubbleSorter wrapped = parrot.createRoot(bubbleSorter, bubbleSorter.getClass());
         wrapped.sort(arr);
         System.out.println("/*");
         for (int i = 0; i < 4; i++) {
             System.out.println(arr.get(i));
         }
         System.out.println("*/");
-        EnvironmentNode node = environmentObjectListener.getRoot();
-        System.out.println(new MockitoSynthesizer(
-                "org.ingko.examples.sortExample",
-                "method",
-                "SortExampleExpected").generateMockito(node));
+        System.out.println(parrot.createMockito("org.ingko.examples.sortExample", "method", "SortExampleExpected"));
     }
 
     public static class BubbleSorter {

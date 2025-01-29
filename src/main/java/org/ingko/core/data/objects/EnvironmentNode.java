@@ -7,11 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class EnvironmentNode implements Serializable, ParrotObjectNode {
+public class EnvironmentNode implements Serializable, ParrotObjectNode<EnvironmentNode> {
     private final List<EnvironmentMethodCall> environmentMethodCalls;
     private final UUID uuid;
     private final Class<?> runtimeClass;
-    private final Class<?> representingClass;
     private final List<EnvironmentNode> directChildren;
     private String comments;
     private String value;
@@ -25,7 +24,6 @@ public class EnvironmentNode implements Serializable, ParrotObjectNode {
                            boolean serialized,
                            boolean failedNode,
                            Class<?> runtimeClass,
-                           Class<?> representingClass,
                            String comments,
                            List<EnvironmentNode> directChildren) {
         this.environmentMethodCalls = environmentMethodCalls;
@@ -35,7 +33,6 @@ public class EnvironmentNode implements Serializable, ParrotObjectNode {
         this.serialized = serialized;
         this.failedNode = failedNode;
         this.runtimeClass = runtimeClass;
-        this.representingClass = representingClass;
         this.comments = comments;
         this.directChildren = directChildren;
     }
@@ -47,7 +44,6 @@ public class EnvironmentNode implements Serializable, ParrotObjectNode {
                 true,
                 false,
                 false,
-                clazz,
                 clazz,
                 "",
                 new ArrayList<>());
@@ -61,7 +57,6 @@ public class EnvironmentNode implements Serializable, ParrotObjectNode {
                 false,
                 true,
                 clazz,
-                clazz,
                 comments,
                 new ArrayList<>());
     }
@@ -73,7 +68,6 @@ public class EnvironmentNode implements Serializable, ParrotObjectNode {
                 true,
                 false,
                 false,
-                clazz,
                 clazz,
                 "",
                 new ArrayList<>());
@@ -87,7 +81,6 @@ public class EnvironmentNode implements Serializable, ParrotObjectNode {
                 false,
                 false,
                 clazz,
-                clazz,
                 "",
                 new ArrayList<>());
     }
@@ -99,7 +92,6 @@ public class EnvironmentNode implements Serializable, ParrotObjectNode {
                 true,
                 true,
                 false,
-                clazz,
                 clazz,
                 "",
                 new ArrayList<>());
@@ -119,6 +111,11 @@ public class EnvironmentNode implements Serializable, ParrotObjectNode {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    @Override
+    public void addChild(EnvironmentNode child) {
+        directChildren.add(child);
     }
 
     public boolean isFailedNode() {
@@ -163,10 +160,6 @@ public class EnvironmentNode implements Serializable, ParrotObjectNode {
 
     public void addMethodCall(EnvironmentMethodCall environmentMethodCall) {
         environmentMethodCalls.add(environmentMethodCall);
-    }
-
-    public void addDirectChild(EnvironmentNode environmentNode) {
-        directChildren.add(environmentNode);
     }
 
     public List<EnvironmentNode> getDirectChildren() {

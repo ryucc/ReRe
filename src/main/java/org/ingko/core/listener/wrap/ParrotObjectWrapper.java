@@ -22,7 +22,7 @@ import java.util.Set;
  * @param <NODE>
  * @param <MANAGER>
  */
-public class ParrotObjectWrapper<NODE extends ParrotObjectNode, MANAGER extends NodeManager<NODE>> {
+public class ParrotObjectWrapper<NODE extends ParrotObjectNode<NODE>, MANAGER extends NodeManager<NODE>> {
     private final MANAGER nodeManager;
 
     public ParrotObjectWrapper(MANAGER nodeManager) {
@@ -89,7 +89,7 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode, MANAGER extends 
                     // Build object graph
                     // Use runtimeType due to type erasure
                     NODE childNode = nodeManager.createEmpty(recordComponent.getType());
-                    nodeManager.addChild(curNode, childNode);
+                    curNode.addChild(childNode);
                     nodeMap.put(child, childNode);
                 }
             } else {
@@ -99,7 +99,7 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode, MANAGER extends 
                         // TODO when null, get from cur.getClass().getComponentTpe
                         Class<?> childClass = child.getClass();
                         NODE childNode = nodeManager.createEmpty(childClass);
-                        nodeManager.addChild(curNode, childNode);
+                        curNode.addChild(childNode);
                         nodeMap.put(child, childNode);
                         front.add(child);
                     }

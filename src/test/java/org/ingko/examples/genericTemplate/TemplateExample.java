@@ -1,7 +1,6 @@
 package org.ingko.examples.genericTemplate;
 
-import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
+import org.ingko.api.Parrot;
 
 import java.util.Random;
 
@@ -9,8 +8,8 @@ public class TemplateExample {
     public static void main(String[] args) {
 
         TemplateDice<Integer> dice = new TemplateDice<>(1);
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        TemplateDice wrappedDice = environmentObjectListener.createRoot(dice, TemplateDice.class);
+        Parrot parrot = Parrot.newSession();
+        TemplateDice<Integer> wrappedDice = parrot.createRoot(dice, TemplateDice.class);
         System.out.println("/*");
 
         for (int i = 1; i <= 5; i++) {
@@ -20,10 +19,8 @@ public class TemplateExample {
         }
         System.out.println("*/");
 
-        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer("org.ingko.examples.templateMatching",
-                "create",
-                "TemplateExampleExpected");
-        System.out.println(mockitoSynthesizer.generateMockito(environmentObjectListener.getRoot()));
+        String code = parrot.createMockito("org.ingko.examples.templateMatching", "create", "TemplateExampleExpected");
+        System.out.println(code);
     }
 
     public static class TemplateDice<T> {

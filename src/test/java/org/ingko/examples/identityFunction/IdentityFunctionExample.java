@@ -1,8 +1,6 @@
 package org.ingko.examples.identityFunction;
 
-import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
-import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
+import org.ingko.api.Parrot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,15 +10,13 @@ public class IdentityFunctionExample {
         List<Integer> arr = new ArrayList<>(List.of(3, 1, 2));
         IdentityFunction identityFunction = new IdentityFunction();
 
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        IdentityFunction wrapped = environmentObjectListener.createRoot(identityFunction, identityFunction.getClass());
+        Parrot parrot = Parrot.newSession();
+        IdentityFunction wrapped = parrot.createRoot(identityFunction, identityFunction.getClass());
         wrapped.call(arr);
-        EnvironmentNode node = environmentObjectListener.getRoot();
-        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer(
-                "org.ingko.examples.identityFunction",
+        String code = parrot.createMockito("org.ingko.examples.identityFunction",
                 "create",
                 "IdentityFunctionExampleExpected");
-        System.out.println(mockitoSynthesizer.generateMockito(node));
+        System.out.println(code);
 
     }
 

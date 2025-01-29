@@ -20,7 +20,6 @@ import java.util.List;
 /*
 TODO: better type inference
  */
-//@SuppressWarnings("unchecked")
 public class EnvironmentObjectListener implements ParrotMethodInterceptor<EnvironmentNode> {
     private final List<EnvironmentNode> roots;
 
