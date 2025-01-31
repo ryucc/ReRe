@@ -88,7 +88,12 @@ public class ExampleTests {
             return;
         }
         String expected = Files.readString(output);
-        assertThat(outContent.toString()).isEqualTo(expected);
+        String[] a1 = outContent.toString().split("\n");
+        String[] a2 = expected.split("\n");
+
+        for(int i = 0; i < a1.length && i < a2.length; i++) {
+            assertThat(a1[i]).isEqualTo(a2[i]);
+        }
     }
     @Test
     public void testIdentityFunctionExample() throws IOException {

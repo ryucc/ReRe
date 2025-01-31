@@ -17,7 +17,7 @@ public class UserNodeManager implements NodeManager<UserNode> {
     }
 
     @Override
-    public UserNode createEmpty(Class<?> clazz) {
+    public UserNode createEmpty(Class<?> clazz, Object original) {
         return new UserNode(clazz);
     }
 

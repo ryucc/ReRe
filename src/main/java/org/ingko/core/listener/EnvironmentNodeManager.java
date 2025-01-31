@@ -24,7 +24,10 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
     }
 
     @Override
-    public EnvironmentNode createEmpty(Class<?> clazz) {
+    public EnvironmentNode createEmpty(Class<?> clazz, Object original) {
+        if(ClassUtils.isStringOrPrimitive(clazz)) {
+            return EnvironmentNode.ofPrimitive(clazz, original.toString());
+        }
         return EnvironmentNode.ofInternal(clazz);
     }
 

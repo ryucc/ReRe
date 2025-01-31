@@ -62,7 +62,7 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode<NODE>, MANAGER ex
         Map<Object, List<Object>> parents = new HashMap<>();
 
         front.add(original);
-        NODE rootNode = nodeManager.createEmpty(targetClass);
+        NODE rootNode = nodeManager.createEmpty(targetClass, original);
         Map<Object, NODE> nodeMap = new HashMap<>();
         nodeMap.put(original, rootNode);
         while (!front.isEmpty()) {
@@ -87,7 +87,7 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode<NODE>, MANAGER ex
                     front.add(child);
                     // Build object graph
                     // Use runtimeType due to type erasure
-                    NODE childNode = nodeManager.createEmpty(recordComponent.getType());
+                    NODE childNode = nodeManager.createEmpty(recordComponent.getType(), child);
                     curNode.addChild(childNode);
                     nodeMap.put(child, childNode);
                 }
@@ -97,7 +97,7 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode<NODE>, MANAGER ex
                         Object child = Array.get(cur, i);
                         // TODO when null, get from cur.getClass().getComponentTpe
                         Class<?> childClass = child.getClass();
-                        NODE childNode = nodeManager.createEmpty(childClass);
+                        NODE childNode = nodeManager.createEmpty(childClass, child);
                         curNode.addChild(childNode);
                         nodeMap.put(child, childNode);
                         front.add(child);

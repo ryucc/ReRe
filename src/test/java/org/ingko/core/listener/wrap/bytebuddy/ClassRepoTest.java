@@ -1,17 +1,14 @@
-package org.ingko.core.listener.graph.returnOnly;
+package org.ingko.core.listener.wrap.bytebuddy;
 
-
-import org.ingko.core.listener.wrap.bytebuddy.ClassRepo;
-import org.ingko.core.listener.testUtils.ReturnNullInterceptor;
-import org.junit.jupiter.api.Test;
 import org.ingko.core.listener.exceptions.SubclassingException;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-class ClassRepoBasicTests {
+class ClassRepoTest {
     @Test
     public void testCache() throws Exception {
         ClassRepo classRepo = new ClassRepo(new ReturnNullInterceptor(), Map.of());
@@ -51,4 +48,5 @@ class ClassRepoBasicTests {
 
     private static class MyPrivate {
     }
+
 }

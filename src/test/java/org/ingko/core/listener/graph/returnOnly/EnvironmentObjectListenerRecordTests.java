@@ -1,5 +1,10 @@
 package org.ingko.core.listener.graph.returnOnly;
 
+import org.ingko.api.Parrot;
+import org.ingko.core.data.objects.EnvironmentNode;
+import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
+import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class EnvironmentObjectListenerRecordTests {
@@ -8,17 +13,16 @@ public class EnvironmentObjectListenerRecordTests {
     }
 
 
-    /*
     @Test
     public void test() {
         RecordB b = new RecordB(1,3);
         RecordA a = new RecordA(1, b);
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
+        Parrot parrot = Parrot.newSession();
 
-        EnvironmentObjectListener.ListenResult<?> aa = environmentObjectListener.handleRecord(a, RecordA.class, new HashMap<>());
-        EnvironmentNode environmentNode = aa.node();
-        RecordA wrappedA = (RecordA) aa.wrapped();
+        RecordA wrappedA = parrot.createRoot(a, RecordA.class);
         assertThat(wrappedA).isEqualTo(a);
+
+        EnvironmentNode environmentNode = parrot.getParrotIntermediateData().roots().getFirst();
 
         assertThat(environmentNode.getRuntimeClass()).isEqualTo(RecordA.class);
         assertThat(environmentNode.getDirectChildren())
@@ -39,5 +43,4 @@ public class EnvironmentObjectListenerRecordTests {
         assertThat(bEnvironmentNode.getDirectChildren().getLast().getValue())
                 .isEqualTo(Integer.valueOf(b.b()).toString());
     }
-     */
 }

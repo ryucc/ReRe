@@ -5,7 +5,6 @@ import org.ingko.core.data.methods.EnvironmentMethodCall;
 import org.ingko.core.data.objects.LocalSymbol;
 import org.ingko.core.data.methods.MethodResult;
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.testUtils.GraphCompare;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
