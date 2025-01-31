@@ -3,7 +3,7 @@ package org.ingko.core.synthesizer.mockito.nodes;
 import com.palantir.javapoet.MethodSpec;
 import com.palantir.javapoet.TypeSpec;
 import org.ingko.core.data.methods.EnvironmentMethodCall;
-import org.ingko.core.data.methods.LocalSymbol;
+import org.ingko.core.data.objects.LocalSymbol;
 import org.ingko.core.data.methods.MethodResult;
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.utils.ClassUtils;

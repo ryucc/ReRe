@@ -1,11 +1,7 @@
 package org.ingko.core.listener.interceptor;
 
-import net.bytebuddy.implementation.bind.annotation.AllArguments;
-import net.bytebuddy.implementation.bind.annotation.Origin;
-import net.bytebuddy.implementation.bind.annotation.RuntimeType;
-import net.bytebuddy.implementation.bind.annotation.This;
 import org.ingko.core.data.methods.EnvironmentMethodCall;
-import org.ingko.core.data.methods.LocalSymbol;
+import org.ingko.core.data.objects.LocalSymbol;
 import org.ingko.core.data.methods.UserMethodCall;
 import org.ingko.core.data.objects.ArrayMember;
 import org.ingko.core.data.objects.EnvironmentNode;

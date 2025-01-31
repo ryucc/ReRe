@@ -1,10 +1,10 @@
 package org.ingko.testData;
 
+import org.ingko.api.Parrot;
 import org.ingko.core.data.methods.EnvironmentMethodCall;
-import org.ingko.core.data.methods.LocalSymbol;
+import org.ingko.core.data.objects.LocalSymbol;
 import org.ingko.core.data.methods.MethodResult;
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
 import org.ingko.core.listener.testUtils.GraphCompare;
 import org.junit.jupiter.api.Test;
 
@@ -22,12 +22,12 @@ public class IdentityFunction {
         Identity identity = new Identity();
 
 
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        Identity wrapped = environmentObjectListener.createRoot(identity, Identity.class);
+        Parrot parrot = Parrot.newSession();
+        Identity wrapped = parrot.createRoot(identity, Identity.class);
 
         wrapped.identityFunction(identity);
 
-        EnvironmentNode node = environmentObjectListener.getRoot();
+        EnvironmentNode node = parrot.getParrotIntermediateData().roots().getFirst();
         GraphCompare graphCompare = new GraphCompare();
         assertThat(graphCompare.diffNode(getExpectedNode(Identity.class), node)).isTrue();
     }
@@ -35,10 +35,8 @@ public class IdentityFunction {
     public EnvironmentNode getExpectedNode(Class<?> expectedClass) {
         try {
             EnvironmentNode node = EnvironmentNode.ofInternal(Identity.class);
-            EnvironmentMethodCall methodCall = new EnvironmentMethodCall(
-                    Identity.class.getMethod(
-                            "identityFunction",
-                            Object.class));
+            EnvironmentMethodCall methodCall = new EnvironmentMethodCall(Identity.class.getMethod("identityFunction",
+                    Object.class));
             methodCall.setReturnSymbol(new LocalSymbol(LocalSymbol.Source.PARAMETER, 0));
             methodCall.setReturnNode(EnvironmentNode.ofInternal(expectedClass));
             methodCall.setResult(MethodResult.RETURN);

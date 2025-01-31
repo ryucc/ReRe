@@ -1,5 +1,6 @@
-package org.ingko.core.listener.graph.returnOnly;
+package org.ingko.testData;
 
+import org.ingko.api.Parrot;
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
 import org.ingko.core.listener.testUtils.GraphCompare;
@@ -17,8 +18,8 @@ public class ListenThrowTests {
 
         ErrorDice dice = new ErrorDice();
 
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        ErrorDice wrappedDice = environmentObjectListener.createRoot(dice, ErrorDice.class);
+        Parrot parrot = Parrot.newSession();
+        ErrorDice wrappedDice = parrot.createRoot(dice, ErrorDice.class);
 
 
         for (int i = 1; i <= 2; i++) {
@@ -28,7 +29,15 @@ public class ListenThrowTests {
                 System.out.println("Caught Exception");
             }
         }
-        EnvironmentNode root = environmentObjectListener.getRoot();
+
+        EnvironmentNode node = parrot.getParrotIntermediateData().roots().getFirst();
+
+
+        EnvironmentNode expectedNode = getExpectedNode();
+        GraphCompare graphCompare = new GraphCompare();
+        assertThat(graphCompare.diffNode(node, expectedNode)).isTrue();
+    }
+    public EnvironmentNode getExpectedNode() throws Exception{
         EnvironmentNode expectedRoot = EnvironmentNode.ofInternal(ErrorDice.class);
         EnvironmentNode returnEnvironmentNode = EnvironmentNode.ofPrimitive(Integer.class, "2");
         EnvironmentNode throwEnvironmentNode = EnvironmentNode.ofSerialized(RuntimeException.class, "dummySerialization");
@@ -40,10 +49,7 @@ public class ListenThrowTests {
         call2.setResult(MethodResult.THROW);
         expectedRoot.addMethodCall(call1);
         expectedRoot.addMethodCall(call2);
-
-
-        GraphCompare graphCompare = new GraphCompare();
-        assertThat(graphCompare.diffNode(root, expectedRoot)).isTrue();
+        return expectedRoot;
     }
 
     public static class ErrorDice {

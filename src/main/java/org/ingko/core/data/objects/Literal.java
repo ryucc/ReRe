@@ -1,4 +1,4 @@
-package org.ingko.core.data.methods;
+package org.ingko.core.data.objects;
 
 public record Literal (Class<?> clazz, String value){
 }

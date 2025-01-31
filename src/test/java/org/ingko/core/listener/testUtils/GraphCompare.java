@@ -1,7 +1,7 @@
 package org.ingko.core.listener.testUtils;
 
 import org.ingko.core.data.methods.EnvironmentMethodCall;
-import org.ingko.core.data.methods.LocalSymbol;
+import org.ingko.core.data.objects.LocalSymbol;
 import org.ingko.core.data.methods.UserMethodCall;
 import org.ingko.core.data.objects.EnvironmentNode;
 

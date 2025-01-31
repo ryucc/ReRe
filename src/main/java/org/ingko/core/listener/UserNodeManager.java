@@ -4,7 +4,7 @@ import org.ingko.core.data.objects.UserNode;
 import org.ingko.core.listener.interceptor.ParrotMethodInterceptor;
 import org.ingko.core.listener.utils.ClassUtils;
 import org.ingko.core.listener.utils.UserObjectSpy;
-import org.ingko.core.listener.wrap.MockitoSingleNodeWrapper;
+import org.ingko.core.listener.wrap.mockito.MockitoSingleNodeWrapper;
 import org.ingko.core.listener.wrap.SingleNodeWrapper;
 
 public class UserNodeManager implements NodeManager<UserNode> {

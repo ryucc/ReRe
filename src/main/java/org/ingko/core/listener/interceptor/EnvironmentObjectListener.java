@@ -1,7 +1,7 @@
 package org.ingko.core.listener.interceptor;
 
 import org.ingko.core.data.methods.EnvironmentMethodCall;
-import org.ingko.core.data.methods.LocalSymbol;
+import org.ingko.core.data.objects.LocalSymbol;
 import org.ingko.core.data.methods.MethodResult;
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.data.objects.UserNode;
@@ -23,13 +23,18 @@ TODO: better type inference
 public class EnvironmentObjectListener implements ParrotMethodInterceptor<EnvironmentNode> {
     private final List<EnvironmentNode> roots;
 
-    private final UserObjectListener userObjectListener;
-    private final ParrotObjectWrapper<EnvironmentNode, EnvironmentNodeManager> wrapper;
+    private UserObjectListener userObjectListener;
+
+    public void setEnvironmentObjectWrapper(ParrotObjectWrapper<EnvironmentNode, EnvironmentNodeManager> environmentObjectWrapper) {
+        this.environmentObjectWrapper = environmentObjectWrapper;
+    }
+
+    private ParrotObjectWrapper<EnvironmentNode, EnvironmentNodeManager> environmentObjectWrapper;
 
     public EnvironmentObjectListener() {
         roots = new ArrayList<>();
-        wrapper = new ParrotObjectWrapper<>(new EnvironmentNodeManager(this));
-        userObjectListener = new UserObjectListener(wrapper);
+        environmentObjectWrapper = new ParrotObjectWrapper<>(new EnvironmentNodeManager(this));
+        userObjectListener = new UserObjectListener(environmentObjectWrapper);
     }
 
     public EnvironmentNode getRoot() {
@@ -37,7 +42,7 @@ public class EnvironmentObjectListener implements ParrotMethodInterceptor<Enviro
     }
 
     public <T> T createRoot(Object original, Class<T> targetClass) {
-        ParrotWrapResult<T, EnvironmentNode> result = wrapper.createRoot(original, targetClass);
+        ParrotWrapResult<T, EnvironmentNode> result = environmentObjectWrapper.createRoot(original, targetClass);
         roots.add(result.node());
         return result.wrapped();
     }
@@ -72,7 +77,7 @@ public class EnvironmentObjectListener implements ParrotMethodInterceptor<Enviro
             orignalMethod.setAccessible(true);
             returnValue = orignalMethod.invoke(original, wrappedArguments);
         } catch (InvocationTargetException e) {
-            ParrotWrapResult<?, EnvironmentNode> result = wrapper.createRoot(e.getTargetException(),
+            ParrotWrapResult<?, EnvironmentNode> result = environmentObjectWrapper.createRoot(e.getTargetException(),
                     e.getTargetException().getClass());
             edge.setReturnNode(result.node());
             edge.setResult(MethodResult.THROW);
@@ -107,7 +112,7 @@ public class EnvironmentObjectListener implements ParrotMethodInterceptor<Enviro
         // Due to type erasure
         Class<?> returnType = returnValue == null ? orignalMethod.getReturnType() : returnValue.getClass();
 
-        ParrotWrapResult<?, EnvironmentNode> result = wrapper.createRoot(returnValue, returnType);
+        ParrotWrapResult<?, EnvironmentNode> result = environmentObjectWrapper.createRoot(returnValue, returnType);
         edge.setReturnNode(result.node());
         edge.setReturnClass(returnType);
         edge.setResult(MethodResult.RETURN);

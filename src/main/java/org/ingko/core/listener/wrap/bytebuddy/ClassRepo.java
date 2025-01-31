@@ -52,49 +52,6 @@ public class ClassRepo {
         interfaces = List.of();
     }
 
-    /*
-     * TODO: move the dfs to runtime.
-     */
-    public Class<?> getOrDefineSubclass(Class<?> child, Class<?> target) throws SubclassingException {
-        Queue<Class<?>> candidates = new ArrayDeque<>();
-        if (target.isAssignableFrom(child)) {
-            candidates.add(child);
-        } else {
-            throw new SubclassingException("Target class is not assignable from input.");
-        }
-        List<Class<?>> triedClasses = new ArrayList<>();
-        List<Throwable> failureReason = new ArrayList<>();
-        while (!candidates.isEmpty()) {
-            Class<?> cur = candidates.poll();
-            try {
-                return getOrDefineSubclass(cur);
-            } catch (SubclassingException e) {
-                triedClasses.add(cur);
-                failureReason.add(e);
-            }
-            if (cur.getSuperclass() != null && target.isAssignableFrom(cur.getSuperclass())) {
-                candidates.add(cur.getSuperclass());
-            }
-            Class<?>[] interfaces = cur.getInterfaces();
-            for (Class<?> implementedInterface : interfaces) {
-                if (target.isAssignableFrom(implementedInterface) || target.equals(implementedInterface)) {
-                    candidates.add(implementedInterface);
-                }
-            }
-        }
-
-        List<String> explainations = new ArrayList<>();
-
-        for (int i = 0; i < failureReason.size(); i++) {
-            String reason = String.format("%s failed with %s.",
-                    triedClasses.get(i).toString(),
-                    failureReason.get(i).toString());
-            explainations.add(reason);
-        }
-        String finalReason = String.join("\n", explainations);
-        throw new SubclassingException("Can not subclass any suitable interface. The following classes were attempted: " + finalReason);
-    }
-
 
     public Class<?> getOrDefineSubclass(Class<?> target) throws SubclassingException {
         if (Modifier.isFinal(target.getModifiers())) {

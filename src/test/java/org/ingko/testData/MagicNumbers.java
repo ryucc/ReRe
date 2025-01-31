@@ -1,13 +1,12 @@
 package org.ingko.testData;
 
+import org.ingko.api.Parrot;
 import org.ingko.core.data.methods.EnvironmentMethodCall;
-import org.ingko.core.data.methods.LocalSymbol;
+import org.ingko.core.data.objects.LocalSymbol;
 import org.ingko.core.data.methods.MethodResult;
 import org.ingko.core.data.methods.UserMethodCall;
 import org.ingko.core.data.objects.EnvironmentNode;
-import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
 import org.ingko.core.listener.testUtils.GraphCompare;
-import org.ingko.core.synthesizer.mockito.MockitoSynthesizer;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -17,12 +16,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * MathMagic is a class containing 1 method, demonstrating
  * ((x + 1) * 2 + 4) / 2 - 3 = x
- *
+ * <p>
  * This is used to test a method that modifies the input parameters.
- *
+ * <p>
  * In MagicNumbersSimple, the parameters passed to the userMethodCalls are primitives.
  * In MagicNumbers, the parameters passed to the userMethodCalls are classes.
- *
  */
 public class MagicNumbers {
 
@@ -131,15 +129,12 @@ public class MagicNumbers {
 
         MyInt a = new MyInt(100);
 
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        MathMagic wrapped = environmentObjectListener.createRoot(magic, MathMagic.class);
+        Parrot parrot = Parrot.newSession();
+        MathMagic wrapped = parrot.createRoot(magic, MathMagic.class);
 
         wrapped.magic(a);
 
-        EnvironmentNode node = environmentObjectListener.getRoot();
-        MockitoSynthesizer synthesizer = new MockitoSynthesizer("asd", "asdf");
-        //System.out.println(synthesizer.generateMockito(getExpectedNode()));
-        //synthesizer.generateMockito(node);
+        EnvironmentNode node = parrot.getParrotIntermediateData().roots().getFirst();
         GraphCompare graphCompare = new GraphCompare();
 
         assertThat(graphCompare.diffNode(getExpectedNode(), node)).isTrue();

@@ -1,7 +1,8 @@
-package org.ingko.core.listener.wrap;
+package org.ingko.core.listener.wrap.mockito;
 
 import org.ingko.core.listener.interceptor.ParrotMethodInterceptor;
 import org.ingko.core.listener.utils.EnvironmentObjectSpy;
+import org.ingko.core.listener.wrap.SingleNodeWrapper;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;

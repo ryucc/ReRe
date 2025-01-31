@@ -18,7 +18,6 @@ import java.util.Queue;
 import java.util.Set;
 
 /**
- *
  * @param <NODE>
  * @param <MANAGER>
  */
@@ -30,7 +29,7 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode<NODE>, MANAGER ex
     }
 
 
-    public List<Object> getRecordFields(Object cur) throws InitializationException {
+    private List<Object> getRecordFields(Object cur) throws InitializationException {
         RecordComponent[] recordComponents = cur.getClass().getRecordComponents();
         List<Object> fields = new ArrayList<>();
 
@@ -149,7 +148,7 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode<NODE>, MANAGER ex
         return toWrapped;
     }
 
-    public void postAssignChildren(Map<Object, Object> toWrapped) {
+    private void postAssignChildren(Map<Object, Object> toWrapped) {
         for (Object cur : toWrapped.keySet()) {
             Object wrapped = toWrapped.get(cur);
             if (cur.getClass().isArray()) {

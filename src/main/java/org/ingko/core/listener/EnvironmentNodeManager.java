@@ -10,13 +10,17 @@ import org.ingko.core.serde.exceptions.SerializationException;
 
 public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
     private static final DefaultSerde defaultSerde = new DefaultSerde();
-    private final SingleNodeWrapper<EnvironmentNode> leafNodeWrapper;
-    //private final MockitoSingleEnvironmentNodeWrapper wrapper;
+    private SingleNodeWrapper<EnvironmentNode> leafNodeWrapper;
 
     public EnvironmentNodeManager(ParrotMethodInterceptor<EnvironmentNode> listener) {
         this.leafNodeWrapper = new EnvironmentNodeWrapper(listener);
         //this.wrapper = new JavaProxySingleNodeWrapper<>(listener);
         //this.wrapper = new MockitoSingleNodeWrapper<>(listener, EnvironmentObjectSpy.class);
+    }
+    //private final MockitoSingleEnvironmentNodeWrapper wrapper;
+
+    public void setLeafNodeWrapper(SingleNodeWrapper<EnvironmentNode> leafNodeWrapper) {
+        this.leafNodeWrapper = leafNodeWrapper;
     }
 
     @Override

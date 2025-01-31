@@ -1,7 +1,6 @@
 package org.ingko.core.data.objects;
 
 import org.ingko.core.data.methods.EnvironmentMethodCall;
-import org.ingko.core.data.methods.LocalSymbol;
 
 import java.util.ArrayList;
 import java.util.List;

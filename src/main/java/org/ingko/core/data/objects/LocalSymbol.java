@@ -1,12 +1,11 @@
-package org.ingko.core.data.methods;
+package org.ingko.core.data.objects;
 
-import org.ingko.core.data.objects.Member;
-
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class LocalSymbol {
+public class LocalSymbol implements Serializable {
     private final Source source;
     private final int index;
 

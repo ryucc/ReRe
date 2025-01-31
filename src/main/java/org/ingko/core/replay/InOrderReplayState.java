@@ -1,6 +1,6 @@
 package org.ingko.core.replay;
 
-import org.ingko.core.data.methods.LocalSymbol;
+import org.ingko.core.data.objects.LocalSymbol;
 
 import java.util.HashMap;
 import java.util.HashSet;

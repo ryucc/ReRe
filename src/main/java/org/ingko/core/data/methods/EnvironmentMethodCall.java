@@ -1,6 +1,7 @@
 package org.ingko.core.data.methods;
 
 import org.ingko.core.data.objects.EnvironmentNode;
+import org.ingko.core.data.objects.LocalSymbol;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
