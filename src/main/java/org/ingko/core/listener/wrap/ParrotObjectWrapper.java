@@ -7,6 +7,7 @@ import org.ingko.core.listener.exceptions.InitializationException;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.RecordComponent;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -35,7 +36,10 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode<NODE>, MANAGER ex
 
         try {
             for (RecordComponent field : recordComponents) {
-                Object child = field.getAccessor().invoke(cur);
+
+                Method accessor = field.getAccessor();
+                accessor.setAccessible(true);
+                Object child = accessor.invoke(cur);
                 fields.add(child);
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -78,16 +82,20 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode<NODE>, MANAGER ex
                 childCount.put(cur, components.size());
                 for (int i = 0; i < recordComponents.length; i++) {
                     Object child = components.get(i);
-                    RecordComponent recordComponent = recordComponents[i];
                     // Build parent pointer for topological sort
                     if (!parents.containsKey(child)) {
                         parents.put(child, new ArrayList<>());
                     }
                     parents.get(child).add(cur);
+
+                    if (explored.contains(child)) {
+                        curNode.addChild(nodeMap.get(child));
+                        continue;
+                    }
                     front.add(child);
                     // Build object graph
                     // Use runtimeType due to type erasure
-                    NODE childNode = nodeManager.createEmpty(recordComponent.getType(), child);
+                    NODE childNode = nodeManager.createEmpty(recordComponents[i].getType(), child);
                     curNode.addChild(childNode);
                     nodeMap.put(child, childNode);
                 }
@@ -96,6 +104,10 @@ public class ParrotObjectWrapper<NODE extends ParrotObjectNode<NODE>, MANAGER ex
                     for (int i = 0; i < Array.getLength(cur); i++) {
                         Object child = Array.get(cur, i);
                         // TODO when null, get from cur.getClass().getComponentTpe
+                        if (explored.contains(child)) {
+                            curNode.addChild(nodeMap.get(child));
+                            continue;
+                        }
                         Class<?> childClass = child.getClass();
                         NODE childNode = nodeManager.createEmpty(childClass, child);
                         curNode.addChild(childNode);

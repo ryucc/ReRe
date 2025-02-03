@@ -1,10 +1,10 @@
 package org.ingko.core.listener.graph.returnOnly;
 
 
+import org.ingko.api.Parrot;
 import org.ingko.core.data.objects.EnvironmentNode;
 import org.ingko.core.listener.interceptor.EnvironmentObjectListener;
 import org.junit.jupiter.api.Test;
-import org.ingko.testUtils.SimpleTreePrinter;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
@@ -42,12 +42,18 @@ class ClassArrayTests {
         ArrayHolder holder = new ArrayHolder(arr);
         arr[0] = holder;
 
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        environmentObjectListener.createRoot(arr, arr.getClass());
-        environmentObjectListener.createRoot(holder, holder.getClass());
-        EnvironmentNode root1 = environmentObjectListener.getRoot();
-        new SimpleTreePrinter().printTree(root1);
+        Parrot parrot = Parrot.newSession();
+        parrot.createRoot(arr, arr.getClass());
+        parrot.createRoot(holder, holder.getClass());
+        EnvironmentNode arrRoot = parrot.getParrotIntermediateData().roots().getFirst();
+        assertThat(arrRoot.getDirectChildren()).hasSize(1);
+        EnvironmentNode recordRoot = parrot.getParrotIntermediateData().roots().getLast();
+        // TODO minor: global node map?
+        // The same object has 2 nodes because of different roots
+        assertThat(arrRoot == arrRoot.getDirectChildren().getFirst().getDirectChildren().getFirst()).isTrue();
+        assertThat(recordRoot.getDirectChildren().getFirst().getDirectChildren().getFirst() == recordRoot).isTrue();
     }
 
-    record ArrayHolder(Object[] arr) {}
+    record ArrayHolder(Object[] arr) {
+    }
 }
