@@ -62,30 +62,17 @@ public class ReadmeExampleExpected {
 }
 ```
 
-Of course, ReRe is capable of more than just recording primitive value returns. The following
-The latest examples will be in test/java/org/rere/examples. This is so that our examples are always compiled and tested up to date. But here we will still include few examples.
+Of course, ReRe is capable of more than just recording primitive value returns. The following effects are also recorded,
+
+1. Exceptions thrown.
+2. Modifications to method parameters.
+3. Methods of the return values.
+
+The easiest way might be to test it on your code, or look at our examples under test/java/org/rere/examples. This is so that our examples are always compiled and tested up to date. But here we will still include few examples.
 
 ## Limitations
-
-ReRe records interactions through method interception. This means that
-
-## Arrays and Records
-
-Arrays and Records are final by the Java's language design. But some of their properties
-
-## Recording methods with side effects
-
-Coming soon
+### Final objects
+### Global Variables
 
 ## Known Issues
 hashCode() and isEqual() might break, because we are subclassing.
-
-
-
-
-
-TODO:
-custom serialization
-unit tests
-Override final public non-static fields for all classes
-BUG: private classes with no constructors declared will error
