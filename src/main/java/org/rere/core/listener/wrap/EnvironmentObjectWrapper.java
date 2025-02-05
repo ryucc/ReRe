@@ -1,0 +1,10 @@
+package org.rere.core.listener.wrap;
+
+import org.rere.core.data.objects.EnvironmentNode;
+import org.rere.core.listener.EnvironmentNodeManager;
+
+public class EnvironmentObjectWrapper extends TopoOrderObjectWrapper<EnvironmentNode, EnvironmentNodeManager> {
+    public EnvironmentObjectWrapper(EnvironmentNodeManager nodeManager) {
+        super(nodeManager);
+    }
+}

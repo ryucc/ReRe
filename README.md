@@ -1,122 +1,73 @@
-# Java's Little Parrot
-
-TODO: always handle null as a literal
+# ReRe's Readme
 
 ## Introduction
 
-Java's little parrot is a tool to record and replay (most) Java objects.
+ReRe is the abbreviation of **Record** and **Replay**. This started out as a project to replay general java executions, but I ran out of cash and need to find a job now. For now ReRe is released as a code synthesizer.
+
+ReRe uses logic to synthesize code, so it's predictable right or wrong. I hope in the LLM era, this still has its place in the world. It would be my pleasure if anyone favors my hand written code over the modern LLM synthesizers.
+
+Best of luck and I hope this project brings value to you!
 
 
-## Basic Example
+## Usage
 
-Create Mockito java code by replaying executions.
-
-Let's say you have a dependency with random behavior
+To start with ReRe, import the API first.
 
 ```java
-import java.util.Random;
+import org.rere.api.ReRe;
+```
 
-public class Dice {
-    public Dice(){}
+Next create a new instance of ReRe
 
-    public int roll() {
-        return new Random().nextInt(6) + 1;
-    }
+```java
+ReRe rere = ReRe.newSession();
+```
+
+For whichever object you want to record, use the create root API. Here, we are using a dice as example.
+
+```java
+Dice dice = new Dice();
+Dice rereDice = rere.createRoot(dice, Dice.class);
+```
+
+Now rereDice is a copy of dice, that records its behavior. Use the rereDice inplace of dice in your code.
+
+For example,
+
+
+```java
+for (int i = 1; i <= 5; i++) {
+    System.out.println("Rolled " + rereDice.roll());
 }
 ```
 
-It would be nice to have some way to generate the following code by recording a real object.
+After you are done recording, use the createMockito() api
 
 ```java
-public class MockDiceCreator {
-  public Dice create() {
-    Dice mockDice = Mockito.mock(Dice.class);
-    doReturn(2)
-            .doReturn(3)
-            .doReturn(3)
-            .when(mockDice)
-            .roll();
-    return mockDice;
-  }
-}
-```
-Good news!
-This package enables you to do so!
-
-Just modify your running code in 2 steps
-1. Wrapping the target object with a `Listener`
-2. Generating the code with a `CodeSynthesizer`
-
-That's it!
-
-Example:
-
-```java
-import environmentObjectListener.core.org.parrot.Listener;
-import synthesizer.core.org.parrot.CodeSynthesizer;
-
-public class Main {
-    public static void main(String[] args) {
-
-        Dice dice = new Dice();
-
-        Listener environmentObjectListener = new Listener();
-        Dice wrappedDice = environmentObjectListener.wrap(dice);
-        for (int i = 1; i <= 5; i++) {
-            wrappedDice.roll();
-        }
-        CodeSynthesizer synth = new CodeSynthesizer("org.katie.orange.examples", "create");
-        System.out.println(synth.generateMockito(environmentObjectListener));
-    }
-}
+String code = rere.createMockito("org.rere.examples.readme", "create", "ReadmeExampleExpected");
 ```
 
-
-## Recursive Mocking
-
-Orange doesn't only return primitives. Orange mocks all the objects recursively.
-
-For example, having an `HttpClient`, that returns a `HttpResponse`, that returns a `String` body.
-
-```java
-
-import java.net.http.HttpResponse;
-
-public class Main2 {
-    public static void main(String[] args) {
-        HttpClient client = new HttpClient();
-        HttpResponse response = client.get();
-        String body = response.getBody();
-        System.out.println(body);
-    }
-}
-```
-Orange can generate the following code by listening to HttpClient
-
+ReRe will generate the following code,
 
 
 ```java
-public class MockHttpClientCreator {
-  public static HttpClient create() {
-    String string_d510 = "Hello World!";
-    HttpResponse mockHttpResponse_047e = Mockito.mock(HttpResponse.class);
-    doReturn(string_d510).when(mockHttpResponse_047e).getBody();
-    HttpClient mockHttpClient_c11e = Mockito.mock(HttpClient.class);
-    doReturn(mockHttpResponse_047e).when(mockHttpClient_c11e).get();
-    return mockHttpClient_c11e;
+public class ReadmeExampleExpected {
+  private static final DefaultSerde defaultSerde = new DefaultSerde();
+
+  public static ReadmeExample.Dice environmentNode0() {
+    ReadmeExample.Dice mockObject = mock(ReadmeExample.Dice.class);
+    doReturn(4).doReturn(5).doReturn(2).doReturn(4).doReturn(3).when(mockObject).roll();
+    return mockObject;
   }
 }
 ```
 
-As long as your program ends, this tree is will be finite, also the leaf nodes return void or a primitive data type.
+Of course, ReRe is capable of more than just recording primitive value returns. The following
+The latest examples will be in test/java/org/rere/examples. This is so that our examples are always compiled and tested up to date. But here we will still include few examples.
 
-This means that Orange can mock almost any java object! (As long as there are no final classes involved)
+## Limitations
 
-The other limitation is Orange only records behavior that was executed at runtime.
-
-## Recording throws
-
-See test/java/examples/ThrowExample.java
+ReRe records interactions through method interception. This means that
 
 ## Arrays and Records
 
@@ -130,7 +81,6 @@ Coming soon
 hashCode() and isEqual() might break, because we are subclassing.
 
 
-Array + Record loops
 
 
 
