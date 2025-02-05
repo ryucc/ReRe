@@ -74,5 +74,9 @@ The easiest way might be to test it on your code, or look at our examples under 
 ### Final objects
 ### Global Variables
 
+## Contributions
+
+Please raise bug reports and issues first. I'm not ready to accept PRs yet.
+
 ## Known Issues
 hashCode() and isEqual() might break, because we are subclassing.

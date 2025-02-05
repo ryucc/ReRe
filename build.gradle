@@ -1,6 +1,8 @@
 plugins {
     id 'java'
     id 'jacoco'
+    id 'java-library'
+    id 'maven-publish'
 }
 
 jacocoTestReport {
@@ -12,11 +14,24 @@ jacocoTestReport {
     }
 }
 
-group = 'org.katie.orange'
-version = '1.0-SNAPSHOT'
+group = 'org.rere'
+version = '0.0.1'
 
 repositories {
     mavenCentral()
+}
+
+publishing {
+    publications {
+        library(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url = layout.buildDirectory.dir("publishing-repository")
+        }
+    }
 }
 
 dependencies {
