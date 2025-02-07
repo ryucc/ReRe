@@ -9,5 +9,15 @@ import org.rere.core.data.objects.EnvironmentNode;
 
 import java.util.List;
 
-public record ReReIntermediateData(List<EnvironmentNode> roots) {
+public class ReReIntermediateData {
+    private final List<EnvironmentNode> roots;
+
+    public ReReIntermediateData(List<EnvironmentNode> roots) {
+        this.roots = roots;
+    }
+
+    public List<EnvironmentNode> roots() {
+        return roots;
+    }
+
 }

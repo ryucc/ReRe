@@ -61,9 +61,10 @@ public class Signature implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof Signature other)) {
+        if (!(obj instanceof Signature)) {
             return false;
         }
+        Signature other = (Signature) obj;
         if (!other.getMethodName().equals(this.methodName)) {
             return false;
         }

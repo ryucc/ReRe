@@ -5,7 +5,7 @@
 
 package org.rere.core.synthesizer.mockito;
 
-import com.palantir.javapoet.MethodSpec;
+import com.squareup.javapoet.MethodSpec;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.methods.Signature;
 

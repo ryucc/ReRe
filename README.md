@@ -62,7 +62,9 @@ public class ReadmeExampleExpected {
 }
 ```
 
-Of course, ReRe is capable of more than just recording primitive value returns. The following effects are also recorded,
+
+Of course, ReRe is capable of more than just recording primitive value returns. The next example is when the object throws an exception
+ReRe will generate the following code,
 
 1. Exceptions thrown.
 2. Modifications to method parameters.
@@ -74,9 +76,15 @@ The easiest way might be to test it on your code, or look at our examples under 
 ### Final objects
 ### Global Variables
 
-## Contributions
-
-Please raise bug reports and issues first. I'm not ready to accept PRs yet.
-
 ## Known Issues
 hashCode() and isEqual() might break, because we are subclassing.
+
+## Contributions
+
+Please raise bug reports and issues first.
+
+
+
+## Special Thanks
+
+Thanks to all my friends and family who I kept pitching this idea to. The support and opposition both help me decide what to spend time on.

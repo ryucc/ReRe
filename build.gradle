@@ -5,6 +5,12 @@ plugins {
     id 'maven-publish'
 }
 
+compileJava {
+
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
+
 jacocoTestReport {
     dependsOn test // tests are required to run before generating the report
     reports {
@@ -21,15 +27,15 @@ repositories {
     mavenCentral()
 }
 
+java {
+    withSourcesJar()
+    // and/or analogously use “withJavadocJar()” to get a “javadocJar” task
+}
+
 publishing {
     publications {
         library(MavenPublication) {
             from components.java
-        }
-    }
-    repositories {
-        maven {
-            url = layout.buildDirectory.dir("publishing-repository")
         }
     }
 }
@@ -47,8 +53,10 @@ dependencies {
     // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy-gradle-plugin
     runtimeOnly group: 'net.bytebuddy', name: 'byte-buddy-gradle-plugin', version: '1.17.0'
     implementation 'net.bytebuddy:byte-buddy:1.17.0'
-    // https://mvnrepository.com/artifact/com.squareup/javapoet
-    implementation group: 'com.palantir.javapoet', name: 'javapoet', version: '0.5.0'
+    // https://mvnrepository.com/artifact/com.squareupup/javapoet
+    //implementation group: 'com.squareup.javapoet', name: 'javapoet', version: '0.5.0'
+    //Migrate to palantir, if java 11 version is availiable
+    implementation group: 'com.squareup', name: 'javapoet', version: '1.13.0'
 }
 
 test {

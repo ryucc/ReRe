@@ -5,11 +5,20 @@
 
 package org.rere.core.synthesizer.mockito.nodes;
 
-import com.palantir.javapoet.TypeSpec;
+import com.squareup.javapoet.TypeSpec;
 import org.rere.core.data.objects.EnvironmentNode;
 
 public interface EnvironmentNodeSynthesizer {
     SynthResult generateEnvironmentNode(TypeSpec.Builder typeBuilder, EnvironmentNode root);
-    record SynthResult(String methodName) {
+    class SynthResult {
+        public SynthResult(String methodName) {
+            this.methodName = methodName;
+        }
+
+        public String methodName() {
+            return methodName;
+        }
+
+        private final String methodName;
     }
 }

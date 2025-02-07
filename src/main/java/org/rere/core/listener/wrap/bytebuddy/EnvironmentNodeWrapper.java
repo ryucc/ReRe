@@ -17,7 +17,8 @@ import org.rere.core.listener.utils.ObjectSpy;
 import org.rere.core.listener.wrap.SingleNodeWrapper;
 
 import java.lang.reflect.Method;
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 
 public class EnvironmentNodeWrapper implements SingleNodeWrapper<EnvironmentNode> {
@@ -25,8 +26,15 @@ public class EnvironmentNodeWrapper implements SingleNodeWrapper<EnvironmentNode
 
     public EnvironmentNodeWrapper(ReReMethodInterceptor<EnvironmentNode> listener) {
         this.classRepo = new ClassRepo(new Listener(listener),
-                Map.of(EnvironmentObjectSpy.FIELD, EnvironmentObjectSpy.TYPE, ObjectSpy.FIELD, ObjectSpy.TYPE),
-                List.of(EnvironmentObjectSpy.class, ObjectSpy.class));
+                initClassSpecMap(),
+                Arrays.asList(EnvironmentObjectSpy.class, ObjectSpy.class));
+    }
+
+    private static Map<String, Class<?>> initClassSpecMap() {
+        Map<String, Class<?>> spec = new HashMap<>();
+        spec.put(EnvironmentObjectSpy.FIELD, EnvironmentObjectSpy.TYPE);
+        spec.put(ObjectSpy.FIELD, ObjectSpy.TYPE);
+        return spec;
     }
 
     @Override

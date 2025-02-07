@@ -12,6 +12,12 @@ import java.io.Serializable;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ClassUtilsTest {
+    record SomeRecord(){}
+    @Test
+    public void testIsRecord(){
+        assertThat(ClassUtils.isRecord(SomeRecord.class)).isTrue();
+        assertThat(ClassUtils.isRecord(int.class)).isFalse();
+    }
     @Test
     public void testIsPrimitive(){
         assertThat(ClassUtils.isWrapperOrPrimitive(Integer.class)).isTrue();
@@ -22,15 +28,6 @@ class ClassUtilsTest {
         assertThat(ClassUtils.isWrapperOrPrimitive(Character.class)).isTrue();
         assertThat(ClassUtils.isWrapperOrPrimitive(Byte.class)).isTrue();
         assertThat(ClassUtils.isWrapperOrPrimitive(this.getClass())).isFalse();
-
-        int[][] a = new int[10][100];
-
-        Class<?> cls = a.getClass();
-        System.out.println(cls.isRecord());
-        System.out.println(cls.getComponentType());
-        System.out.println(cls.getComponentType().getComponentType());
-        System.out.println(Serializable.class.isAssignableFrom(cls));
-        System.out.println(Serializable.class.isAssignableFrom(int.class));
     }
 
 }

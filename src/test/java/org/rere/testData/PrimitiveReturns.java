@@ -32,7 +32,7 @@ public class PrimitiveReturns {
         wrapped.getTwo();
         wrapped.getString();
 
-        EnvironmentNode node = rere.getReReIntermediateData().roots().getFirst();
+        EnvironmentNode node = rere.getReReIntermediateData().roots().get(0);
         GraphCompare graphCompare = new GraphCompare();
         assertThat(graphCompare.diffNode(getExpectedNode(), node)).isTrue();
     }

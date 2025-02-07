@@ -21,7 +21,7 @@ class ClassArrayTests {
         ReRe rere = ReRe.newSession();
         rere.createRoot(arr, arr.getClass());
 
-        EnvironmentNode root = rere.getReReIntermediateData().roots().getFirst();
+        EnvironmentNode root = rere.getReReIntermediateData().roots().get(0);
         assertThat(root.getDirectChildren()).hasSize(5);
 
     }
@@ -34,7 +34,7 @@ class ClassArrayTests {
 
         rere.createRoot(arr, arr.getClass());
 
-        EnvironmentNode root = rere.getReReIntermediateData().roots().getFirst();
+        EnvironmentNode root = rere.getReReIntermediateData().roots().get(0);
         assertThat(root.getDirectChildren()).hasSize(2);
     }
 
@@ -48,13 +48,13 @@ class ClassArrayTests {
         ReRe rere = ReRe.newSession();
         rere.createRoot(arr, arr.getClass());
         rere.createRoot(holder, holder.getClass());
-        EnvironmentNode arrRoot = rere.getReReIntermediateData().roots().getFirst();
+        EnvironmentNode arrRoot = rere.getReReIntermediateData().roots().get(0);
         assertThat(arrRoot.getDirectChildren()).hasSize(1);
         EnvironmentNode recordRoot = rere.getReReIntermediateData().roots().getLast();
         // TODO minor: global node map?
         // The same object has 2 nodes because of different roots
-        assertThat(arrRoot == arrRoot.getDirectChildren().getFirst().getDirectChildren().getFirst()).isTrue();
-        assertThat(recordRoot.getDirectChildren().getFirst().getDirectChildren().getFirst() == recordRoot).isTrue();
+        assertThat(arrRoot == arrRoot.getDirectChildren().get(0).getDirectChildren().get(0)).isTrue();
+        assertThat(recordRoot.getDirectChildren().get(0).getDirectChildren().get(0) == recordRoot).isTrue();
     }
 
     record ArrayHolder(Object[] arr) {

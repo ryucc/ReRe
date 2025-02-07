@@ -41,7 +41,7 @@ public class ReRe {
 
     public String createMockito(String packageName, String methodName, String fileName) {
         MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer(packageName, methodName, fileName);
-        return mockitoSynthesizer.generateMockito(reReIntermediateData.roots().getFirst());
+        return mockitoSynthesizer.generateMockito(reReIntermediateData.roots().get(0));
     }
 
 

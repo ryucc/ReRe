@@ -26,19 +26,19 @@ public class EnvironmentObjectListenerRecordTests {
         RecordA wrappedA = rere.createRoot(a, RecordA.class);
         assertThat(wrappedA).isEqualTo(a);
 
-        EnvironmentNode environmentNode = rere.getReReIntermediateData().roots().getFirst();
+        EnvironmentNode environmentNode = rere.getReReIntermediateData().roots().get(0);
 
         assertThat(environmentNode.getRuntimeClass()).isEqualTo(RecordA.class);
         assertThat(environmentNode.getDirectChildren())
                 .hasSize(2);
-        assertThat(environmentNode.getDirectChildren().getFirst().getRuntimeClass())
+        assertThat(environmentNode.getDirectChildren().get(0).getRuntimeClass())
                 .isEqualTo(int.class);
-        assertThat(environmentNode.getDirectChildren().getFirst().getValue())
+        assertThat(environmentNode.getDirectChildren().get(0).getValue())
                 .isEqualTo(Integer.valueOf(a.a()).toString());
         EnvironmentNode bEnvironmentNode = environmentNode.getDirectChildren().getLast();
         assertThat(bEnvironmentNode.getRuntimeClass())
                 .isEqualTo(RecordB.class);
-        assertThat(bEnvironmentNode.getDirectChildren().getFirst().getRuntimeClass())
+        assertThat(bEnvironmentNode.getDirectChildren().get(0).getRuntimeClass())
                 .isEqualTo(int.class);
         assertThat(bEnvironmentNode.getDirectChildren().getFirst().getValue())
                 .isEqualTo(Integer.valueOf(b.a()).toString());

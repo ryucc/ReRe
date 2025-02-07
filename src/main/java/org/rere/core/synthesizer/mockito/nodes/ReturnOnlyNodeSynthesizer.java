@@ -5,8 +5,8 @@
 
 package org.rere.core.synthesizer.mockito.nodes;
 
-import com.palantir.javapoet.MethodSpec;
-import com.palantir.javapoet.TypeSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.synthesizer.mockito.MockitoSynthesizer;

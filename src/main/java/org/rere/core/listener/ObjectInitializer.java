@@ -8,18 +8,18 @@ package org.rere.core.listener;
 import org.rere.core.listener.exceptions.InitializationException;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.RecordComponent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class ObjectInitializer {
-    public static <T> T initRecord(Class<T> clazz,
-                                   List<Object> params) throws InitializationException {
-        RecordComponent[] components = clazz.getRecordComponents();
+    public static <T> T initRecord(Class<T> clazz, List<Object> params) throws InitializationException {
+        // Using java 5 syntax to support records
+        Field[] components = clazz.getDeclaredFields();
         try {
-            Class<?>[] paramTypes = Arrays.stream(components).map(RecordComponent::getType).toArray(Class<?>[]::new);
+            Class<?>[] paramTypes = Arrays.stream(components).map(Field::getType).toArray(Class<?>[]::new);
             Constructor<?> constructor = clazz.getDeclaredConstructor(paramTypes);
             constructor.setAccessible(true);
             return (T) constructor.newInstance(params.toArray());
@@ -27,7 +27,8 @@ public class ObjectInitializer {
             // Can't find constructor for Record
             // should never happen
             throw new InitializationException("No constructor found for record.", e);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | IllegalArgumentException e  ) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 IllegalArgumentException e) {
             // unable to create mock
             throw new InitializationException("Constructor Exists, but error while invocation.", e);
         }

@@ -72,13 +72,14 @@ public class LocalSymbol implements Serializable {
 
     @Override
     public String toString() {
-        return switch (source) {
-            case LOCAL_ENV -> "local " + index;
-            case PARAMETER -> "param " + index;
-            case RETURN_VALUE -> "return " + index;
-            case THROW -> "throw " + index;
-            default -> "unknown";
-        };
+        if(source == Source.LOCAL_ENV) {
+            return "local" + index;
+        } else if(source == Source.PARAMETER) {
+            return "param" + index;
+        } else if(source == Source.THROW) {
+            return "throw" + index;
+        }
+        return "unknown";
     }
 
     public int getIndex() {

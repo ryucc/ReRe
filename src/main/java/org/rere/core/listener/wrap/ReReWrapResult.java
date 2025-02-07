@@ -5,5 +5,21 @@
 
 package org.rere.core.listener.wrap;
 
-public record ReReWrapResult<T, NODE>(T wrapped, NODE node) {
+public class ReReWrapResult<T, NODE> {
+    public ReReWrapResult(T wrapped, NODE node) {
+        this.wrapped = wrapped;
+        this.node = node;
+    }
+
+    final T wrapped;
+    final NODE node;
+
+    public T wrapped() {
+        return wrapped;
+    }
+
+    public NODE node() {
+        return node;
+    }
+
 }

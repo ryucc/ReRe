@@ -6,22 +6,23 @@
 package org.rere.core.listener.interceptor;
 
 import org.rere.core.data.methods.EnvironmentMethodCall;
-import org.rere.core.data.objects.LocalSymbol;
 import org.rere.core.data.methods.UserMethodCall;
 import org.rere.core.data.objects.ArrayMember;
 import org.rere.core.data.objects.EnvironmentNode;
+import org.rere.core.data.objects.LocalSymbol;
 import org.rere.core.data.objects.RecordMember;
 import org.rere.core.data.objects.UserNode;
 import org.rere.core.listener.EnvironmentNodeManager;
 import org.rere.core.listener.UserNodeManager;
+import org.rere.core.listener.utils.ClassUtils;
 import org.rere.core.listener.utils.EnvironmentObjectSpy;
 import org.rere.core.listener.utils.UserObjectSpy;
-import org.rere.core.listener.wrap.TopoOrderObjectWrapper;
 import org.rere.core.listener.wrap.ReReWrapResult;
+import org.rere.core.listener.wrap.TopoOrderObjectWrapper;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.RecordComponent;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -65,13 +66,13 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
                         nodeQueue.add(child);
                     }
                 }
-            } else if (cur.getDeclaredClass().isRecord()) {
-                RecordComponent[] recordComponents = cur.getDeclaredClass().getRecordComponents();
+            } else if (ClassUtils.isRecord(cur.getDeclaredClass())) {
+                Field[] recordComponents = cur.getDeclaredClass().getDeclaredFields();
                 for (int i = 0; i < cur.getDirectChildren().size(); i++) {
                     UserNode child = cur.getDirectChildren().get(i);
                     if (!explored.contains(child)) {
                         LocalSymbol childSymbol = cur.getSymbol().copy();
-                        RecordComponent component = recordComponents[i];
+                        Field component = recordComponents[i];
                         childSymbol.appendPath(new RecordMember(component.getName()));
                         child.setSymbol(childSymbol);
                         nodeQueue.add(child);

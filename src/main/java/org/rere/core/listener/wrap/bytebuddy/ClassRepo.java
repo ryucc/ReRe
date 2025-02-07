@@ -19,6 +19,7 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.bytebuddy.matcher.ElementMatchers.anyOf;
@@ -92,7 +93,7 @@ public class ClassRepo {
 
             List<Method> selfDefinedMethods = interfaces.stream()
                     .flatMap(clazz -> Stream.of(clazz.getMethods()))
-                    .toList();
+                    .collect(Collectors.toList());
 
             DynamicType.Builder<?> builder = new ByteBuddy().subclass(target)
                     //TODO: only skip for Throwable

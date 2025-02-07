@@ -43,7 +43,7 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
     }
 
     public EnvironmentNode getRoot() {
-        return roots.getFirst();
+        return roots.get(0);
     }
 
     public <T> T createRoot(Object original, Class<T> targetClass) {

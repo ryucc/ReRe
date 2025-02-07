@@ -9,11 +9,10 @@ import org.rere.core.data.objects.ReReObjectNode;
 import org.rere.core.listener.NodeManager;
 import org.rere.core.listener.ObjectInitializer;
 import org.rere.core.listener.exceptions.InitializationException;
+import org.rere.core.listener.utils.ClassUtils;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.RecordComponent;
+import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @param <NODE>
@@ -36,18 +36,18 @@ public class TopoOrderObjectWrapper<NODE extends ReReObjectNode<NODE>, MANAGER e
 
 
     private List<Object> getRecordFields(Object cur) throws InitializationException {
-        RecordComponent[] recordComponents = cur.getClass().getRecordComponents();
+        // Using java 5 syntax to support records
+        Field[] recordComponents = cur.getClass().getDeclaredFields();
         List<Object> fields = new ArrayList<>();
 
         try {
-            for (RecordComponent field : recordComponents) {
+            for (Field field : recordComponents) {
 
-                Method accessor = field.getAccessor();
-                accessor.setAccessible(true);
-                Object child = accessor.invoke(cur);
+                field.setAccessible(true);
+                Object child = field.get(cur);
                 fields.add(child);
             }
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (IllegalAccessException e) {
             // Fail object creation here.
             throw new InitializationException("Failed to access member of record");
         }
@@ -81,9 +81,9 @@ public class TopoOrderObjectWrapper<NODE extends ReReObjectNode<NODE>, MANAGER e
                 continue;
             }
             explored.add(cur);
-            if (cur.getClass().isRecord()) {
+            if (ClassUtils.isRecord(cur.getClass())) {
                 List<Object> components = getRecordFields(cur);
-                RecordComponent[] recordComponents = cur.getClass().getRecordComponents();
+                Field[] recordComponents = cur.getClass().getDeclaredFields();
                 childCount.put(cur, components.size());
                 for (int i = 0; i < recordComponents.length; i++) {
                     Object child = components.get(i);
@@ -138,9 +138,10 @@ public class TopoOrderObjectWrapper<NODE extends ReReObjectNode<NODE>, MANAGER e
             Object wrapped;
             if (cur.getClass().isArray()) {
                 wrapped = Array.newInstance(cur.getClass().getComponentType(), Array.getLength(cur));
-            } else if (cur.getClass().isRecord()) {
+            } else if (ClassUtils.isRecord(cur.getClass())) {
                 List<Object> components = getRecordFields(cur);
-                List<Object> wrappedComponents = components.stream().map(toWrapped::get).toList();
+                List<Object> wrappedComponents = components.stream().map(toWrapped::get)
+                        .collect(Collectors.toList());
                 wrapped = ObjectInitializer.initRecord(cur.getClass(), wrappedComponents);
             } else {
                 NODE node = toNode.get(cur);
@@ -200,8 +201,37 @@ public class TopoOrderObjectWrapper<NODE extends ReReObjectNode<NODE>, MANAGER e
         }
     }
 
-    record TopSortData<NODE>(Queue<Object> topologicalReady, Map<Object, Integer> childCount,
-                             Map<Object, List<Object>> parents, Map<Object, NODE> nodeMap) {
-    }
+    class TopSortData<NODE> {
+        protected final Queue<Object> topologicalReady;
+        protected final Map<Object, Integer> childCount;
+        protected final Map<Object, List<Object>> parents;
+        protected final Map<Object, NODE> nodeMap;
 
+        public TopSortData(Queue<Object> topologicalReady,
+                           Map<Object, Integer> childCount,
+                           Map<Object, List<Object>> parents,
+                           Map<Object, NODE> nodeMap) {
+            this.topologicalReady = topologicalReady;
+            this.childCount = childCount;
+            this.parents = parents;
+            this.nodeMap = nodeMap;
+        }
+
+        public Queue<Object> topologicalReady() {
+            return topologicalReady;
+        }
+
+        public Map<Object, Integer> childCount() {
+            return childCount;
+        }
+
+        public Map<Object, List<Object>> parents() {
+            return parents;
+        }
+
+        public Map<Object, NODE> nodeMap() {
+            return nodeMap;
+        }
+
+    }
 }

@@ -5,10 +5,10 @@
 
 package org.rere.core.synthesizer.mockito;
 
-import com.palantir.javapoet.FieldSpec;
-import com.palantir.javapoet.JavaFile;
-import com.palantir.javapoet.MethodSpec;
-import com.palantir.javapoet.TypeSpec;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.methods.Signature;
 import org.rere.core.data.objects.EnvironmentNode;
@@ -93,6 +93,21 @@ public class MockitoSynthesizer {
         return javaFile.toString();
     }
 
-    public record MethodGroup(Signature signature, List<EnvironmentMethodCall> methodCalls) {
+    public static class MethodGroup {
+        public MethodGroup(Signature signature, List<EnvironmentMethodCall> methodCalls) {
+            this.signature = signature;
+            this.methodCalls = methodCalls;
+        }
+
+        public Signature signature() {
+            return signature;
+        }
+
+        public List<EnvironmentMethodCall> methodCalls() {
+            return methodCalls;
+        }
+
+        private final Signature signature;
+        private final List<EnvironmentMethodCall> methodCalls;
     }
 }

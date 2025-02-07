@@ -5,10 +5,10 @@
 
 package org.rere.core.synthesizer.mockito.methods;
 
-import com.palantir.javapoet.MethodSpec;
-import com.palantir.javapoet.ParameterizedTypeName;
-import com.palantir.javapoet.TypeName;
-import com.palantir.javapoet.TypeSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.objects.LocalSymbol;
 import org.rere.core.data.methods.UserMethodCall;
@@ -37,12 +37,7 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
     }
 
     private String symbolNamer(LocalSymbol s) {
-        return switch (s.getSource()) {
-            case LOCAL_ENV -> "local";
-            case PARAMETER -> "param";
-            case RETURN_VALUE -> "return";
-            default -> "";
-        } + s.getIndex() + s.getAccessPath().stream().map(Member::getPath).collect(Collectors.joining());
+        return s.toString() + s.getAccessPath().stream().map(Member::getPath).collect(Collectors.joining());
     }
 
     public Set<LocalSymbol> exploredUsedSymbols(EnvironmentMethodCall rootMethodCall, List<UserMethodCall> userMethodCalls) {

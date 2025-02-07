@@ -5,8 +5,8 @@
 
 package org.rere.core.synthesizer.mockito.nodes;
 
-import com.palantir.javapoet.MethodSpec;
-import com.palantir.javapoet.TypeSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.objects.LocalSymbol;
 import org.rere.core.data.methods.MethodResult;
@@ -73,7 +73,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
             variableNames.put(cur, objectName);
             front.addAll(cur.getDirectChildren());
             methodBuilder.addStatement("$T $L", cur.getRuntimeClass(), objectName);
-            if (!cur.getRuntimeClass().isRecord() || cur.getDirectChildren().isEmpty()) {
+            if (!ClassUtils.isRecord(cur.getRuntimeClass()) || cur.getDirectChildren().isEmpty()) {
                 readyQueue.add(cur);
             } else {
                 for (EnvironmentNode child : cur.getDirectChildren()) {
@@ -85,7 +85,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         List<EnvironmentNode> arrays = new ArrayList<>();
         while (!readyQueue.isEmpty()) {
             EnvironmentNode cur = readyQueue.poll();
-            if (cur.getRuntimeClass().isRecord()) {
+            if (ClassUtils.isRecord(cur.getRuntimeClass())) {
                 String children = cur.getDirectChildren()
                         .stream()
                         .map(c -> variableNames.get(c))
@@ -129,7 +129,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         if (ClassUtils.isStringOrPrimitive(root.getRuntimeClass())) {
             return new SynthResult(root.getValue());
         }
-        if (root.getRuntimeClass().isRecord() || root.getRuntimeClass().isArray()) {
+        if (ClassUtils.isRecord(root.getRuntimeClass()) || root.getRuntimeClass().isArray()) {
             return generateRecordEnvironmentNode(typeBuilder, root);
         }
         return generateLeafEnvironmentNode(typeBuilder, root);
