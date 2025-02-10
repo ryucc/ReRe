@@ -36,7 +36,7 @@ For whichever object you want to record, use the create root API. Here, we are u
 
 ```java
 Dice dice = new Dice();
-Dice rereDice = rere.createRoot(dice, Dice.class);
+Dice rereDice = rere.createSpiedObject(dice, Dice.class);
 ```
 
 Now rereDice is a copy of dice, that records its behavior. Use the rereDice inplace of dice in your code.
@@ -45,15 +45,15 @@ For example,
 
 
 ```java
-for (int i = 1; i <= 5; i++) {
-    System.out.println("Rolled " + rereDice.roll());
+for (int i = 0; i < 5; i++) {
+    rereDice.roll();
 }
 ```
 
 After you are done recording, use the createMockito() api
 
 ```java
-String code = rere.createMockito("org.rere.examples.readme", "create", "ReadmeExampleExpected");
+String code = rere.exportMockito("org.rere.examples.readme", "create", "ReadmeExampleExpected");
 ```
 
 ReRe will generate the following code,
@@ -150,8 +150,16 @@ All our examples are also run as unit tests, please check test/java/org/rere/exa
 
 ## Limitations
 ### Final objects
-### Multithreading
+We cannot record the behavior of final objects, since the lower level implementation of interception is done by subclassing.
+We will in the future, provide custom serialization as a workaround.
+
 ### Global Variables
+Modifications to global variables as a side effect are not recorded. In the future, we may provide a solution for users
+to manually mark the possible global variables that are modified, and record the side effects.
+
+### Multithreading
+ReRe matches methods by the call order, since matching variables is probably an undecidable problem. The inconsistency of
+multithreaded programs may be a problem.
 
 ## Known Issues
 hashCode() and isEqual() might break, because we are subclassing.
@@ -167,6 +175,12 @@ Please raise issues for bugs, ask questions for usage. Let's talk about the prob
 I'll set up a buy me a coffee link later. [link pending]
 
 Right now any job referrals would help. Here is my resume [link pending]
+
+There are also some projects that need funding:
+
+1. Python version of ReRe
+1. JavaScript version of ReRe
+1. Unnamed project - reconstruct code execution paths from log4j logs. (This is not an undecidable problem, given the line numbers.)
 
 ## Special Thanks
 
