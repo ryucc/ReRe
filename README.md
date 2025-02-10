@@ -60,7 +60,7 @@ After you are done recording, use the createMockito() api
 String code = rere.exportMockito("org.rere.examples.readme", "create", "ReadmeExampleExpected");
 ```
 
-ReRe will generate the following code,
+ReRe will generate the following [code](src/test/java/org/rere/examples/readme/),
 
 
 ```java
@@ -78,7 +78,7 @@ public class ReadmeExampleExpected {
 
 Of course, ReRe is capable of more than just recording primitive value returns.
 
-This following code is from [ThrowExample.java](), showing that ReRe can also capture throw behaviors.
+This following code is from [ThrowExample.java](src/test/java/org/rere/examples/exception/), showing that ReRe can also capture throw behaviors.
 
 ```java
 
@@ -97,7 +97,7 @@ public class ThrowExampleExpected {
 }
 ```
 
-This following code is from [SortExample.java](src/test/org/rere/examples/sort/), showing that ReRe also captures modifications to the parameters.
+This following code is from [SortExample.java](src/test/java/org/rere/examples/sort/), showing that ReRe also captures modifications to the parameters.
 
 ```java
 public class SortExampleExpected {
@@ -127,7 +127,7 @@ public class SortExampleExpected {
 }
 ```
 
-This last example is from [IdentityFunctionExample.java](), show casing ReRe can also record the behavior of
+This last example is from [IdentityFunctionExample.java](src/test/java/org/rere/examples/identityFunction/), show casing ReRe can also record the behavior of
 identity functions. This is important, since returning an object copy instead of an object with the same reference may
 cause replay failures.
 
