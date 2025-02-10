@@ -15,10 +15,10 @@ public class IdentityFunctionExample {
         List<Integer> arr = new ArrayList<>(List.of(3, 1, 2));
         IdentityFunction identityFunction = new IdentityFunction();
 
-        ReRe rere = ReRe.newSession();
-        IdentityFunction wrapped = rere.createRoot(identityFunction, identityFunction.getClass());
+        ReRe rere = new ReRe();
+        IdentityFunction wrapped = rere.createSpiedObject(identityFunction, identityFunction.getClass());
         wrapped.call(arr);
-        String code = rere.createMockito("org.rere.examples.identityFunction",
+        String code = rere.exportMockito("org.rere.examples.identityFunction",
                 "create",
                 "IdentityFunctionExampleExpected");
         System.out.println(code);

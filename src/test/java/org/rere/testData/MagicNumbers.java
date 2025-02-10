@@ -133,12 +133,12 @@ public class MagicNumbers {
 
         MyInt a = new MyInt(100);
 
-        ReRe rere = ReRe.newSession();
-        MathMagic wrapped = rere.createRoot(magic, MathMagic.class);
+        ReRe rere = new ReRe();
+        MathMagic wrapped = rere.createSpiedObject(magic, MathMagic.class);
 
         wrapped.magic(a);
 
-        EnvironmentNode node = rere.getReReIntermediateData().roots().getFirst();
+        EnvironmentNode node = rere.getReReRecordData().roots().getFirst();
         GraphCompare graphCompare = new GraphCompare();
 
         assertThat(graphCompare.diffNode(getExpectedNode(), node)).isTrue();

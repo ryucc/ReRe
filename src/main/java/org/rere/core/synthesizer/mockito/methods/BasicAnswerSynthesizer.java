@@ -118,28 +118,30 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
         Type returnType = userMethodCall.getReturnType();
 
         String source = symbolNamer(userMethodCall.getSource());
+        List<LocalSymbol> paramSources = userMethodCall.getParameters();
         List<EnvironmentNode> locals = userMethodCall.getLocalParameters();
         // Generate parameter string
-        List<String> params = new ArrayList<>();
-        for (int i = 0; i < locals.size(); i++) {
-            LocalSymbol symbol = userMethodCall.getParameters().get(i);
+        List<String> paramNames = new ArrayList<>();
+        for (int i = 0; i < paramSources.size(); i++) {
+            LocalSymbol symbol = paramSources.get(i);
             if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV && locals.get(symbol.getIndex()).isTerminal()) {
-                params.add(locals.get(symbol.getIndex()).getValue());
+                paramNames.add(locals.get(symbol.getIndex()).getValue());
             } else if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV) {
                 String method = environmentNodeSynthesizer.generateEnvironmentNode(typeBuilder, locals.get(i)).methodName();
-                params.add(method);
+                paramNames.add(method);
             } else {
-                params.add(symbolNamer(symbol));
+                paramNames.add(symbolNamer(symbol));
             }
         }
-        String paramString = String.join(", ", params);
+        String paramString = String.join(", ", paramNames);
         String returnName = symbolNamer(returnSymbol);
         if (returnType.equals(void.class) || returnType.equals(Void.class) ||!explored.contains(returnSymbol)) {
             methodBuilder.addStatement("$L.$L($L)", source, userMethodCall.getMethodName(), paramString);
         } else {
-            methodBuilder.addStatement("$T $L = $L.$L($L)",
+            methodBuilder.addStatement("$T $L = ($T) $L.$L($L)",
                     returnType,
                     returnName,
+                    returnType,
                     source,
                     userMethodCall.getMethodName(),
                     paramString);

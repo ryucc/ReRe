@@ -74,6 +74,8 @@ public class LocalSymbol implements Serializable {
     public String toString() {
         if(source == Source.LOCAL_ENV) {
             return "local" + index;
+        } else if(source == Source.RETURN_VALUE) {
+            return "return" + index;
         } else if(source == Source.PARAMETER) {
             return "param" + index;
         } else if(source == Source.THROW) {

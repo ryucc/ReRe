@@ -12,15 +12,15 @@ public class ParameterMatchingExample {
     public static void main(String[] args) {
 
         PrivateDice dice = new PrivateDice();
-        ReRe rere = ReRe.newSession();
-        PrivateDice wrappedDice = rere.createRoot(dice, PrivateDice.class);
+        ReRe rere = new ReRe();
+        PrivateDice wrappedDice = rere.createSpiedObject(dice, PrivateDice.class);
 
 
         System.out.println("/*");
         System.out.println("Rolled " + wrappedDice.roll(1, 1.0, 1L, (short) 1, 'a', (byte) 0, true, 1, "abc"));
         System.out.println("*/");
 
-        String code = rere.createMockito("org.rere.examples.parameterMatching",
+        String code = rere.exportMockito("org.rere.examples.parameterMatching",
                 "create",
                 "ParameterMatchingExampleExpected");
         System.out.println(code);

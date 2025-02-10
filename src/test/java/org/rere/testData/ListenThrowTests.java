@@ -21,8 +21,8 @@ public class ListenThrowTests {
 
         ErrorDice dice = new ErrorDice();
 
-        ReRe rere = ReRe.newSession();
-        ErrorDice wrappedDice = rere.createRoot(dice, ErrorDice.class);
+        ReRe rere = new ReRe();
+        ErrorDice wrappedDice = rere.createSpiedObject(dice, ErrorDice.class);
 
 
         for (int i = 1; i <= 2; i++) {
@@ -33,7 +33,7 @@ public class ListenThrowTests {
             }
         }
 
-        EnvironmentNode node = rere.getReReIntermediateData().roots().getFirst();
+        EnvironmentNode node = rere.getReReRecordData().roots().getFirst();
 
 
         EnvironmentNode expectedNode = getExpectedNode();

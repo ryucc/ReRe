@@ -38,21 +38,34 @@ public class UserMethodCall implements Serializable {
 
     private final String methodName;
 
-    public Type getReturnType() {
+    public Class<?> getReturnType() {
         return returnType;
     }
 
-    private final Type returnType;
+    public void setReturnType(Class<?> returnType) {
+        this.returnType = returnType;
+    }
+
+    private Class<?> returnType;
 
     public UserMethodCall(LocalSymbol source,
                           String methodName,
                           List<EnvironmentNode> local,
                           List<LocalSymbol> parameters,
-                          Type returnType) {
+                          Class<?> returnType) {
         this.source = source;
         this.localParameters = local;
         this.methodName = methodName;
         this.parameters = parameters;
         this.returnType = returnType;
+    }
+    public UserMethodCall(LocalSymbol source,
+                           String methodName,
+                           List<EnvironmentNode> local,
+                           List<LocalSymbol> parameters) {
+        this.source = source;
+        this.localParameters = local;
+        this.methodName = methodName;
+        this.parameters = parameters;
     }
 }

@@ -118,16 +118,13 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
 
         EnvironmentMethodCall scopeMethod = userNode.getScope();
 
-        {
-            String methodName = orignalMethod.getName();
-            LocalSymbol operand = userNode.getSymbol();
-            UserMethodCall userMethodCall = new UserMethodCall(operand,
-                    methodName,
-                    environmentNodes,
-                    parameterSourceList,
-                    orignalMethod.getGenericReturnType());
-            scopeMethod.addUserMethodCall(userMethodCall);
-        }
+        String methodName = orignalMethod.getName();
+        LocalSymbol operand = userNode.getSymbol();
+        UserMethodCall userMethodCall = new UserMethodCall(operand,
+                methodName,
+                environmentNodes,
+                parameterSourceList);
+        scopeMethod.addUserMethodCall(userMethodCall);
 
         // We can set the return values after registering...
         // The return values only need a pointer to the scope and its index.
@@ -137,6 +134,11 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
         try {
             orignalMethod.setAccessible(true);
             Object ret = orignalMethod.invoke(original, wrappedArguments.toArray());
+            if (ret == null) {
+                return null;
+            } else {
+                userMethodCall.setReturnType(ret.getClass());
+            }
 
             if (ret instanceof EnvironmentObjectSpy) {
                 // Environment object: untrack. Even if its member is user object, the method calls will be traced.

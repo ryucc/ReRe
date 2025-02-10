@@ -14,8 +14,8 @@ public class ArrayExample {
 
         Dice[] twoDice = {new Dice(), new Dice()};
 
-        ReRe rere = ReRe.newSession();
-        Dice[] wrappedDice = rere.createRoot(twoDice, twoDice.getClass());
+        ReRe rere = new ReRe();
+        Dice[] wrappedDice = rere.createSpiedObject(twoDice, twoDice.getClass());
 
         System.out.println("/*");
         for (int i = 1; i <= 5; i++) {
@@ -23,7 +23,7 @@ public class ArrayExample {
             System.out.println("Rolled " + wrappedDice[1].roll());
         }
         System.out.println("*/");
-        String code = rere.createMockito("org.rere.examples.arrayExample", "create", "ArrayExampleExpected");
+        String code = rere.exportMockito("org.rere.examples.arrayExample", "create", "ArrayExampleExpected");
         System.out.println(code);
     }
 

@@ -31,7 +31,7 @@ public class UserNode implements ReReObjectNode<UserNode> {
     private final UUID uuid;
     private final List<UserNode> directChildren;
     /**
-     * Scope needs to change to a EnvironmentNode for stateful objects
+     * Remove scope, read from a global stack instead.
      */
     private EnvironmentMethodCall scope;
     private LocalSymbol symbol;

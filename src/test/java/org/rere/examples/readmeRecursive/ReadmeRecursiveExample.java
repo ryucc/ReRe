@@ -11,15 +11,15 @@ public class ReadmeRecursiveExample {
 
     public static void main(String[] args) {
         HttpClient client = new HttpClient();
-        ReRe rere = ReRe.newSession();
+        ReRe rere = new ReRe();
 
-        HttpClient wrappedClient = rere.createRoot(client, HttpClient.class);
+        HttpClient wrappedClient = rere.createSpiedObject(client, HttpClient.class);
 
         System.out.println("/*");
         System.out.println(wrappedClient.get(0).getBody());
         System.out.println("*/");
 
-        String code = rere.createMockito("org.rere.examples.readmeRecursive",
+        String code = rere.exportMockito("org.rere.examples.readmeRecursive",
                 "create",
                 "ReadmeRecursiveExampleExpected");
 

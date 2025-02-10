@@ -21,12 +21,12 @@ public class EnvironmentObjectListenerRecordTests {
     public void test() {
         RecordB b = new RecordB(1,3);
         RecordA a = new RecordA(1, b);
-        ReRe rere = ReRe.newSession();
+        ReRe rere = new ReRe();
 
-        RecordA wrappedA = rere.createRoot(a, RecordA.class);
+        RecordA wrappedA = rere.createSpiedObject(a, RecordA.class);
         assertThat(wrappedA).isEqualTo(a);
 
-        EnvironmentNode environmentNode = rere.getReReIntermediateData().roots().get(0);
+        EnvironmentNode environmentNode = rere.getReReRecordData().roots().get(0);
 
         assertThat(environmentNode.getRuntimeClass()).isEqualTo(RecordA.class);
         assertThat(environmentNode.getDirectChildren())

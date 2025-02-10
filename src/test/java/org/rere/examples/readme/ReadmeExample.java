@@ -13,8 +13,8 @@ public class ReadmeExample {
     public static void main(String[] args) {
 
         Dice dice = new Dice();
-        ReRe reRe = ReRe.newSession();
-        Dice wrappedDice = reRe.createRoot(dice, Dice.class);
+        ReRe reRe = new ReRe();
+        Dice wrappedDice = reRe.createSpiedObject(dice, Dice.class);
 
 
         System.out.println("/*");
@@ -24,7 +24,7 @@ public class ReadmeExample {
         }
         System.out.println("*/");
 
-        String code = reRe.createMockito("org.rere.examples.readme", "create", "ReadmeExampleExpected");
+        String code = reRe.exportMockito("org.rere.examples.readme", "create", "ReadmeExampleExpected");
         System.out.println(code);
     }
 

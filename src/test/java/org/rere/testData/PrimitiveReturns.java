@@ -25,14 +25,14 @@ public class PrimitiveReturns {
         PrimitiveGenerator identity = new PrimitiveGenerator();
 
 
-        ReRe rere = ReRe.newSession();
-        PrimitiveGenerator wrapped = rere.createRoot(identity, PrimitiveGenerator.class);
+        ReRe rere = new ReRe();
+        PrimitiveGenerator wrapped = rere.createSpiedObject(identity, PrimitiveGenerator.class);
 
         wrapped.getOne();
         wrapped.getTwo();
         wrapped.getString();
 
-        EnvironmentNode node = rere.getReReIntermediateData().roots().get(0);
+        EnvironmentNode node = rere.getReReRecordData().roots().get(0);
         GraphCompare graphCompare = new GraphCompare();
         assertThat(graphCompare.diffNode(getExpectedNode(), node)).isTrue();
     }

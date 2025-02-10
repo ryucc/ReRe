@@ -14,8 +14,8 @@ public class RecordExample {
 
         TwoDice twoDice = new TwoDice(new Dice(), new Dice());
 
-        ReRe rere = ReRe.newSession();
-        TwoDice wrappedDice = rere.createRoot(twoDice, TwoDice.class);
+        ReRe rere = new ReRe();
+        TwoDice wrappedDice = rere.createSpiedObject(twoDice, TwoDice.class);
 
         System.out.println("/*");
         for (int i = 1; i <= 5; i++) {
@@ -24,7 +24,7 @@ public class RecordExample {
         }
         System.out.println("*/");
 
-        String code = rere.createMockito("org.rere.examples.recordExample", "create", "RecordExampleExpected");
+        String code = rere.exportMockito("org.rere.examples.recordExample", "create", "RecordExampleExpected");
         System.out.println(code);
     }
 

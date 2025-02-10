@@ -14,8 +14,8 @@ public class ThrowExample {
 
         ErrorDice dice = new ErrorDice();
 
-        ReRe rere = ReRe.newSession();
-        ErrorDice wrappedDice = rere.createRoot(dice, ErrorDice.class);
+        ReRe rere = new ReRe();
+        ErrorDice wrappedDice = rere.createSpiedObject(dice, ErrorDice.class);
 
 
         System.out.println("/*");
@@ -29,7 +29,7 @@ public class ThrowExample {
         }
         System.out.println("*/");
 
-        String code = rere.createMockito("org.rere.examples.exception", "create", "ThrowExampleExpected");
+        String code = rere.exportMockito("org.rere.examples.exception", "create", "ThrowExampleExpected");
         System.out.println(code);
     }
 

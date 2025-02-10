@@ -26,12 +26,12 @@ public class IdentityFunction {
         Identity identity = new Identity();
 
 
-        ReRe rere = ReRe.newSession();
-        Identity wrapped = rere.createRoot(identity, Identity.class);
+        ReRe rere = new ReRe();
+        Identity wrapped = rere.createSpiedObject(identity, Identity.class);
 
         wrapped.identityFunction(identity);
 
-        EnvironmentNode node = rere.getReReIntermediateData().roots().getFirst();
+        EnvironmentNode node = rere.getReReRecordData().roots().getFirst();
         GraphCompare graphCompare = new GraphCompare();
         assertThat(graphCompare.diffNode(getExpectedNode(Identity.class), node)).isTrue();
     }

@@ -13,8 +13,8 @@ public class TemplateExample {
     public static void main(String[] args) {
 
         TemplateDice<Integer> dice = new TemplateDice<>(1);
-        ReRe rere = ReRe.newSession();
-        TemplateDice<Integer> wrappedDice = rere.createRoot(dice, TemplateDice.class);
+        ReRe rere = new ReRe();
+        TemplateDice<Integer> wrappedDice = rere.createSpiedObject(dice, TemplateDice.class);
         System.out.println("/*");
 
         for (int i = 1; i <= 5; i++) {
@@ -24,7 +24,7 @@ public class TemplateExample {
         }
         System.out.println("*/");
 
-        String code = rere.createMockito("org.rere.examples.templateMatching", "create", "TemplateExampleExpected");
+        String code = rere.exportMockito("org.rere.examples.templateMatching", "create", "TemplateExampleExpected");
         System.out.println(code);
     }
 

@@ -18,10 +18,10 @@ class ClassArrayTests {
     public void test() throws Exception {
 
         Integer[] arr = {1, 2, 3, 4, 5};
-        ReRe rere = ReRe.newSession();
-        rere.createRoot(arr, arr.getClass());
+        ReRe rere = new ReRe();
+        rere.createSpiedObject(arr, arr.getClass());
 
-        EnvironmentNode root = rere.getReReIntermediateData().roots().get(0);
+        EnvironmentNode root = rere.getReReRecordData().roots().get(0);
         assertThat(root.getDirectChildren()).hasSize(5);
 
     }
@@ -30,11 +30,11 @@ class ClassArrayTests {
     public void test2D() throws Exception {
 
         Integer[][] arr = {{1, 2}, {1, 2}};
-        ReRe rere = ReRe.newSession();
+        ReRe rere = new ReRe();
 
-        rere.createRoot(arr, arr.getClass());
+        rere.createSpiedObject(arr, arr.getClass());
 
-        EnvironmentNode root = rere.getReReIntermediateData().roots().get(0);
+        EnvironmentNode root = rere.getReReRecordData().roots().get(0);
         assertThat(root.getDirectChildren()).hasSize(2);
     }
 
@@ -45,12 +45,12 @@ class ClassArrayTests {
         ArrayHolder holder = new ArrayHolder(arr);
         arr[0] = holder;
 
-        ReRe rere = ReRe.newSession();
-        rere.createRoot(arr, arr.getClass());
-        rere.createRoot(holder, holder.getClass());
-        EnvironmentNode arrRoot = rere.getReReIntermediateData().roots().get(0);
+        ReRe rere = new ReRe();
+        rere.createSpiedObject(arr, arr.getClass());
+        rere.createSpiedObject(holder, holder.getClass());
+        EnvironmentNode arrRoot = rere.getReReRecordData().roots().get(0);
         assertThat(arrRoot.getDirectChildren()).hasSize(1);
-        EnvironmentNode recordRoot = rere.getReReIntermediateData().roots().getLast();
+        EnvironmentNode recordRoot = rere.getReReRecordData().roots().getLast();
         // TODO minor: global node map?
         // The same object has 2 nodes because of different roots
         assertThat(arrRoot == arrRoot.getDirectChildren().get(0).getDirectChildren().get(0)).isTrue();
