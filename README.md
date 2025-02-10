@@ -35,7 +35,9 @@ ReRe rere = new ReRe();
 For whichever object you want to record, use the create root API. Here, we are using a dice as example.
 
 ```java
+// Create original object
 Dice dice = new Dice();
+// Create spied object
 Dice rereDice = rere.createSpiedObject(dice, Dice.class);
 ```
 
@@ -45,6 +47,7 @@ For example,
 
 
 ```java
+// Invoke method calls on the spied object
 for (int i = 0; i < 5; i++) {
     rereDice.roll();
 }
@@ -53,6 +56,7 @@ for (int i = 0; i < 5; i++) {
 After you are done recording, use the createMockito() api
 
 ```java
+// Export Mockito Code
 String code = rere.exportMockito("org.rere.examples.readme", "create", "ReadmeExampleExpected");
 ```
 
@@ -93,7 +97,7 @@ public class ThrowExampleExpected {
 }
 ```
 
-This following code is from [SortExample.java](), showing that ReRe also captures modifications to the parameters.
+This following code is from [SortExample.java](src/test/org/rere/examples/sort/), showing that ReRe also captures modifications to the parameters.
 
 ```java
 public class SortExampleExpected {
