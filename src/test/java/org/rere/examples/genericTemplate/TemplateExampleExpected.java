@@ -10,7 +10,7 @@ goos 1
 Rolled 6
 goos 1
 */
-package org.rere.examples.templateMatching;
+package org.rere.examples.genericTemplate;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doAnswer;
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import org.rere.core.serde.DefaultSerde;
-import org.rere.examples.genericTemplate.TemplateExample;
 
 public class TemplateExampleExpected {
   private static final DefaultSerde defaultSerde = new DefaultSerde();

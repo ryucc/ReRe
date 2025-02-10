@@ -21,7 +21,7 @@ public class SortExample {
         wrapped.sort(arr);
         System.out.println("/*");
         for (int i = 0; i < 2; i++) {
-            System.out.println(arr.get(i));
+            System.out.println(arr.get(i).value());
         }
         System.out.println("*/");
         System.out.println(rere.exportMockito("org.rere.examples.sort", "method", "SortExampleExpected"));

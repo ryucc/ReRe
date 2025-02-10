@@ -1,6 +1,6 @@
 /*
-org.rere.examples.sort.SortExample$MyInt@710afd47
-org.rere.examples.sort.SortExample$MyInt@1fa9692b
+2
+3
 */
 package org.rere.examples.sort;
 

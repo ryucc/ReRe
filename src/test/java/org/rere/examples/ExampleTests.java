@@ -5,7 +5,11 @@
 
 package org.rere.examples;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.rere.examples.arrayExample.ArrayExample;
+import org.rere.examples.arrayExample.ArrayExample2;
 import org.rere.examples.exception.ThrowExample;
 import org.rere.examples.genericTemplate.TemplateExample;
 import org.rere.examples.identityFunction.IdentityFunctionExample;
@@ -13,10 +17,8 @@ import org.rere.examples.parameterMatching.ParameterMatchingExample;
 import org.rere.examples.readme.ReadmeExample;
 import org.rere.examples.readmeRecursive.ReadmeRecursiveExample;
 import org.rere.examples.recordExample.RecordExample;
+import org.rere.examples.recordExample.RecordExample2;
 import org.rere.examples.sort.SortExample;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -71,6 +73,7 @@ public class ExampleTests {
         String expected = Files.readString(output);
         assertThat(outContent.toString()).isEqualTo(expected);
     }
+
     @Test
     public void testArrayExample() throws IOException {
         String[] args = {};
@@ -84,6 +87,19 @@ public class ExampleTests {
         assertThat(outContent.toString()).isEqualTo(expected);
     }
     @Test
+    public void testArrayExample2() throws IOException {
+        String[] args = {};
+        ArrayExample2.main(args);
+        Path output = Path.of("src/test/java/org/rere/examples/arrayExample/ArrayExampleExpected2.java");
+        if (RESET_TESTS) {
+            Files.writeString(output, outContent.toString());
+            return;
+        }
+        String expected = Files.readString(output);
+        assertThat(outContent.toString()).isEqualTo(expected);
+    }
+
+    @Test
     public void testRecordExample() throws IOException {
         String[] args = {};
         RecordExample.main(args);
@@ -96,10 +112,33 @@ public class ExampleTests {
         String[] a1 = outContent.toString().split("\n");
         String[] a2 = expected.split("\n");
 
-        for(int i = 0; i < a1.length && i < a2.length; i++) {
+        for (int i = 0; i < a1.length && i < a2.length; i++) {
             assertThat(a1[i]).isEqualTo(a2[i]);
         }
     }
+
+    @Test
+    public void testRecordExample2() throws IOException {
+        String[] args = {};
+        RecordExample2.main(args);
+        Path output = Path.of("src/test/java/org/rere/examples/recordExample/RecordExampleExpected2.java");
+        if (RESET_TESTS) {
+            Files.writeString(output, outContent.toString());
+            return;
+        }
+        String expected = Files.readString(output);
+        compareStrings(outContent.toString(), expected);
+    }
+
+    private void compareStrings(String s1, String s2) {
+        String[] a1 = s1.split("\n");
+        String[] a2 = s2.split("\n");
+
+        for (int i = 0; i < a1.length && i < a2.length; i++) {
+            assertThat(a1[i]).isEqualTo(a2[i]);
+        }
+    }
+
     @Test
     public void testIdentityFunctionExample() throws IOException {
         String[] args = {};
@@ -149,8 +188,9 @@ public class ExampleTests {
             return;
         }
         String expected = Files.readString(output);
-        assertThat(outContent.toString()).isEqualTo(expected);
+        compareStrings(outContent.toString(), expected);
     }
+
     @Test
     public void testThrowExample() throws Exception {
         String[] args = {};

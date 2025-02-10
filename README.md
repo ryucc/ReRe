@@ -7,12 +7,16 @@ API might have big changes in the future.
 
 ## Introduction
 
-ReRe is the abbreviation of **Record** and **Replay**. This started out as a project to replay general java executions, but I ran out of cash and need to find a job now. For now ReRe is released as a code synthesizer.
+ReRe is the abbreviation of **Record** and **Replay**.
 
-ReRe uses logic to synthesize code, so it's predictable right or wrong. I hope in the LLM era, this still has its place in the world. It would be my pleasure if anyone favors my hand written code over the modern LLM synthesizers.
+ReRe Mockito code synthesizer, ReRe can record real objects, and produce Mockito code based
+on the real object's runtime behavior.
 
-Best of luck and I hope this project brings value to you!
+Compared to LLM code generators, it may be a few commands more to generate code, but the data quality should be better.
+If any LLM can generate the same code this project does, that LLM should also be Turing-Complete. So I hope ReRe still
+has its time now.
 
+Hope you have fun with this project!
 
 ## Usage
 
@@ -89,16 +93,64 @@ public class ThrowExampleExpected {
 }
 ```
 
-This following code is from [ThrowExample.java](), showing that ReRe can also capture throw behaviors.
+This following code is from [SortExample.java](), showing that ReRe also captures modifications to the parameters.
 
-1. Exceptions thrown.
-2. Modifications to method parameters.
-3. Methods of the return values.
+```java
+public class SortExampleExpected {
+  private static final DefaultSerde defaultSerde = new DefaultSerde();
 
-The easiest way might be to test it on your code, or look at our examples under test/java/org/rere/examples. This is so that our examples are always compiled and tested up to date. But here we will still include few examples.
+  public static Answer<Void> getAnswer0() {
+    return (InvocationOnMock invocation) -> {
+      ArrayList param0 = invocation.getArgument(0);
+      param0.size();
+      SortExample.MyInt return1 = (SortExample.MyInt) param0.get(1);
+      SortExample.MyInt return2 = (SortExample.MyInt) param0.get(0);
+      return1.compare(return2);
+      param0.set(1, return2);
+      param0.set(0, return1);
+      SortExample.MyInt return6 = (SortExample.MyInt) param0.get(1);
+      SortExample.MyInt return7 = (SortExample.MyInt) param0.get(0);
+      return6.compare(return7);
+      return null;
+    } ;
+  }
+
+  public static SortExample.BubbleSorter environmentNode0() {
+    SortExample.BubbleSorter mockObject = mock(SortExample.BubbleSorter.class);
+    doAnswer(getAnswer0()).when(mockObject).sort(any());
+    return mockObject;
+  }
+}
+```
+
+This last example is from [IdentityFunctionExample.java](), show casing ReRe can also record the behavior of
+identity functions. This is important, since returning an object copy instead of an object with the same reference may
+cause replay failures.
+
+```java
+public class IdentityFunctionExampleExpected {
+  private static final DefaultSerde defaultSerde = new DefaultSerde();
+
+  public static Answer<ArrayList> getAnswer0() {
+    return (InvocationOnMock invocation) -> {
+      ArrayList param0 = invocation.getArgument(0);
+      return param0;
+    } ;
+  }
+
+  public static IdentityFunctionExample.IdentityFunction environmentNode0() {
+    IdentityFunctionExample.IdentityFunction mockObject = mock(IdentityFunctionExample.IdentityFunction.class);
+    doAnswer(getAnswer0()).when(mockObject).call(any());
+    return mockObject;
+  }
+}
+```
+
+All our examples are also run as unit tests, please check test/java/org/rere/examples for more usage examples.
 
 ## Limitations
 ### Final objects
+### Multithreading
 ### Global Variables
 
 ## Known Issues
@@ -106,10 +158,25 @@ hashCode() and isEqual() might break, because we are subclassing.
 
 ## Contributions
 
-Please raise bug reports and issues first.
+### Project contributions
 
+Please raise issues for bugs, ask questions for usage. Let's talk about the problem before starting to implement code.
 
+### Personal contributions
+
+I'll set up a buy me a coffee link later. [link pending]
+
+Right now any job referrals would help. Here is my resume [link pending]
 
 ## Special Thanks
 
-Thanks to all my friends and family who I kept pitching this idea to. The support and opposition both help me decide what to spend time on.
+Thanks to all my friends and family. Many of whom I kept pitching this idea to. 
+
+Thanks to my former colleagues at Amazon. I received a lot of mentorship as a junior engineer there.
+A lot of the coding principles I learnt at Amazon inspired this project.
+
+Thanks to Rafael Winterhalter, the creator of ByteBuddy. This person may not know me, but I feel
+I know this person a lot. It is crazy how much he supports the ByteBuddy project online. This year I have read
+so much tutorials and answer written by himself. I doubt I will have the same energy to do for project ReRe.
+
+Thanks to the authors of Mockito/EasyMock, and all the previous mock frameworks. I am standing on the shoulder of giants.

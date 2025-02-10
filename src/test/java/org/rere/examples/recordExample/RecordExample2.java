@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2025 <project contributors>
+ * This program is made available under the terms of the MIT License.
+ */
 
 package org.rere.examples.recordExample;
 
@@ -5,22 +9,22 @@ import org.rere.api.ReRe;
 
 import java.util.Random;
 
-public class RecordExample {
+public class RecordExample2 {
     public static void main(String[] args) {
 
         TwoDice twoDice = new TwoDice(new Dice(), new Dice());
+        DiceRoller diceRoller = new DiceRoller();
 
         ReRe rere = new ReRe();
-        TwoDice wrappedDice = rere.createSpiedObject(twoDice, TwoDice.class);
+        DiceRoller wrappedRoller = rere.createSpiedObject(diceRoller, DiceRoller.class);
 
         System.out.println("/*");
         for (int i = 1; i <= 5; i++) {
-            System.out.println("Rolled " + wrappedDice.dice1().roll());
-            System.out.println("Rolled " + wrappedDice.dice2().roll());
+            System.out.println("Rolled " + wrappedRoller.roll(twoDice));
         }
         System.out.println("*/");
 
-        String code = rere.exportMockito("org.rere.examples.recordExample", "create", "RecordExampleExpected");
+        String code = rere.exportMockito("org.rere.examples.recordExample", "create", "RecordExampleExpected2");
         System.out.println(code);
     }
 
@@ -40,4 +44,12 @@ public class RecordExample {
 
     public record TwoDice(Dice dice1, Dice dice2) {
     }
+
+    public static class DiceRoller {
+        public DiceRoller(){}
+        public int roll(TwoDice twoDice) {
+            return twoDice.dice1().roll();
+        }
+    }
+
 }

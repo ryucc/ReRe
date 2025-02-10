@@ -24,7 +24,7 @@ public class TemplateExample {
         }
         System.out.println("*/");
 
-        String code = rere.exportMockito("org.rere.examples.templateMatching", "create", "TemplateExampleExpected");
+        String code = rere.exportMockito("org.rere.examples.genericTemplate", "create", "TemplateExampleExpected");
         System.out.println(code);
     }
 
