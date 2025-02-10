@@ -1,8 +1,6 @@
 # ReRe's Readme
 
 ## Version 0.0.1
-Showcase for friends and family.
-
 API might have big changes in the future.
 
 ## Introduction
