@@ -1,9 +1,6 @@
 # ReRe's Readme
 
-ReRe is the abbreviation of **Record** and **Replay**.
-
-ReRe Mockito code synthesizer, ReRe can record real objects, and produce Mockito code based
-on the real object's runtime behavior.
+ReRe is the abbreviation of **Record** and **Replay**. It is a Mockito code synthesizer, by recording real objects, and ReRe will produce code that mimics exactly that object's runtime behavior.
 
 Hope you have fun with this project!
 
