@@ -73,7 +73,7 @@ public class ReadmeExampleExpected {
 
 Of course, ReRe is capable of more than just recording primitive value returns.
 
-This following code is from [ThrowExample.java](src/test/java/org/rere/examples/exception/), showing that ReRe can also capture throw behaviors.
+This following code is generated through [ThrowExample.java](src/test/java/org/rere/examples/exception/), showing that ReRe can also capture throw behaviors.
 
 ```java
 
@@ -92,7 +92,7 @@ public class ThrowExampleExpected {
 }
 ```
 
-This following code is from [SortExample.java](src/test/java/org/rere/examples/sort/), showing that ReRe also captures modifications to the parameters.
+This following code is generated through [SortExample.java](src/test/java/org/rere/examples/sort/), showing that ReRe also captures modifications to the parameters.
 
 ```java
 public class SortExampleExpected {
