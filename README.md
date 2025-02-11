@@ -1,8 +1,5 @@
 # ReRe's Readme
 
-## Version 0.0.1
-API might have big changes in the future.
-
 ## Introduction
 
 ReRe is the abbreviation of **Record** and **Replay**.
