@@ -5,10 +5,6 @@ ReRe is the abbreviation of **Record** and **Replay**.
 ReRe Mockito code synthesizer, ReRe can record real objects, and produce Mockito code based
 on the real object's runtime behavior.
 
-Compared to LLM code generators, it may be a few commands more to generate code, but the data quality should be better.
-If any LLM can generate the same code this project does, that LLM should also be Turing-Complete. So I hope ReRe still
-has its time now.
-
 Hope you have fun with this project!
 
 ## Usage
