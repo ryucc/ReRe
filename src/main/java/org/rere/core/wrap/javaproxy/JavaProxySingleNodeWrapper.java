@@ -23,10 +23,10 @@ public class JavaProxySingleNodeWrapper<NODE> implements SingleNodeWrapper<NODE>
     }
 
     @Override
-    public <T> T initiateSpied(T original, NODE node) {
+    public Object initiateSpied(Object original, NODE node) {
         try {
             Class<?> proxyClass = Proxy.getProxyClass(original.getClass().getClassLoader(), original.getClass());
-            return (T) proxyClass.getConstructor(InvocationHandler.class).
+            return proxyClass.getConstructor(InvocationHandler.class).
                     newInstance(new MyInvocationHandler(original, node));
         } catch (Exception e) {
             return original;

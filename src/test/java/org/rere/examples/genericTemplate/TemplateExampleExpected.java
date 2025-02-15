@@ -26,8 +26,8 @@ public class TemplateExampleExpected {
 
   public static TemplateExample.TemplateDice environmentNode0() throws Exception {
     TemplateExample.TemplateDice mockObject = mock(TemplateExample.TemplateDice.class);
-    doReturn(1).doReturn(1).doReturn(1).doReturn(1).doReturn(1).when(mockObject).getObject();
-    doReturn(1).doReturn(5).doReturn(2).doReturn(6).doReturn(6).when(mockObject).roll();
+    doReturn((java.lang.Integer) 1).doReturn((java.lang.Integer) 1).doReturn((java.lang.Integer) 1).doReturn((java.lang.Integer) 1).doReturn((java.lang.Integer) 1).when(mockObject).getObject();
+    doReturn((int) 1).doReturn((int) 5).doReturn((int) 2).doReturn((int) 6).doReturn((int) 6).when(mockObject).roll();
     return mockObject;
   }
 }

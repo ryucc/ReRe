@@ -7,8 +7,10 @@ package org.rere.examples.httpclients;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.rere.examples.httpclients.apache.ApacheHttpClientExample;
+import org.rere.examples.httpclients.java.JavaHttpClientExample;
 import org.rere.examples.readme.ReadmeExample;
 
 import java.io.ByteArrayOutputStream;
@@ -40,10 +42,11 @@ public class HttpExampleTests {
     }
 
     @Test
-    public void testApacheExample() throws Exception {
+    @Disabled("Google content changes everytime")
+    public void testJavaExample() throws Exception {
         String[] args = {};
-        ApacheHttpClientExample.main(args);
-        Path output = Path.of("src/test/java/org/rere/examples/httpclients/apache/ApacheHttpClientExampleExpected.java");
+        JavaHttpClientExample.main(args);
+        Path output = Path.of("src/test/java/org/rere/examples/httpclients/java/JavaHttpClientExampleExpected.java");
         if (!RESET_TESTS) {
             Files.writeString(output, outContent.toString());
             return;

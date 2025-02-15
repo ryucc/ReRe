@@ -38,11 +38,11 @@ public class EnvironmentNodeWrapper implements SingleNodeWrapper<EnvironmentNode
     }
 
     @Override
-    public <T> T initiateSpied(T returnValue, EnvironmentNode node) {
+    public Object initiateSpied(Object returnValue, EnvironmentNode node) {
 
         try {
             Class<?> mockedClass = classRepo.getOrDefineSubclass(returnValue.getClass());
-            T mocked = (T) ObjectInitializer.create(mockedClass);
+            Object mocked = ObjectInitializer.create(mockedClass);
             ((EnvironmentObjectSpy) mocked).setReReNodePointer(node);
             ((EnvironmentObjectSpy) mocked).setReReOriginObject(returnValue);
             return mocked;

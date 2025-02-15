@@ -97,7 +97,8 @@ public class EnvironmentNode implements Serializable, ReReObjectNode<Environment
                 new ArrayList<>());
     }
 
-    public Class<?> representingClass() {
+    @Override
+    public Class<?> getRepresentingClass() {
         return representingClass;
     }
 

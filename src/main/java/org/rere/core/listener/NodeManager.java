@@ -5,7 +5,9 @@
 
 package org.rere.core.listener;
 
-public interface NodeManager <NODE>{
+import org.rere.core.data.objects.ReReObjectNode;
+
+public interface NodeManager <NODE extends ReReObjectNode<?>>{
     NODE createEmpty(Class<?> clazz, Object original);
     NODE createNull(Class<?> clazz);
     NODE createFailed(Class<?> clazz, String comments);

@@ -6,5 +6,5 @@
 package org.rere.core.wrap;
 
 public interface SingleNodeWrapper<NODE> {
-    <T> T initiateSpied(T returnValue, NODE node);
+    Object initiateSpied(Object returnValue, NODE node);
 }

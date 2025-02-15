@@ -5,6 +5,7 @@
 
 package org.rere.core.wrap.mockito;
 
+import org.rere.core.data.objects.ReReObjectNode;
 import org.rere.core.listener.interceptor.ReReMethodInterceptor;
 import org.rere.core.wrap.SingleNodeWrapper;
 import org.mockito.Mockito;
@@ -12,9 +13,10 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 @SuppressWarnings("unchecked")
-public class MockitoSingleNodeWrapper<NODE> implements SingleNodeWrapper<NODE> {
+public class MockitoSingleNodeWrapper<NODE extends ReReObjectNode<?>> implements SingleNodeWrapper<NODE> {
     private final ReReMethodInterceptor<NODE> listener;
     private final Class<?> extraInterface;
 
@@ -24,11 +26,18 @@ public class MockitoSingleNodeWrapper<NODE> implements SingleNodeWrapper<NODE> {
     }
 
     @Override
-    public <T> T initiateSpied(T returnValue, NODE node) {
-        return (T) Mockito.mock(returnValue.getClass(),
-                Mockito.withSettings()
-                        .defaultAnswer(new EnvAns(returnValue, node))
-                        .extraInterfaces(extraInterface));
+    public Object initiateSpied(Object returnValue, NODE node) {
+        try {
+            return Mockito.mock(returnValue.getClass(),
+                    Mockito.withSettings()
+                            .defaultAnswer(new EnvAns(returnValue, node))
+                            .extraInterfaces(extraInterface));
+        } catch (Exception e) {
+            return Mockito.mock(node.getRepresentingClass(),
+                    Mockito.withSettings()
+                            .defaultAnswer(new EnvAns(returnValue, node))
+                            .extraInterfaces(extraInterface));
+        }
     }
 
     /*

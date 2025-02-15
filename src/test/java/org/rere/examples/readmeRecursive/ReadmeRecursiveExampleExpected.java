@@ -10,14 +10,19 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import java.lang.Exception;
+import java.lang.String;
 import org.rere.core.serde.DefaultSerde;
 
 public class ReadmeRecursiveExampleExpected {
   private static final DefaultSerde defaultSerde = new DefaultSerde();
 
+  public static String environmentNode2() throws Exception {
+    return (String) defaultSerde.deserialize("rO0ABXQADEhlbGxvIFdvcmxkIQ==");
+  }
+
   public static ReadmeRecursiveExample.HttpResponse environmentNode1() throws Exception {
     ReadmeRecursiveExample.HttpResponse mockObject = mock(ReadmeRecursiveExample.HttpResponse.class);
-    doReturn("Hello World!").when(mockObject).getBody();
+    doReturn(environmentNode2()).when(mockObject).getBody();
     return mockObject;
   }
 

@@ -30,10 +30,10 @@ public class UserNodeWrapper implements SingleNodeWrapper<UserNode> {
     }
 
     @Override
-    public <T> T initiateSpied(T returnValue, UserNode node) {
+    public Object initiateSpied(Object returnValue, UserNode node) {
         try {
             Class<?> mockedClass = classRepo.getOrDefineSubclass(returnValue.getClass());
-            T mocked = (T) ObjectInitializer.create(mockedClass);
+            Object mocked = ObjectInitializer.create(mockedClass);
             ((UserObjectSpy) mocked).setReReUserNode(node);
             ((UserObjectSpy) mocked).setReReOriginObject(returnValue);
             return mocked;

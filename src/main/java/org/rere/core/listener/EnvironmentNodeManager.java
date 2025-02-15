@@ -53,11 +53,7 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
 
     public Object synthesizeLeafNode(Object original, EnvironmentNode node) {
         Object wrapped;
-        if (ClassUtils.isString(original.getClass())) {
-            node.setValue("\"" + original + "\"");
-            node.setTerminal(true);
-            wrapped = original;
-        } else if (ClassUtils.isStringOrPrimitive(original.getClass())) {
+        if (ClassUtils.isWrapperOrPrimitive(original.getClass())) {
             node.setValue(original.toString());
             node.setTerminal(true);
             wrapped = original;

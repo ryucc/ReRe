@@ -26,13 +26,13 @@ public class RecordExampleExpected {
 
   public static RecordExample.Dice environmentNode1() throws Exception {
     RecordExample.Dice mockObject = mock(RecordExample.Dice.class);
-    doReturn(1).doReturn(5).doReturn(2).doReturn(6).doReturn(6).when(mockObject).roll();
+    doReturn((int) 1).doReturn((int) 5).doReturn((int) 2).doReturn((int) 6).doReturn((int) 6).when(mockObject).roll();
     return mockObject;
   }
 
   public static RecordExample.Dice environmentNode2() throws Exception {
     RecordExample.Dice mockObject = mock(RecordExample.Dice.class);
-    doReturn(1).doReturn(5).doReturn(2).doReturn(6).doReturn(6).when(mockObject).roll();
+    doReturn((int) 1).doReturn((int) 5).doReturn((int) 2).doReturn((int) 6).doReturn((int) 6).when(mockObject).roll();
     return mockObject;
   }
 

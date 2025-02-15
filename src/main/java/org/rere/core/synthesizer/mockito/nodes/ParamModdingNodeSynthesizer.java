@@ -130,8 +130,9 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
 
     @Override
     public SynthResult generateEnvironmentNode(TypeSpec.Builder typeBuilder, EnvironmentNode root) {
-        if (ClassUtils.isStringOrPrimitive(root.getRuntimeClass())) {
-            return new SynthResult(root.getValue());
+        if (ClassUtils.isWrapperOrPrimitive(root.getRuntimeClass())) {
+            String cast = String.format("(%s) ", root.getRuntimeClass().getName());
+            return new SynthResult(cast + root.getValue());
         }
         if (ClassUtils.isRecord(root.getRuntimeClass()) || root.getRuntimeClass().isArray()) {
             return generateRecordEnvironmentNode(typeBuilder, root);
@@ -153,8 +154,12 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
 
     //TODO, use implemented interfaces first
     private Class<?> getBestClass(Class<?> runtimeClass, Class<?> lowerBoundClass) {
+        if(runtimeClass.equals(String.class)) {
+            return runtimeClass;
+        }
         boolean visible = getVisibility(runtimeClass);
-        if(visible) {
+        boolean notFinal = !java.lang.reflect.Modifier.isFinal(runtimeClass.getModifiers());
+        if(visible && notFinal) {
             return runtimeClass;
         }
         return lowerBoundClass;
@@ -165,7 +170,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         String methodName = "environmentNode" + environmentId;
         environmentId++;
 
-        Class<?> declaringClass = getBestClass(root.getRuntimeClass(), root.representingClass());
+        Class<?> declaringClass = getBestClass(root.getRuntimeClass(), root.getRepresentingClass());
 
 
 

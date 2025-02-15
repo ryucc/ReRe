@@ -27,6 +27,12 @@ public class UserNode implements ReReObjectNode<UserNode> {
      * upper bound is good as long as user doesn't type cast downwards
      */
     private final Class<?> runtimeClass;
+
+    @Override
+    public Class<?> getRepresentingClass() {
+        return representingClass;
+    }
+
     private final Class<?> representingClass;
     private final List<UserNode> directChildren;
     /**

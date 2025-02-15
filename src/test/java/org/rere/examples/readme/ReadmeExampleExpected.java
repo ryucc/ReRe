@@ -22,7 +22,7 @@ public class ReadmeExampleExpected {
   public static ReadmeExample.Dice environmentNode0() throws Exception {
     ReadmeExample.Dice mockObject = mock(ReadmeExample.Dice.class);
     doNothing().when(mockObject).chill();
-    doReturn(4).doReturn(5).doReturn(2).doReturn(4).doReturn(3).when(mockObject).roll();
+    doReturn((int) 4).doReturn((int) 5).doReturn((int) 2).doReturn((int) 4).doReturn((int) 3).when(mockObject).roll();
     return mockObject;
   }
 }
