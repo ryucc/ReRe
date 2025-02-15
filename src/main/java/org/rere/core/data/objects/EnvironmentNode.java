@@ -12,10 +12,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Represents the serialization a Environment Object.
+ */
 public class EnvironmentNode implements Serializable, ReReObjectNode<EnvironmentNode> {
     private final List<EnvironmentMethodCall> environmentMethodCalls;
     private final UUID uuid;
+
+    /**
+     * The class of the original object at runtime. Maybe final, private, or anonymous.
+     * This is the first choice type to reconstruct the object as, to avoid casting problems.
+     */
     private final Class<?> runtimeClass;
+
+    /**
+     * The lower bound class this object must be.
+     * If this environment object was returned from another Environment Object, the representing class
+     * would be the return class from that method's signature.
+     * If this environment object was a field of a record, the representingClass would be the field type.
+     */
     private final Class<?> representingClass;
     private final List<EnvironmentNode> directChildren;
     private String comments;
@@ -23,6 +38,7 @@ public class EnvironmentNode implements Serializable, ReReObjectNode<Environment
     private boolean terminal;
     private boolean serialized;
     private boolean failedNode;
+
     public EnvironmentNode(List<EnvironmentMethodCall> environmentMethodCalls,
                            UUID uuid,
                            String value,
@@ -110,10 +126,20 @@ public class EnvironmentNode implements Serializable, ReReObjectNode<Environment
         this.serialized = serialized;
     }
 
+    /**
+     * Comments when creating this node. Usually why we failed tracing the object.
+     *
+     * @return Plaintext comments.
+     */
     public String getComments() {
         return comments;
     }
 
+    /**
+     * TODO: make immutable.
+     *
+     * @param comments
+     */
     public void setComments(String comments) {
         this.comments = comments;
     }
@@ -151,6 +177,12 @@ public class EnvironmentNode implements Serializable, ReReObjectNode<Environment
         return environmentMethodCalls;
     }
 
+    /**
+     * Terminal if this is a null node, or serialized node.
+     * Terminal objects do not have methods tracked.
+     *
+     * @return true if node is terminal.
+     */
     public boolean isTerminal() {
         return this.terminal;
     }
