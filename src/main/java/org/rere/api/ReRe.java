@@ -8,8 +8,8 @@ package org.rere.api;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.EnvironmentNodeManager;
 import org.rere.core.listener.interceptor.EnvironmentObjectListener;
-import org.rere.core.listener.wrap.EnvironmentObjectWrapper;
-import org.rere.core.listener.wrap.ReReWrapResult;
+import org.rere.core.wrap.EnvironmentObjectWrapper;
+import org.rere.core.wrap.ReReWrapResult;
 import org.rere.core.serde.ReReSerde;
 import org.rere.core.synthesizer.mockito.MockitoSynthesizer;
 
@@ -19,12 +19,17 @@ public class ReRe {
     private final ReReIntermediateData reReIntermediateData;
     EnvironmentObjectWrapper environmentObjectWrapper;
 
+    public ReRe() {
+        this(new ReReSettings());
+    }
+
+
     /**
      * Initiate an instance of ReRe.
      */
-    public ReRe() {
+    public ReRe(ReReSettings reReSettings) {
         reReIntermediateData = new ReReIntermediateData(new ArrayList<>());
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
+        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener(reReSettings);
         EnvironmentNodeManager environmentNodeManager = new EnvironmentNodeManager(environmentObjectListener);
         this.environmentObjectWrapper = new EnvironmentObjectWrapper(environmentNodeManager);
         environmentObjectListener.setEnvironmentObjectWrapper(environmentObjectWrapper);

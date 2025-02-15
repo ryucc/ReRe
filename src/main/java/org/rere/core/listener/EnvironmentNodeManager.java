@@ -8,19 +8,23 @@ package org.rere.core.listener;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.interceptor.ReReMethodInterceptor;
 import org.rere.core.listener.utils.ClassUtils;
-import org.rere.core.listener.wrap.SingleNodeWrapper;
-import org.rere.core.listener.wrap.bytebuddy.EnvironmentNodeWrapper;
+import org.rere.core.listener.utils.EnvironmentObjectSpy;
+import org.rere.core.wrap.SingleNodeWrapper;
+import org.rere.core.wrap.mockito.MockitoSingleNodeWrapper;
 import org.rere.core.serde.DefaultSerde;
 import org.rere.core.serde.exceptions.SerializationException;
+
+import java.io.Serializable;
+import java.lang.reflect.Modifier;
 
 public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
     private static final DefaultSerde defaultSerde = new DefaultSerde();
     private SingleNodeWrapper<EnvironmentNode> leafNodeWrapper;
 
     public EnvironmentNodeManager(ReReMethodInterceptor<EnvironmentNode> listener) {
-        this.leafNodeWrapper = new EnvironmentNodeWrapper(listener);
+        //this.leafNodeWrapper = new EnvironmentNodeWrapper(listener);
         //this.wrapper = new JavaProxySingleNodeWrapper<>(listener);
-        //this.wrapper = new MockitoSingleNodeWrapper<>(listener, EnvironmentObjectSpy.class);
+        this.leafNodeWrapper = new MockitoSingleNodeWrapper<>(listener, EnvironmentObjectSpy.class);
     }
     //private final MockitoSingleEnvironmentNodeWrapper wrapper;
 
@@ -29,11 +33,11 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
     }
 
     @Override
-    public EnvironmentNode createEmpty(Class<?> clazz, Object original) {
-        if(ClassUtils.isStringOrPrimitive(clazz)) {
-            return EnvironmentNode.ofPrimitive(clazz, original.toString());
+    public EnvironmentNode createEmpty(Class<?> representingClass, Object original) {
+        if(ClassUtils.isStringOrPrimitive(representingClass)) {
+            return EnvironmentNode.ofPrimitive(representingClass, original.toString());
         }
-        return EnvironmentNode.ofInternal(clazz);
+        return EnvironmentNode.ofInternal(original.getClass(), representingClass);
     }
 
     @Override
@@ -57,7 +61,11 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
             node.setValue(original.toString());
             node.setTerminal(true);
             wrapped = original;
-        } else if (Throwable.class.isAssignableFrom(original.getClass())) {
+        } else if (
+                (Modifier.isFinal(original.getClass().getModifiers())
+                && Serializable.class.isAssignableFrom(original.getClass()))
+                        ||
+                Throwable.class.isAssignableFrom(original.getClass())) {
             node.setTerminal(true);
             node.setSerialized(true);
             try {

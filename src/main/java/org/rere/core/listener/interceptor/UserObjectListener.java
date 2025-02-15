@@ -12,13 +12,15 @@ import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.data.objects.LocalSymbol;
 import org.rere.core.data.objects.RecordMember;
 import org.rere.core.data.objects.UserNode;
-import org.rere.core.listener.EnvironmentNodeManager;
 import org.rere.core.listener.UserNodeManager;
 import org.rere.core.listener.utils.ClassUtils;
 import org.rere.core.listener.utils.EnvironmentObjectSpy;
 import org.rere.core.listener.utils.UserObjectSpy;
-import org.rere.core.listener.wrap.ReReWrapResult;
-import org.rere.core.listener.wrap.TopoOrderObjectWrapper;
+import org.rere.core.wrap.EnvironmentObjectWrapper;
+import org.rere.core.wrap.ReReEnvironmentObjectWrapper;
+import org.rere.core.wrap.ReReWrapResult;
+import org.rere.core.wrap.TopoOrderObjectWrapper;
+import org.rere.core.wrap.mockito.UserObjectWrapper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -32,57 +34,16 @@ import java.util.Set;
 
 public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
 
-    private final TopoOrderObjectWrapper<EnvironmentNode, EnvironmentNodeManager> environmentObjectWrapper;
-    private final TopoOrderObjectWrapper<UserNode, UserNodeManager> userObjectWrapper;
+    private final EnvironmentObjectWrapper environmentObjectWrapper;
+    private UserObjectWrapper userObjectWrapper;
 
-    public UserObjectListener(TopoOrderObjectWrapper<EnvironmentNode, EnvironmentNodeManager> environmentObjectWrapper) {
+    public UserObjectListener(EnvironmentObjectWrapper environmentObjectWrapper) {
         this.environmentObjectWrapper = environmentObjectWrapper;
-        this.userObjectWrapper = new TopoOrderObjectWrapper<>(new UserNodeManager(this));
     }
 
-    public ReReWrapResult<?, UserNode> createRoot(Object original,
-                                                  Class<?> type,
-                                                  EnvironmentMethodCall scope,
-                                                  LocalSymbol symbol) {
-        ReReWrapResult<?, UserNode> wrapped = userObjectWrapper.createRoot(original, type);
-
-        // DFS
-        Queue<UserNode> nodeQueue = new ArrayDeque<>();
-        Set<UserNode> explored = new HashSet<>();
-        nodeQueue.add(wrapped.node());
-        wrapped.node().setSymbol(symbol);
-
-        while (!nodeQueue.isEmpty()) {
-            UserNode cur = nodeQueue.poll();
-            cur.setScope(scope);
-            explored.add(cur);
-            if (cur.getDeclaredClass().isArray()) {
-                for (int i = 0; i < cur.getDirectChildren().size(); i++) {
-                    UserNode child = cur.getDirectChildren().get(i);
-                    if (!explored.contains(child)) {
-                        LocalSymbol childSymbol = cur.getSymbol().copy();
-                        childSymbol.appendPath(new ArrayMember(i));
-                        child.setSymbol(childSymbol);
-                        nodeQueue.add(child);
-                    }
-                }
-            } else if (ClassUtils.isRecord(cur.getDeclaredClass())) {
-                Field[] recordComponents = cur.getDeclaredClass().getDeclaredFields();
-                for (int i = 0; i < cur.getDirectChildren().size(); i++) {
-                    UserNode child = cur.getDirectChildren().get(i);
-                    if (!explored.contains(child)) {
-                        LocalSymbol childSymbol = cur.getSymbol().copy();
-                        Field component = recordComponents[i];
-                        childSymbol.appendPath(new RecordMember(component.getName()));
-                        child.setSymbol(childSymbol);
-                        nodeQueue.add(child);
-                    }
-                }
-            }
-        }
-        return new ReReWrapResult<>(wrapped.wrapped(), wrapped.node());
+    public void setUserObjectWrapper(UserObjectWrapper userObjectWrapper) {
+        this.userObjectWrapper = userObjectWrapper;
     }
-
     public Object interceptInterface(Object original,
                                      Method orignalMethod,
                                      UserNode userNode,
@@ -120,10 +81,7 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
 
         String methodName = orignalMethod.getName();
         LocalSymbol operand = userNode.getSymbol();
-        UserMethodCall userMethodCall = new UserMethodCall(operand,
-                methodName,
-                environmentNodes,
-                parameterSourceList);
+        UserMethodCall userMethodCall = new UserMethodCall(operand, methodName, environmentNodes, parameterSourceList);
         scopeMethod.addUserMethodCall(userMethodCall);
 
         // We can set the return values after registering...
@@ -151,12 +109,12 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
                 ret = ((UserObjectSpy) ret).getReReOriginObject();
             }
             LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.RETURN_VALUE, currentReturnIndex);
-            ReReWrapResult<?, UserNode> result = createRoot(ret, orignalMethod.getReturnType(), scopeMethod, symbol);
+            ReReWrapResult<?, UserNode> result = userObjectWrapper.createRoot(ret, orignalMethod.getReturnType(), scopeMethod, symbol);
             return result.wrapped();
         } catch (InvocationTargetException e) {
             Throwable real = e.getTargetException();
             LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.THROW, currentReturnIndex);
-            ReReWrapResult<?, UserNode> result = createRoot(real, real.getClass(), scopeMethod, symbol);
+            ReReWrapResult<?, UserNode> result = userObjectWrapper.createRoot(real, real.getClass(), scopeMethod, symbol);
             result.node().setSymbol(symbol);
             throw (Throwable) result.wrapped();
         } catch (IllegalAccessException e) {

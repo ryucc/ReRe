@@ -18,24 +18,25 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import java.lang.Exception;
 import org.rere.core.serde.DefaultSerde;
 
 public class ArrayExampleExpected {
   private static final DefaultSerde defaultSerde = new DefaultSerde();
 
-  public static ArrayExample.Dice environmentNode1() {
+  public static ArrayExample.Dice environmentNode1() throws Exception {
     ArrayExample.Dice mockObject = mock(ArrayExample.Dice.class);
     doReturn(1).doReturn(5).doReturn(2).doReturn(6).doReturn(6).when(mockObject).roll();
     return mockObject;
   }
 
-  public static ArrayExample.Dice environmentNode2() {
+  public static ArrayExample.Dice environmentNode2() throws Exception {
     ArrayExample.Dice mockObject = mock(ArrayExample.Dice.class);
     doReturn(1).doReturn(5).doReturn(2).doReturn(6).doReturn(6).when(mockObject).roll();
     return mockObject;
   }
 
-  public static ArrayExample.Dice[] environmentNode0() {
+  public static ArrayExample.Dice[] environmentNode0() throws Exception {
     ArrayExample.Dice[] object0;
     ArrayExample.Dice object1;
     ArrayExample.Dice object2;

@@ -13,6 +13,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import java.lang.Exception;
 import java.lang.Integer;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -61,7 +62,7 @@ public class RecordExampleExpected2 {
     } ;
   }
 
-  public static RecordExample2.DiceRoller environmentNode0() {
+  public static RecordExample2.DiceRoller environmentNode0() throws Exception {
     RecordExample2.DiceRoller mockObject = mock(RecordExample2.DiceRoller.class);
     doAnswer(getAnswer0()).doAnswer(getAnswer1()).doAnswer(getAnswer2()).doAnswer(getAnswer3()).doAnswer(getAnswer4()).when(mockObject).roll(any());
     return mockObject;

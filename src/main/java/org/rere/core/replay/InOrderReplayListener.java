@@ -10,7 +10,7 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.implementation.bind.annotation.This;
 import org.rere.core.data.objects.EnvironmentNode;
-import org.rere.core.listener.wrap.bytebuddy.ClassRepo;
+import org.rere.core.wrap.bytebuddy.ClassRepo;
 import org.rere.core.listener.ObjectInitializer;
 import org.rere.core.listener.exceptions.InitializationException;
 import org.rere.core.listener.exceptions.SubclassingException;

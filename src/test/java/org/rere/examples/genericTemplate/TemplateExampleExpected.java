@@ -18,12 +18,13 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import java.lang.Exception;
 import org.rere.core.serde.DefaultSerde;
 
 public class TemplateExampleExpected {
   private static final DefaultSerde defaultSerde = new DefaultSerde();
 
-  public static TemplateExample.TemplateDice environmentNode0() {
+  public static TemplateExample.TemplateDice environmentNode0() throws Exception {
     TemplateExample.TemplateDice mockObject = mock(TemplateExample.TemplateDice.class);
     doReturn(1).doReturn(1).doReturn(1).doReturn(1).doReturn(1).when(mockObject).getObject();
     doReturn(1).doReturn(5).doReturn(2).doReturn(6).doReturn(6).when(mockObject).roll();

@@ -3,7 +3,7 @@
  * This program is made available under the terms of the MIT License.
  */
 
-package org.rere.core.listener.wrap;
+package org.rere.core.wrap;
 
 import org.rere.core.data.objects.ReReObjectNode;
 import org.rere.core.listener.NodeManager;
@@ -106,6 +106,7 @@ public class TopoOrderObjectWrapper<NODE extends ReReObjectNode<NODE>, MANAGER e
                 }
             } else {
                 if (cur.getClass().isArray()) {
+                    Class<?> childrenClass = cur.getClass().getComponentType();
                     for (int i = 0; i < Array.getLength(cur); i++) {
                         Object child = Array.get(cur, i);
                         // TODO when null, get from cur.getClass().getComponentTpe
@@ -113,8 +114,7 @@ public class TopoOrderObjectWrapper<NODE extends ReReObjectNode<NODE>, MANAGER e
                             curNode.addChild(nodeMap.get(child));
                             continue;
                         }
-                        Class<?> childClass = child.getClass();
-                        NODE childNode = nodeManager.createEmpty(childClass, child);
+                        NODE childNode = nodeManager.createEmpty(childrenClass, child);
                         curNode.addChild(childNode);
                         nodeMap.put(child, childNode);
                         front.add(child);
@@ -140,8 +140,7 @@ public class TopoOrderObjectWrapper<NODE extends ReReObjectNode<NODE>, MANAGER e
                 wrapped = Array.newInstance(cur.getClass().getComponentType(), Array.getLength(cur));
             } else if (ClassUtils.isRecord(cur.getClass())) {
                 List<Object> components = getRecordFields(cur);
-                List<Object> wrappedComponents = components.stream().map(toWrapped::get)
-                        .collect(Collectors.toList());
+                List<Object> wrappedComponents = components.stream().map(toWrapped::get).collect(Collectors.toList());
                 wrapped = ObjectInitializer.initRecord(cur.getClass(), wrappedComponents);
             } else {
                 NODE node = toNode.get(cur);
@@ -191,7 +190,7 @@ public class TopoOrderObjectWrapper<NODE extends ReReObjectNode<NODE>, MANAGER e
             return new ReReWrapResult<>(null, node);
         }
         try {
-            TopSortData<NODE> data = buildGraph(original, original.getClass());
+            TopSortData<NODE> data = buildGraph(original, targetClass);
             Map<Object, Object> stuff = topOrderInit(data);
             postAssignChildren(stuff);
             T wrapped = (T) stuff.get(original);

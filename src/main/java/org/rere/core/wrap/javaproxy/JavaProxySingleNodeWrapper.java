@@ -3,10 +3,10 @@
  * This program is made available under the terms of the MIT License.
  */
 
-package org.rere.core.listener.wrap.javaproxy;
+package org.rere.core.wrap.javaproxy;
 
 import org.rere.core.listener.interceptor.ReReMethodInterceptor;
-import org.rere.core.listener.wrap.SingleNodeWrapper;
+import org.rere.core.wrap.SingleNodeWrapper;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

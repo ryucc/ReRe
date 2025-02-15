@@ -115,7 +115,7 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
                                        LocalSymbol returnSymbol,
                                        Set<LocalSymbol> explored) {
 
-        Type returnType = userMethodCall.getReturnType();
+        Class<?> returnType = userMethodCall.getReturnType();
 
         String source = symbolNamer(userMethodCall.getSource());
         List<LocalSymbol> paramSources = userMethodCall.getParameters();
@@ -135,7 +135,8 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
         }
         String paramString = String.join(", ", paramNames);
         String returnName = symbolNamer(returnSymbol);
-        if (returnType.equals(void.class) || returnType.equals(Void.class) ||!explored.contains(returnSymbol)) {
+        // TODO find where null comes from
+        if (returnType == null || returnType.equals(void.class) || returnType.equals(Void.class) ||!explored.contains(returnSymbol)) {
             methodBuilder.addStatement("$L.$L($L)", source, userMethodCall.getMethodName(), paramString);
         } else {
             methodBuilder.addStatement("$T $L = ($T) $L.$L($L)",

@@ -3,7 +3,7 @@
  * This program is made available under the terms of the MIT License.
  */
 
-package org.rere.core.listener.wrap;
+package org.rere.core.wrap;
 
 public interface SingleNodeWrapper<NODE> {
     <T> T initiateSpied(T returnValue, NODE node);

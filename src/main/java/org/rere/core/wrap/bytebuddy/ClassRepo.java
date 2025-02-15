@@ -3,7 +3,7 @@
  * This program is made available under the terms of the MIT License.
  */
 
-package org.rere.core.listener.wrap.bytebuddy;
+package org.rere.core.wrap.bytebuddy;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.DynamicType;

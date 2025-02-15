@@ -25,8 +25,8 @@ public class EnvironmentObjectListenerRecursiveTests {
         String s = wrappedClient.get().getBody();
 
         EnvironmentNode root = environmentObjectListener.getRoot();
-        EnvironmentNode expectedRoot = EnvironmentNode.ofInternal(HttpClient.class);
-        EnvironmentNode reponseEnvironmentNode = EnvironmentNode.ofInternal(HttpResponse.class);
+        EnvironmentNode expectedRoot = EnvironmentNode.ofInternal(HttpClient.class, HttpClient.class);
+        EnvironmentNode reponseEnvironmentNode = EnvironmentNode.ofInternal(HttpResponse.class, HttpResponse.class);
         EnvironmentMethodCall getCall = new EnvironmentMethodCall(HttpClient.class.getMethod("get"));
         getCall.setReturnNode(reponseEnvironmentNode);
         getCall.setResult(MethodResult.RETURN);

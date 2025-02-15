@@ -16,6 +16,7 @@ public class EnvironmentNode implements Serializable, ReReObjectNode<Environment
     private final List<EnvironmentMethodCall> environmentMethodCalls;
     private final UUID uuid;
     private final Class<?> runtimeClass;
+    private final Class<?> representingClass;
     private final List<EnvironmentNode> directChildren;
     private String comments;
     private String value;
@@ -29,6 +30,7 @@ public class EnvironmentNode implements Serializable, ReReObjectNode<Environment
                            boolean serialized,
                            boolean failedNode,
                            Class<?> runtimeClass,
+                           Class<?> representingClass,
                            String comments,
                            List<EnvironmentNode> directChildren) {
         this.environmentMethodCalls = environmentMethodCalls;
@@ -38,6 +40,7 @@ public class EnvironmentNode implements Serializable, ReReObjectNode<Environment
         this.serialized = serialized;
         this.failedNode = failedNode;
         this.runtimeClass = runtimeClass;
+        this.representingClass = representingClass;
         this.comments = comments;
         this.directChildren = directChildren;
     }
@@ -49,6 +52,7 @@ public class EnvironmentNode implements Serializable, ReReObjectNode<Environment
                 true,
                 false,
                 false,
+                clazz,
                 clazz,
                 "",
                 new ArrayList<>());
@@ -62,6 +66,7 @@ public class EnvironmentNode implements Serializable, ReReObjectNode<Environment
                 false,
                 true,
                 clazz,
+                clazz,
                 comments,
                 new ArrayList<>());
     }
@@ -74,32 +79,26 @@ public class EnvironmentNode implements Serializable, ReReObjectNode<Environment
                 false,
                 false,
                 clazz,
+                clazz,
                 "",
                 new ArrayList<>());
     }
 
-    public static EnvironmentNode ofInternal(Class<?> clazz) {
+    public static EnvironmentNode ofInternal(Class<?> runtimeClass, Class<?> representingClass) {
         return new EnvironmentNode(new ArrayList<>(),
                 UUID.randomUUID(),
                 "",
                 false,
                 false,
                 false,
-                clazz,
+                runtimeClass,
+                representingClass,
                 "",
                 new ArrayList<>());
     }
 
-    public static EnvironmentNode ofSerialized(Class<?> clazz, String value) {
-        return new EnvironmentNode(new ArrayList<>(),
-                UUID.randomUUID(),
-                value,
-                true,
-                true,
-                false,
-                clazz,
-                "",
-                new ArrayList<>());
+    public Class<?> representingClass() {
+        return representingClass;
     }
 
     public boolean isSerialized() {
@@ -141,10 +140,6 @@ public class EnvironmentNode implements Serializable, ReReObjectNode<Environment
 
     public UUID getUuid() {
         return uuid;
-    }
-
-    public Class<?> getDeclaredClass() {
-        return runtimeClass;
     }
 
     public Class<?> getRuntimeClass() {

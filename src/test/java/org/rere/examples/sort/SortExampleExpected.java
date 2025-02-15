@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import java.lang.Exception;
 import java.lang.Void;
 import java.util.ArrayList;
 import org.mockito.invocation.InvocationOnMock;
@@ -35,7 +36,7 @@ public class SortExampleExpected {
     } ;
   }
 
-  public static SortExample.BubbleSorter environmentNode0() {
+  public static SortExample.BubbleSorter environmentNode0() throws Exception {
     SortExample.BubbleSorter mockObject = mock(SortExample.BubbleSorter.class);
     doAnswer(getAnswer0()).when(mockObject).sort(any());
     return mockObject;

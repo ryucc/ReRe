@@ -38,11 +38,11 @@ public class IdentityFunction {
 
     public EnvironmentNode getExpectedNode(Class<?> expectedClass) {
         try {
-            EnvironmentNode node = EnvironmentNode.ofInternal(Identity.class);
+            EnvironmentNode node = EnvironmentNode.ofInternal(Identity.class, Identity.class);
             EnvironmentMethodCall methodCall = new EnvironmentMethodCall(Identity.class.getMethod("identityFunction",
                     Object.class));
             methodCall.setReturnSymbol(new LocalSymbol(LocalSymbol.Source.PARAMETER, 0));
-            methodCall.setReturnNode(EnvironmentNode.ofInternal(expectedClass));
+            methodCall.setReturnNode(EnvironmentNode.ofInternal(expectedClass, expectedClass));
             methodCall.setResult(MethodResult.RETURN);
             node.addMethodCall(methodCall);
             return node;

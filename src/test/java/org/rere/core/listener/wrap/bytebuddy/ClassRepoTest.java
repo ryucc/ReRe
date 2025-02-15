@@ -7,6 +7,7 @@ package org.rere.core.listener.wrap.bytebuddy;
 
 import org.rere.core.listener.exceptions.SubclassingException;
 import org.junit.jupiter.api.Test;
+import org.rere.core.wrap.bytebuddy.ClassRepo;
 
 import java.util.Map;
 

@@ -3,6 +3,12 @@ plugins {
     id 'jacoco'
     id 'java-library'
     id 'maven-publish'
+	id 'signing'
+}
+
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 compileJava {
@@ -20,23 +26,73 @@ jacocoTestReport {
     }
 }
 
-group = 'org.rere'
-version = '0.0.1'
 
 repositories {
     mavenCentral()
 }
 
-java {
-    withSourcesJar()
-    // and/or analogously use “withJavadocJar()” to get a “javadocJar” task
-}
+group = 'io.github.ryucc'
+version = '0.0.1'
 
 publishing {
     publications {
-        library(MavenPublication) {
+        mavenJava(MavenPublication) {
+            artifactId = 'ReRe'
             from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'ReRe-0.0.1'
+                description = 'A concise description of my library'
+                url = 'https://github.com/ryucc/ReRe'
+                licenses {
+                    license {
+                        name = 'The MIT License'
+                        url = 'https://mit-license.org'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'ryucc'
+                        name = 'Kurtis Liu'
+                        email = 'shortyliu@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/ryucc/ReRe.git'
+                    developerConnection = 'scm:git:ssh://github.com:ryucc/ReRe.git'
+                    url = 'https://github.com/ryucc/ReRe/'
+                }
+            }
         }
+    }
+    repositories {
+        maven {
+            // change URLs to point to your repos, e.g. http://my.org/repo
+            def releasesRepoUrl = layout.buildDirectory.dir('repos/releases')
+            def snapshotsRepoUrl = layout.buildDirectory.dir('repos/snapshots')
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+        }
+    }
+}
+
+/*
+signing {
+	useGpgCmd()
+    sign publishing.publications.mavenJava
+}
+*/
+
+
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
     }
 }
 
@@ -51,12 +107,15 @@ dependencies {
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.27.3'
 
     // https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy-gradle-plugin
-    runtimeOnly group: 'net.bytebuddy', name: 'byte-buddy-gradle-plugin', version: '1.17.0'
+    //runtimeOnly group: 'net.bytebuddy', name: 'byte-buddy-gradle-plugin', version: '1.17.0'
     implementation 'net.bytebuddy:byte-buddy:1.17.0'
+
     // https://mvnrepository.com/artifact/com.squareupup/javapoet
     //implementation group: 'com.squareup.javapoet', name: 'javapoet', version: '0.5.0'
     //Migrate to palantir, if java 11 version is availiable
     implementation group: 'com.squareup', name: 'javapoet', version: '1.13.0'
+
+    testImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.14'
 }
 
 test {

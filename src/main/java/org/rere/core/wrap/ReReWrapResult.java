@@ -3,7 +3,7 @@
  * This program is made available under the terms of the MIT License.
  */
 
-package org.rere.core.listener.wrap;
+package org.rere.core.wrap;
 
 public class ReReWrapResult<T, NODE> {
     public ReReWrapResult(T wrapped, NODE node) {

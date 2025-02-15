@@ -39,7 +39,7 @@ public class PrimitiveReturns {
 
     public EnvironmentNode getExpectedNode() {
         try {
-            EnvironmentNode node = EnvironmentNode.ofInternal(PrimitiveGenerator.class);
+            EnvironmentNode node = EnvironmentNode.ofInternal(PrimitiveGenerator.class, PrimitiveGenerator.class);
             /* getOne */
             EnvironmentMethodCall methodCall1 = new EnvironmentMethodCall(PrimitiveGenerator.class.getMethod("getOne"));
             methodCall1.setReturnNode(EnvironmentNode.ofPrimitive(Integer.class, "1"));

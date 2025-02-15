@@ -37,7 +37,7 @@ public class MockitoSynthesizer {
         this.packageName = packageName;
         this.methodName = methodName;
         this.fileName = fileName;
-        this.environmentNodeSynthesizer = new ParamModdingNodeSynthesizer();
+        this.environmentNodeSynthesizer = new ParamModdingNodeSynthesizer(packageName);
     }
 
     public MockitoSynthesizer(String packageName, String methodName) {

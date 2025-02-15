@@ -35,11 +35,13 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
 
     private final EnvironmentAnswerSynthesizer answerSynthesizer;
     private int environmentId;
+    private final String packageName;
 
 
-    public ParamModdingNodeSynthesizer() {
+    public ParamModdingNodeSynthesizer(String packageName) {
         this.answerSynthesizer = new BasicAnswerSynthesizer(this);
         this.environmentId = 0;
+        this.packageName = packageName;
     }
 
 
@@ -48,9 +50,11 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         String methodName = "environmentNode" + environmentId;
         environmentId++;
 
+        Class<?> clazz = root.getRuntimeClass();
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .returns(root.getRuntimeClass());
+                .addException(Exception.class)
+                .returns(clazz);
 
         Queue<EnvironmentNode> front = new ArrayDeque<>();
         Set<EnvironmentNode> explored = new HashSet<>();
@@ -135,14 +139,40 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         return generateLeafEnvironmentNode(typeBuilder, root);
     }
 
+
+    private boolean getVisibility(Class<?> clazz) {
+        int modifiers = clazz.getModifiers();;
+        if (java.lang.reflect.Modifier.isPublic(modifiers)){
+            return true;
+        } else if(java.lang.reflect.Modifier.isPrivate(modifiers)) {
+            return false;
+        }
+        Package pack = clazz.getPackage();
+        return pack.getName().equals(packageName);
+    }
+
+    //TODO, use implemented interfaces first
+    private Class<?> getBestClass(Class<?> runtimeClass, Class<?> lowerBoundClass) {
+        boolean visible = getVisibility(runtimeClass);
+        if(visible) {
+            return runtimeClass;
+        }
+        return lowerBoundClass;
+    }
+
     public SynthResult generateLeafEnvironmentNode(TypeSpec.Builder typeBuilder, EnvironmentNode root) {
 
         String methodName = "environmentNode" + environmentId;
         environmentId++;
 
+        Class<?> declaringClass = getBestClass(root.getRuntimeClass(), root.representingClass());
+
+
+
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .returns(root.getRuntimeClass());
+                .addException(Exception.class)
+                .returns(declaringClass);
 
         if (root.isSerialized()) {
             Class<?> clazz = root.getRuntimeClass();
@@ -151,7 +181,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
             return new SynthResult(methodName + "()");
         }
 
-        declareMock(root.getRuntimeClass(), "mockObject", methodBuilder);
+        declareMock(declaringClass, "mockObject", methodBuilder);
 
         List<MockitoSynthesizer.MethodGroup> methodGroups = groupMethods(root.getMethodCalls());
         for (MockitoSynthesizer.MethodGroup methodGroup : methodGroups) {

@@ -13,12 +13,13 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import java.lang.Exception;
 import org.rere.core.serde.DefaultSerde;
 
 public class ReadmeExampleExpected {
   private static final DefaultSerde defaultSerde = new DefaultSerde();
 
-  public static ReadmeExample.Dice environmentNode0() {
+  public static ReadmeExample.Dice environmentNode0() throws Exception {
     ReadmeExample.Dice mockObject = mock(ReadmeExample.Dice.class);
     doNothing().when(mockObject).chill();
     doReturn(4).doReturn(5).doReturn(2).doReturn(4).doReturn(3).when(mockObject).roll();

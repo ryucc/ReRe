@@ -9,7 +9,6 @@ import org.rere.core.data.methods.EnvironmentMethodCall;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class UserNode implements ReReObjectNode<UserNode> {
     /**
@@ -28,7 +27,7 @@ public class UserNode implements ReReObjectNode<UserNode> {
      * upper bound is good as long as user doesn't type cast downwards
      */
     private final Class<?> runtimeClass;
-    private final UUID uuid;
+    private final Class<?> representingClass;
     private final List<UserNode> directChildren;
     /**
      * Remove scope, read from a global stack instead.
@@ -36,33 +35,42 @@ public class UserNode implements ReReObjectNode<UserNode> {
     private EnvironmentMethodCall scope;
     private LocalSymbol symbol;
     private String comments;
-    private boolean failedNode;
 
-    public UserNode(Class<?> runtimeClass) {
-        this(runtimeClass, null, UUID.randomUUID());
+    public UserNode(Class<?> runtimeClass,
+                    Class<?> representingClass,
+                    List<UserNode> directChildren,
+                    EnvironmentMethodCall scope,
+                    LocalSymbol symbol,
+                    String comments,
+                    boolean failedNode) {
+        this.runtimeClass = runtimeClass;
+        this.representingClass = representingClass;
+        this.directChildren = directChildren;
+        this.scope = scope;
+        this.symbol = symbol;
+        this.comments = comments;
+        this.failedNode = failedNode;
+    }
+
+    private boolean failedNode;
+    public UserNode(Class<?> runtimeClass, Class<?> representingClass) {
+
+        this(runtimeClass,
+                representingClass,
+                new ArrayList<>(),
+                null,
+                null,
+                "",
+                false);
     }
 
     public UserNode(Class<?> runtimeClass, String comments) {
-        this(runtimeClass, null, UUID.randomUUID(), comments);
-    }
-
-    public UserNode(Class<?> runtimeClass, EnvironmentMethodCall scope) {
-        this(runtimeClass, scope, UUID.randomUUID());
-    }
-
-    public UserNode(Class<?> runtimeClass, EnvironmentMethodCall scope, UUID uuid) {
-        this.runtimeClass = runtimeClass;
-        this.scope = scope;
-        this.uuid = uuid;
-        directChildren = new ArrayList<>();
-    }
-
-    public UserNode(Class<?> runtimeClass, EnvironmentMethodCall scope, UUID uuid, String comments) {
-        this.runtimeClass = runtimeClass;
-        this.scope = scope;
-        this.uuid = uuid;
-        this.comments = comments;
-        directChildren = new ArrayList<>();
+        this(runtimeClass, runtimeClass,
+                new ArrayList<>(),
+                null,
+                null,
+                comments,
+                false);
     }
 
     public List<UserNode> getDirectChildren() {
@@ -103,7 +111,4 @@ public class UserNode implements ReReObjectNode<UserNode> {
         this.scope = scope;
     }
 
-    public UUID getUuid() {
-        return uuid;
-    }
 }

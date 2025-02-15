@@ -5,22 +5,27 @@
 
 package org.rere.core.listener.interceptor;
 
+import org.rere.api.ReReSettings;
 import org.rere.core.data.methods.EnvironmentMethodCall;
-import org.rere.core.data.objects.LocalSymbol;
 import org.rere.core.data.methods.MethodResult;
 import org.rere.core.data.objects.EnvironmentNode;
+import org.rere.core.data.objects.LocalSymbol;
 import org.rere.core.data.objects.UserNode;
 import org.rere.core.listener.EnvironmentNodeManager;
+import org.rere.core.listener.UserNodeManager;
 import org.rere.core.listener.utils.EnvironmentObjectSpy;
 import org.rere.core.listener.utils.UserObjectSpy;
-import org.rere.core.listener.wrap.TopoOrderObjectWrapper;
-import org.rere.core.listener.wrap.ReReWrapResult;
+import org.rere.core.wrap.EnvironmentObjectWrapper;
+import org.rere.core.wrap.ReReWrapResult;
+import org.rere.core.wrap.TopoOrderObjectWrapper;
+import org.rere.core.wrap.mockito.UserObjectWrapper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /*
 TODO: better type inference
@@ -28,18 +33,27 @@ TODO: better type inference
 public class EnvironmentObjectListener implements ReReMethodInterceptor<EnvironmentNode> {
     private final List<EnvironmentNode> roots;
 
-    private UserObjectListener userObjectListener;
+    private EnvironmentObjectWrapper environmentObjectWrapper;
+    private final UserObjectWrapper userObjectWrapper;
 
-    public void setEnvironmentObjectWrapper(TopoOrderObjectWrapper<EnvironmentNode, EnvironmentNodeManager> environmentObjectWrapper) {
-        this.environmentObjectWrapper = environmentObjectWrapper;
-    }
-
-    private TopoOrderObjectWrapper<EnvironmentNode, EnvironmentNodeManager> environmentObjectWrapper;
+    private final boolean noParameterMod;
+    private final Set<Class<?>> skipModClasses;
 
     public EnvironmentObjectListener() {
+        this(new ReReSettings());
+    }
+    public EnvironmentObjectListener(ReReSettings reReSettings) {
         roots = new ArrayList<>();
-        environmentObjectWrapper = new TopoOrderObjectWrapper<>(new EnvironmentNodeManager(this));
-        userObjectListener = new UserObjectListener(environmentObjectWrapper);
+        environmentObjectWrapper = new EnvironmentObjectWrapper(new EnvironmentNodeManager(this));
+        UserObjectListener userObjectListener = new UserObjectListener(environmentObjectWrapper);
+        userObjectWrapper = new UserObjectWrapper(new TopoOrderObjectWrapper<>(new UserNodeManager(userObjectListener)));
+        userObjectListener.setUserObjectWrapper(userObjectWrapper);
+        noParameterMod = reReSettings.noParameterModding();
+        skipModClasses = reReSettings.skipMethodTracingClasses();
+    }
+
+    public void setEnvironmentObjectWrapper(EnvironmentObjectWrapper environmentObjectWrapper) {
+        this.environmentObjectWrapper = environmentObjectWrapper;
     }
 
     public EnvironmentNode getRoot() {
@@ -68,10 +82,18 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
 
         for (int i = 0; i < allArguments.length; i++) {
             Object cur = allArguments[i];
+            if(noParameterMod){
+                wrappedArguments[i] = cur;
+                continue;
+            }
             //Class<?> argClass = orignalMethod.getParameterTypes()[i];
             Class<?> argClass = cur.getClass();
+            if(skipModClasses.contains(argClass)) {
+                wrappedArguments[i] = cur;
+                continue;
+            }
             LocalSymbol accessSymbol = new LocalSymbol(LocalSymbol.Source.PARAMETER, i);
-            ReReWrapResult<?, UserNode> result = userObjectListener.createRoot(cur, argClass, edge, accessSymbol);
+            ReReWrapResult<?, UserNode> result = userObjectWrapper.createRoot(cur, argClass, edge, accessSymbol);
             wrappedArguments[i] = result.wrapped();
             argClasses[i] = argClass;
             //params.add(result.userNode());
@@ -115,11 +137,11 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
          */
 
         // Due to type erasure
-        Class<?> returnType = returnValue == null ? orignalMethod.getReturnType() : returnValue.getClass();
+        Class<?> representingReturnType = orignalMethod.getReturnType();
 
-        ReReWrapResult<?, EnvironmentNode> result = environmentObjectWrapper.createRoot(returnValue, returnType);
+        ReReWrapResult<?, EnvironmentNode> result = environmentObjectWrapper.createRoot(returnValue, representingReturnType);
         edge.setReturnNode(result.node());
-        edge.setReturnClass(returnType);
+        edge.setReturnClass(representingReturnType);
         edge.setResult(MethodResult.RETURN);
         sourceNode.addMethodCall(edge);
 

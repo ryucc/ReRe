@@ -6,6 +6,7 @@
 package org.rere.testData;
 
 import org.rere.api.ReRe;
+import org.rere.api.ReReSettings;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.objects.LocalSymbol;
 import org.rere.core.data.methods.MethodResult;
@@ -30,14 +31,14 @@ public class MagicNumbers {
 
     public static EnvironmentNode getExpectedNode() {
         try {
-            EnvironmentNode root = EnvironmentNode.ofInternal(MathMagic.class);
+            EnvironmentNode root = EnvironmentNode.ofInternal(MathMagic.class, MathMagic.class);
             EnvironmentMethodCall methodCall = new EnvironmentMethodCall(MathMagic.class.getMethod("magic",
                     MyInt.class));
             /**
              * Add block
              */
-            EnvironmentNode userAddValue = EnvironmentNode.ofPrimitive(Integer.class, "1");
-            EnvironmentNode userAddParam = EnvironmentNode.ofInternal(MyInt.class);
+            EnvironmentNode userAddValue = EnvironmentNode.ofPrimitive(int.class, "1");
+            EnvironmentNode userAddParam = EnvironmentNode.ofInternal(MyInt.class, MyInt.class);
             EnvironmentMethodCall addEnvGetValue = new EnvironmentMethodCall(MyInt.class.getMethod("getValue"));
             addEnvGetValue.setReturnSymbol(LocalSymbol.local(0));
             addEnvGetValue.setReturnNode(userAddValue);
@@ -52,8 +53,8 @@ public class MagicNumbers {
             /**
              * Times block
              */
-            EnvironmentNode userTimesValue = EnvironmentNode.ofPrimitive(Integer.class, "2");
-            EnvironmentNode userTimesParam = EnvironmentNode.ofInternal(MyInt.class);
+            EnvironmentNode userTimesValue = EnvironmentNode.ofPrimitive(int.class, "2");
+            EnvironmentNode userTimesParam = EnvironmentNode.ofInternal(MyInt.class, MyInt.class);
             EnvironmentMethodCall timesEnvGetValue = new EnvironmentMethodCall(MyInt.class.getMethod("getValue"));
             timesEnvGetValue.setReturnSymbol(LocalSymbol.local(0));
             timesEnvGetValue.setReturnNode(userTimesValue);
@@ -68,8 +69,8 @@ public class MagicNumbers {
             /**
              * 2nd Add block
              */
-            EnvironmentNode userAdd2Value = EnvironmentNode.ofPrimitive(Integer.class, "4");
-            EnvironmentNode userAdd2Param = EnvironmentNode.ofInternal(MyInt.class);
+            EnvironmentNode userAdd2Value = EnvironmentNode.ofPrimitive(int.class, "4");
+            EnvironmentNode userAdd2Param = EnvironmentNode.ofInternal(MyInt.class, MyInt.class);
             EnvironmentMethodCall add2EnvGetValue = new EnvironmentMethodCall(MyInt.class.getMethod("getValue"));
             add2EnvGetValue.setReturnSymbol(LocalSymbol.local(0));
             add2EnvGetValue.setReturnNode(userAdd2Value);
@@ -85,8 +86,8 @@ public class MagicNumbers {
             /**
              * Divide block
              */
-            EnvironmentNode userDivideValue = EnvironmentNode.ofPrimitive(Integer.class, "2");
-            EnvironmentNode userDivideParam = EnvironmentNode.ofInternal(MyInt.class);
+            EnvironmentNode userDivideValue = EnvironmentNode.ofPrimitive(int.class, "2");
+            EnvironmentNode userDivideParam = EnvironmentNode.ofInternal(MyInt.class, MyInt.class);
             EnvironmentMethodCall divideEnvGetValue = new EnvironmentMethodCall(MyInt.class.getMethod("getValue"));
             divideEnvGetValue.setReturnSymbol(LocalSymbol.local(0));
             divideEnvGetValue.setReturnNode(userDivideValue);
@@ -102,8 +103,8 @@ public class MagicNumbers {
             /**
              * Divide block
              */
-            EnvironmentNode userMinusValue = EnvironmentNode.ofPrimitive(Integer.class, "3");
-            EnvironmentNode userMinusParam = EnvironmentNode.ofInternal(MyInt.class);
+            EnvironmentNode userMinusValue = EnvironmentNode.ofPrimitive(int.class, "3");
+            EnvironmentNode userMinusParam = EnvironmentNode.ofInternal(MyInt.class, MyInt.class);
             EnvironmentMethodCall minusEnvGetValue = new EnvironmentMethodCall(MyInt.class.getMethod("getValue"));
             minusEnvGetValue.setReturnSymbol(LocalSymbol.returnValue(3));
             minusEnvGetValue.setReturnNode(userMinusValue);
@@ -118,7 +119,7 @@ public class MagicNumbers {
 
             methodCall.setReturnSymbol(new LocalSymbol(LocalSymbol.Source.RETURN_VALUE, 4));
             methodCall.setResult(MethodResult.RETURN);
-            methodCall.setReturnNode(EnvironmentNode.ofInternal(MyInt.class));
+            methodCall.setReturnNode(EnvironmentNode.ofInternal(MyInt.class, MyInt.class));
             root.addMethodCall(methodCall);
 
             return root;
@@ -133,7 +134,7 @@ public class MagicNumbers {
 
         MyInt a = new MyInt(100);
 
-        ReRe rere = new ReRe();
+        ReRe rere = new ReRe(new ReReSettings());
         MathMagic wrapped = rere.createSpiedObject(magic, MathMagic.class);
 
         wrapped.magic(a);

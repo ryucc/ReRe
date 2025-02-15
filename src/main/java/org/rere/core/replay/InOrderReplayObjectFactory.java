@@ -5,7 +5,7 @@
 
 package org.rere.core.replay;
 
-import org.rere.core.listener.wrap.bytebuddy.ClassRepo;
+import org.rere.core.wrap.bytebuddy.ClassRepo;
 
 public class InOrderReplayObjectFactory implements EmptyObjectFactory {
 

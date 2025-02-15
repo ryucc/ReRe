@@ -35,7 +35,6 @@ public class EnvironmentMethodCall implements Serializable {
     // Dynamic
     private final UUID uuid;
     private final List<UserMethodCall> userMethodCalls;
-    private final List<Type> paramTypes;
     private EnvironmentNode mockReturn;
     /* TODO later: the return values need to be stored on the node.
         In case user objects are stored, then modified later across method calls.
@@ -48,7 +47,6 @@ public class EnvironmentMethodCall implements Serializable {
     private MethodResult result;
 
     public EnvironmentMethodCall(Method method) {
-        this.paramTypes = Arrays.asList(method.getGenericParameterTypes());
         this.uuid = UUID.randomUUID();
         this.signature = new Signature(method);
         this.userMethodCalls = new ArrayList<>();
@@ -64,10 +62,6 @@ public class EnvironmentMethodCall implements Serializable {
 
     public List<UserMethodCall> getUserMethodCalls() {
         return userMethodCalls;
-    }
-
-    public List<Type> getGenericParamTypes() {
-        return paramTypes;
     }
 
     public void setReturnNode(EnvironmentNode node) {

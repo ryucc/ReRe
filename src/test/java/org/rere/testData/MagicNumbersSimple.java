@@ -35,7 +35,7 @@ public class MagicNumbersSimple {
 
     public static EnvironmentNode getExpectedNode() {
         try {
-            EnvironmentNode root = EnvironmentNode.ofInternal(MathMagic.class);
+            EnvironmentNode root = EnvironmentNode.ofInternal(MathMagic.class, MagicNumbers.MathMagic.class);
             EnvironmentMethodCall methodCall = new EnvironmentMethodCall(MathMagic.class.getMethod("magic",
                     MyInt.class));
             /**
@@ -93,7 +93,7 @@ public class MagicNumbersSimple {
 
             methodCall.setReturnSymbol(new LocalSymbol(LocalSymbol.Source.RETURN_VALUE, 4));
             methodCall.setResult(MethodResult.RETURN);
-            methodCall.setReturnNode(EnvironmentNode.ofInternal(MyInt.class));
+            methodCall.setReturnNode(EnvironmentNode.ofInternal(MyInt.class, MyInt.class));
             root.addMethodCall(methodCall);
 
             methodCall.setReturnClass(MyInt.class);

@@ -3,7 +3,7 @@
  * This program is made available under the terms of the MIT License.
  */
 
-package org.rere.core.listener.wrap.bytebuddy;
+package org.rere.core.wrap.bytebuddy;
 
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.Origin;
@@ -14,7 +14,7 @@ import org.rere.core.listener.ObjectInitializer;
 import org.rere.core.listener.interceptor.ReReMethodInterceptor;
 import org.rere.core.listener.utils.ObjectSpy;
 import org.rere.core.listener.utils.UserObjectSpy;
-import org.rere.core.listener.wrap.SingleNodeWrapper;
+import org.rere.core.wrap.SingleNodeWrapper;
 
 import java.lang.reflect.Method;
 import java.util.List;
