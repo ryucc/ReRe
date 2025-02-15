@@ -176,8 +176,13 @@ There are also some projects that need funding:
 
 Thanks to all my friends and family. Many of whom I kept pitching this idea to. 
 
+### Amazon colleagues
 Thanks to my former colleagues at Amazon. I received a lot of mentorship as a junior engineer there.
 A lot of the coding principles I learnt at Amazon inspired this project.
+
+Special thanks to Joe Leija, who I pitched this idea multiple time towards, and getting feedback everytime. 
+
+### ByteBuddy, Mockito, and all Mock frameworks
 
 Thanks to Rafael Winterhalter, the creator of ByteBuddy. This person may not know me, but I feel
 I know this person a lot. It is crazy how much he supports the ByteBuddy project online. This year I have read
