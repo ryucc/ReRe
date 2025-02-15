@@ -180,7 +180,7 @@ Thanks to all my friends and family. Many of whom I kept pitching this idea to.
 Thanks to my former colleagues at Amazon. I received a lot of mentorship as a junior engineer there.
 A lot of the coding principles I learnt at Amazon inspired this project.
 
-Special thanks to (Joe Leija)[linkedin.com/in/joe-leija], who I pitched this idea multiple time towards, and getting feedback everytime. 
+Special thanks to [Joe Leija](linkedin.com/in/joe-leija), who I pitched this idea multiple time towards, and getting feedback everytime. 
 
 ### ByteBuddy, Mockito, and all Mock frameworks
 
