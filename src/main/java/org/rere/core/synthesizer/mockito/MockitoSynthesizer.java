@@ -7,6 +7,7 @@ package org.rere.core.synthesizer.mockito;
 
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -27,29 +28,22 @@ import java.util.List;
 public class MockitoSynthesizer {
 
     private final String packageName;
-    private final String methodName;
     private final String fileName;
 
-    private final EnvironmentNodeSynthesizer environmentNodeSynthesizer;
+    private final ParamModdingNodeSynthesizer environmentNodeSynthesizer;
 
 
-    public MockitoSynthesizer(String packageName, String methodName, String fileName) {
+    public MockitoSynthesizer(String packageName, String fileName) {
         this.packageName = packageName;
-        this.methodName = methodName;
         this.fileName = fileName;
         this.environmentNodeSynthesizer = new ParamModdingNodeSynthesizer(packageName);
     }
 
-    public MockitoSynthesizer(String packageName, String methodName) {
-        this(packageName, methodName, "MockCreator");
-    }
-
-
-    public String generateMockito(EnvironmentNode root) {
+    public String generateMockito(EnvironmentNode root, String methodName) {
 
         TypeSpec.Builder typeBuilder = TypeSpec.classBuilder(fileName).addModifiers(Modifier.PUBLIC);
 
-        environmentNodeSynthesizer.generateEnvironmentNode(typeBuilder, root);
+        environmentNodeSynthesizer.generateRootMethod(typeBuilder, root, methodName);
 
         FieldSpec defaultSerde = FieldSpec.builder(DefaultSerde.class, "defaultSerde")
                 .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
@@ -65,6 +59,7 @@ public class MockitoSynthesizer {
                 .addStaticImport(Mockito.class, "doNothing")
                 .addStaticImport(Mockito.class, "mock")
                 .build();
+
         return javaFile.toString();
     }
 

@@ -10,6 +10,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import java.lang.Exception;
+import java.lang.RuntimeException;
 import java.lang.String;
 import org.rere.core.serde.DefaultSerde;
 
@@ -30,6 +31,15 @@ public class ReadmeRecursiveExampleExpected {
     ReadmeRecursiveExample.HttpClient mockObject = mock(ReadmeRecursiveExample.HttpClient.class);
     doReturn(environmentNode1()).when(mockObject).get(anyInt());
     return mockObject;
+  }
+
+  public static ReadmeRecursiveExample.HttpClient create() throws Exception {
+    try {
+      return environmentNode0();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }
 

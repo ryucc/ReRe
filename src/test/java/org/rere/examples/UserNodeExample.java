@@ -24,7 +24,7 @@ public class UserNodeExample {
         MyRecord myRecord = new MyRecord(myClasses);
         wrapped.modify(myRecord);
         EnvironmentNode node = environmentObjectListener.getRoot();
-        System.out.println(new MockitoSynthesizer("pack", "method").generateMockito(node));
+        System.out.println(new MockitoSynthesizer("pack", "method").generateMockito(node, "create"));
     }
 
     public static class MyClass {

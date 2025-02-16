@@ -19,6 +19,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import java.lang.Exception;
+import java.lang.RuntimeException;
 import org.rere.core.serde.DefaultSerde;
 
 public class RecordExampleExpected {
@@ -44,6 +45,15 @@ public class RecordExampleExpected {
     object2 = environmentNode2();
     object0 = new RecordExample.TwoDice(object1,object2);
     return object0;
+  }
+
+  public static RecordExample.TwoDice create() throws Exception {
+    try {
+      return environmentNode0();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }
 

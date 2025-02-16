@@ -29,5 +29,14 @@ public class ThrowExampleExpected {
     doReturn((int) 2).doReturn((int) 2).doThrow(environmentNode1()).doReturn((int) 1).doReturn((int) 4).when(mockObject).roll();
     return mockObject;
   }
+
+  public static ThrowExample.ErrorDice create() throws Exception {
+    try {
+      return environmentNode0();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
 

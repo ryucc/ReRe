@@ -11,6 +11,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import java.lang.Exception;
+import java.lang.RuntimeException;
 import java.lang.Void;
 import java.util.ArrayList;
 import org.mockito.invocation.InvocationOnMock;
@@ -40,6 +41,15 @@ public class SortExampleExpected {
     SortExample.BubbleSorter mockObject = mock(SortExample.BubbleSorter.class);
     doAnswer(getAnswer0()).when(mockObject).sort(any());
     return mockObject;
+  }
+
+  public static SortExample.BubbleSorter method() throws Exception {
+    try {
+      return environmentNode0();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }
 

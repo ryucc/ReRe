@@ -140,6 +140,24 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         return generateLeafEnvironmentNode(typeBuilder, root);
     }
 
+    public void generateRootMethod(TypeSpec.Builder typeBuilder, EnvironmentNode root, String methodName) {
+
+        Class<?> declaringClass = getBestClass(root.getRuntimeClass(), root.getRepresentingClass());
+        MethodSpec.Builder rootMethodBuilder = MethodSpec.methodBuilder(methodName)
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                .addException(Exception.class)
+                .returns(declaringClass);
+        EnvironmentNodeSynthesizer.SynthResult result = generateEnvironmentNode(typeBuilder, root);
+
+        rootMethodBuilder.beginControlFlow("try")
+                .addStatement("return $L", result.methodName())
+                .endControlFlow()
+                .beginControlFlow("catch (Exception e)")
+                .addStatement("throw new $T(e)", RuntimeException.class)
+                .endControlFlow();
+        typeBuilder.addMethod(rootMethodBuilder.build());
+    }
+
 
     private boolean getVisibility(Class<?> clazz) {
         int modifiers = clazz.getModifiers();;
@@ -153,7 +171,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
     }
 
     //TODO, use implemented interfaces first
-    private Class<?> getBestClass(Class<?> runtimeClass, Class<?> lowerBoundClass) {
+    public Class<?> getBestClass(Class<?> runtimeClass, Class<?> lowerBoundClass) {
         if(runtimeClass.equals(String.class)) {
             return runtimeClass;
         }

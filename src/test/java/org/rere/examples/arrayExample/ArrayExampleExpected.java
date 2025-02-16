@@ -19,6 +19,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import java.lang.Exception;
+import java.lang.RuntimeException;
 import org.rere.core.serde.DefaultSerde;
 
 public class ArrayExampleExpected {
@@ -46,6 +47,15 @@ public class ArrayExampleExpected {
     object0[0] = object1;
     object0[1] = object2;
     return object0;
+  }
+
+  public static ArrayExample.Dice[] create() throws Exception {
+    try {
+      return environmentNode0();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }
 

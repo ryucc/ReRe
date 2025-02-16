@@ -82,7 +82,7 @@ public class ReRe {
      * @return The generated mockito code in plaintext
      */
     public String exportMockito(String packageName, String methodName, String className) {
-        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer(packageName, methodName, className);
-        return mockitoSynthesizer.generateMockito(reReIntermediateData.roots().get(0));
+        MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer(packageName, className);
+        return mockitoSynthesizer.generateMockito(reReIntermediateData.roots().get(0), methodName);
     }
 }

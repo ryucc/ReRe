@@ -19,6 +19,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 import java.lang.Exception;
+import java.lang.RuntimeException;
 import org.rere.core.serde.DefaultSerde;
 
 public class TemplateExampleExpected {
@@ -29,6 +30,15 @@ public class TemplateExampleExpected {
     doReturn((java.lang.Integer) 1).doReturn((java.lang.Integer) 1).doReturn((java.lang.Integer) 1).doReturn((java.lang.Integer) 1).doReturn((java.lang.Integer) 1).when(mockObject).getObject();
     doReturn((int) 1).doReturn((int) 5).doReturn((int) 2).doReturn((int) 6).doReturn((int) 6).when(mockObject).roll();
     return mockObject;
+  }
+
+  public static TemplateExample.TemplateDice create() throws Exception {
+    try {
+      return environmentNode0();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }
 

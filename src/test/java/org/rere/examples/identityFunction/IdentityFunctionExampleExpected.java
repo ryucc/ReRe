@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 
 import java.lang.Exception;
 import java.lang.Object;
+import java.lang.RuntimeException;
 import java.util.ArrayList;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -27,6 +28,15 @@ public class IdentityFunctionExampleExpected {
     IdentityFunctionExample.IdentityFunction mockObject = mock(IdentityFunctionExample.IdentityFunction.class);
     doAnswer(getAnswer0()).when(mockObject).call(any());
     return mockObject;
+  }
+
+  public static IdentityFunctionExample.IdentityFunction create() throws Exception {
+    try {
+      return environmentNode0();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }
 

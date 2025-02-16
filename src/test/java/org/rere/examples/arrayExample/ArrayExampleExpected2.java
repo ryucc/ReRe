@@ -15,6 +15,7 @@ import static org.mockito.Mockito.mock;
 
 import java.lang.Exception;
 import java.lang.Integer;
+import java.lang.RuntimeException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.rere.core.serde.DefaultSerde;
@@ -66,6 +67,15 @@ public class ArrayExampleExpected2 {
     ArrayExample2.DiceRoller mockObject = mock(ArrayExample2.DiceRoller.class);
     doAnswer(getAnswer0()).doAnswer(getAnswer1()).doAnswer(getAnswer2()).doAnswer(getAnswer3()).doAnswer(getAnswer4()).when(mockObject).roll(any());
     return mockObject;
+  }
+
+  public static ArrayExample2.DiceRoller create() throws Exception {
+    try {
+      return environmentNode0();
+    }
+    catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 }
 

@@ -118,7 +118,7 @@ public class MagicNumbersSimple {
 
         EnvironmentNode node = rere.getReReRecordData().roots().getFirst();
         MockitoSynthesizer synthesizer = new MockitoSynthesizer("asd", "asdf");
-        synthesizer.generateMockito(getExpectedNode());
+        synthesizer.generateMockito(getExpectedNode(), "create");
         GraphCompare graphCompare = new GraphCompare();
 
         assertThat(graphCompare.diffNode(getExpectedNode(), node)).isTrue();
