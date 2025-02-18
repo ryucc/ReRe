@@ -50,11 +50,11 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         String methodName = "environmentNode" + environmentId;
         environmentId++;
 
-        Class<?> clazz = root.getRuntimeClass();
+        Class<?> runtimeRecordClass = root.getRuntimeClass();
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .addException(Exception.class)
-                .returns(clazz);
+                .returns(runtimeRecordClass);
 
         Queue<EnvironmentNode> front = new ArrayDeque<>();
         Set<EnvironmentNode> explored = new HashSet<>();
@@ -124,7 +124,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         }
         methodBuilder.addStatement("return $L", variableNames.get(root));
         typeBuilder.addMethod(methodBuilder.build());
-        return new SynthResult(methodName + "()");
+        return new SynthResult(methodName + "()", runtimeRecordClass);
 
     }
 
@@ -132,7 +132,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
     public SynthResult generateEnvironmentNode(TypeSpec.Builder typeBuilder, EnvironmentNode root) {
         if (ClassUtils.isWrapperOrPrimitive(root.getRuntimeClass())) {
             String cast = String.format("(%s) ", root.getRuntimeClass().getName());
-            return new SynthResult(cast + root.getValue());
+            return new SynthResult(cast + root.getValue(), root.getRuntimeClass());
         }
         if (ClassUtils.isRecord(root.getRuntimeClass()) || root.getRuntimeClass().isArray()) {
             return generateRecordEnvironmentNode(typeBuilder, root);
@@ -183,6 +183,18 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         return lowerBoundClass;
     }
 
+    public void addComments(MethodSpec.Builder methodBuilder, String comments) {
+        if(comments.contains("\n")) {
+            methodBuilder.addCode("/*\n");
+            for(String s: comments.split("\n")) {
+                methodBuilder.addCode(" * $L\n", s);
+            }
+            methodBuilder.addCode("*/\n");
+        } else {
+            methodBuilder.addComment("$L", comments);
+        }
+    }
+
     public SynthResult generateLeafEnvironmentNode(TypeSpec.Builder typeBuilder, EnvironmentNode root) {
 
         String methodName = "environmentNode" + environmentId;
@@ -197,11 +209,15 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
                 .addException(Exception.class)
                 .returns(declaringClass);
 
+        if (root.getComments() != null && !root.getComments().isEmpty()) {
+            addComments(methodBuilder, root.getComments());
+        }
+
         if (root.isSerialized()) {
             Class<?> clazz = root.getRuntimeClass();
             methodBuilder.addStatement("return ($T) defaultSerde.deserialize($S)", clazz, root.getValue());
             typeBuilder.addMethod(methodBuilder.build());
-            return new SynthResult(methodName + "()");
+            return new SynthResult(methodName + "()", clazz);
         }
 
         declareMock(declaringClass, "mockObject", methodBuilder);
@@ -240,6 +256,6 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         }
         typeBuilder.addMethod(methodBuilder.build());
 
-        return new SynthResult(methodName + "()");
+        return new SynthResult(methodName + "()", declaringClass);
     }
 }

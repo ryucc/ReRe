@@ -15,8 +15,10 @@ import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+//TODO: fix private class mocking
 public class EnvironmentObjectListenerPrivateTests {
-    private static class PrivateDice {
+
+    public static class PrivateDice {
 
         private final Random rand;
         public PrivateDice() {

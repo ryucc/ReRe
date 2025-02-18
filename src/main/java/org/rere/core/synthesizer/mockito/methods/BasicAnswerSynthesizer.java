@@ -122,14 +122,21 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
         List<EnvironmentNode> locals = userMethodCall.getLocalParameters();
         // Generate parameter string
         List<String> paramNames = new ArrayList<>();
+        int localParamId = 0;
         for (int i = 0; i < paramSources.size(); i++) {
             LocalSymbol symbol = paramSources.get(i);
             if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV && locals.get(symbol.getIndex()).isTerminal()) {
+                //Primitive values
                 paramNames.add(locals.get(symbol.getIndex()).getValue());
             } else if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV) {
-                String method = environmentNodeSynthesizer.generateEnvironmentNode(typeBuilder, locals.get(i)).methodName();
-                paramNames.add(method);
+                // Create environment mocks
+                EnvironmentNodeSynthesizer.SynthResult result =  environmentNodeSynthesizer.generateEnvironmentNode(typeBuilder, locals.get(i));
+                String paramName = "envParam" + localParamId;
+                localParamId++;
+                methodBuilder.addStatement("$T $L = $L", result.getDeclaredClass(), paramName, result.methodName());
+                paramNames.add(paramName);
             } else {
+                // Return values or parameters
                 paramNames.add(symbolNamer(symbol));
             }
         }

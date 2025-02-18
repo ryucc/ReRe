@@ -46,7 +46,7 @@ public class UserObjectWrapper {
             UserNode cur = nodeQueue.poll();
             cur.setScope(scope);
             explored.add(cur);
-            if (cur.getDeclaredClass().isArray()) {
+            if (cur.getRuntimeClass().isArray()) {
                 for (int i = 0; i < cur.getDirectChildren().size(); i++) {
                     UserNode child = cur.getDirectChildren().get(i);
                     if (!explored.contains(child)) {
@@ -56,8 +56,8 @@ public class UserObjectWrapper {
                         nodeQueue.add(child);
                     }
                 }
-            } else if (ClassUtils.isRecord(cur.getDeclaredClass())) {
-                Field[] recordComponents = cur.getDeclaredClass().getDeclaredFields();
+            } else if (ClassUtils.isRecord(cur.getRuntimeClass())) {
+                Field[] recordComponents = cur.getRuntimeClass().getDeclaredFields();
                 for (int i = 0; i < cur.getDirectChildren().size(); i++) {
                     UserNode child = cur.getDirectChildren().get(i);
                     if (!explored.contains(child)) {

@@ -5,10 +5,12 @@
 
 package org.rere.core.listener;
 
+import org.rere.api.ReReSettings;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.interceptor.ReReMethodInterceptor;
 import org.rere.core.listener.utils.ClassUtils;
 import org.rere.core.listener.utils.EnvironmentObjectSpy;
+import org.rere.core.serde.ReReSerde;
 import org.rere.core.wrap.SingleNodeWrapper;
 import org.rere.core.wrap.mockito.MockitoSingleNodeWrapper;
 import org.rere.core.serde.DefaultSerde;
@@ -16,14 +18,17 @@ import org.rere.core.serde.exceptions.SerializationException;
 
 import java.io.Serializable;
 import java.lang.reflect.Modifier;
+import java.util.Map;
 
 public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
     private static final DefaultSerde defaultSerde = new DefaultSerde();
     private SingleNodeWrapper<EnvironmentNode> leafNodeWrapper;
+    final Map<Class<?>, Class<? extends ReReSerde<?>>> customSerde;
 
-    public EnvironmentNodeManager(ReReMethodInterceptor<EnvironmentNode> listener) {
+    public EnvironmentNodeManager(ReReMethodInterceptor<EnvironmentNode> listener, ReReSettings reReSettings) {
         //this.leafNodeWrapper = new EnvironmentNodeWrapper(listener);
         //this.wrapper = new JavaProxySingleNodeWrapper<>(listener);
+        this.customSerde = reReSettings.getCustomSerde();
         this.leafNodeWrapper = new MockitoSingleNodeWrapper<>(listener, EnvironmentObjectSpy.class);
     }
     //private final MockitoSingleEnvironmentNodeWrapper wrapper;
@@ -56,6 +61,17 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
         if (ClassUtils.isWrapperOrPrimitive(original.getClass())) {
             node.setValue(original.toString());
             node.setTerminal(true);
+            wrapped = original;
+        } else if(original.getClass().equals(String.class)) {
+            node.setTerminal(true);
+            node.setSerialized(true);
+            try {
+                node.setValue(defaultSerde.serialize(original));
+                node.setComments((String) original);
+            } catch (SerializationException e) {
+                node.setFailedNode(true);
+                node.setComments(e.getMessage());
+            }
             wrapped = original;
         } else if (
                 (Modifier.isFinal(original.getClass().getModifiers())

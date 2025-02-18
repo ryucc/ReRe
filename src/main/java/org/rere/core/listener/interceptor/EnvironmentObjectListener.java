@@ -44,7 +44,7 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
     }
     public EnvironmentObjectListener(ReReSettings reReSettings) {
         roots = new ArrayList<>();
-        environmentObjectWrapper = new EnvironmentObjectWrapper(new EnvironmentNodeManager(this));
+        environmentObjectWrapper = new EnvironmentObjectWrapper(new EnvironmentNodeManager(this, reReSettings));
         UserObjectListener userObjectListener = new UserObjectListener(environmentObjectWrapper);
         userObjectWrapper = new UserObjectWrapper(new TopoOrderObjectWrapper<>(new UserNodeManager(userObjectListener)));
         userObjectListener.setUserObjectWrapper(userObjectWrapper);
@@ -87,15 +87,16 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
                 continue;
             }
             //Class<?> argClass = orignalMethod.getParameterTypes()[i];
-            Class<?> argClass = cur.getClass();
-            if(skipModClasses.contains(argClass)) {
+            Class<?> runtimeClass = cur.getClass();
+            if(skipModClasses.contains(runtimeClass)) {
                 wrappedArguments[i] = cur;
                 continue;
             }
             LocalSymbol accessSymbol = new LocalSymbol(LocalSymbol.Source.PARAMETER, i);
-            ReReWrapResult<?, UserNode> result = userObjectWrapper.createRoot(cur, argClass, edge, accessSymbol);
+            Class<?> representingClass = orignalMethod.getParameterTypes()[i];
+            ReReWrapResult<?, UserNode> result = userObjectWrapper.createRoot(cur, representingClass, edge, accessSymbol);
             wrappedArguments[i] = result.wrapped();
-            argClasses[i] = argClass;
+            argClasses[i] = runtimeClass;
             //params.add(result.userNode());
         }
         edge.setParamClasses(Arrays.asList(argClasses));

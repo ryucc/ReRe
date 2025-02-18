@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
+import java.net.http.HttpHeaders;
 public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
 
     private final EnvironmentObjectWrapper environmentObjectWrapper;
@@ -51,7 +52,9 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
         List<EnvironmentNode> environmentNodes = new ArrayList<>();
         List<Object> wrappedArguments = new ArrayList<>();
         List<LocalSymbol> parameterSourceList = new ArrayList<>();
-        for (Object arg : allArguments) {
+        for (int i = 0; i < allArguments.length; i++) {
+            Object arg = allArguments[i];
+            Class<?> representingClass = orignalMethod.getParameterTypes()[i];
             if (arg instanceof UserObjectSpy) {
                 UserNode node = ((UserObjectSpy) arg).getReReUserNode();
                 parameterSourceList.add(node.getSymbol());
@@ -64,8 +67,9 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
                 // Let's assume environments are stateless first... handle this later.
                 System.err.println("User method call received environment object as parameter.");
             } else {
-                ReReWrapResult<?, EnvironmentNode> listenResult = environmentObjectWrapper.createRoot(arg,
-                        arg.getClass());
+                // TODO
+                ReReWrapResult<?, EnvironmentNode> listenResult =
+                        environmentObjectWrapper.createRoot(arg, representingClass);
 
                 int curIndex = environmentNodes.size();
                 LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.LOCAL_ENV, curIndex);

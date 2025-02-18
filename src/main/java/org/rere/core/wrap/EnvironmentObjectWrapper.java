@@ -6,10 +6,19 @@
 package org.rere.core.wrap;
 
 import org.rere.core.data.objects.EnvironmentNode;
+import org.rere.core.data.objects.UserNode;
 import org.rere.core.listener.EnvironmentNodeManager;
+import org.rere.core.listener.UserNodeManager;
 
-public class EnvironmentObjectWrapper extends TopoOrderObjectWrapper<EnvironmentNode, EnvironmentNodeManager> {
+public class EnvironmentObjectWrapper {
+
+    private final TopoOrderObjectWrapper<EnvironmentNode, EnvironmentNodeManager> topoOrderWrapper;
     public EnvironmentObjectWrapper(EnvironmentNodeManager nodeManager) {
-        super(nodeManager);
+        this.topoOrderWrapper = new TopoOrderObjectWrapper<>(nodeManager);
     }
+    public <T> ReReWrapResult<T, EnvironmentNode> createRoot(Object original, Class<T> targetClass) {
+        return topoOrderWrapper.createRoot(original, targetClass);
+    }
+
+
 }

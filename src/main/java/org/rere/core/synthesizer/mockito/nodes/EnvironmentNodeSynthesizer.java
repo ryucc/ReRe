@@ -10,15 +10,22 @@ import org.rere.core.data.objects.EnvironmentNode;
 
 public interface EnvironmentNodeSynthesizer {
     SynthResult generateEnvironmentNode(TypeSpec.Builder typeBuilder, EnvironmentNode root);
+
     class SynthResult {
-        public SynthResult(String methodName) {
+        private final String methodName;
+        private final Class<?> declaredClass;
+
+        public SynthResult(String methodName, Class<?> declaredClass) {
             this.methodName = methodName;
+            this.declaredClass = declaredClass;
+        }
+
+        public Class<?> getDeclaredClass() {
+            return declaredClass;
         }
 
         public String methodName() {
             return methodName;
         }
-
-        private final String methodName;
     }
 }

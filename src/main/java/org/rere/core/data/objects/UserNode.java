@@ -105,7 +105,8 @@ public class UserNode implements ReReObjectNode<UserNode> {
         this.failedNode = failedNode;
     }
 
-    public Class<?> getDeclaredClass() {
+    @Override
+    public Class<?> getRuntimeClass() {
         return runtimeClass;
     }
 

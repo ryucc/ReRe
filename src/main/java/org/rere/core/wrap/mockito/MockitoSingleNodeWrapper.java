@@ -25,18 +25,44 @@ public class MockitoSingleNodeWrapper<NODE extends ReReObjectNode<?>> implements
         this.extraInterface = extraInterface;
     }
 
+    public Class<?> findBestClass(Class<?> start, Class<?> end) {
+        if(!end.isAssignableFrom(start)) {
+            return null;
+        }
+
+        int mod = start.getModifiers();
+        if(Modifier.isPublic(mod) && !Modifier.isFinal(mod)) {
+            return start;
+        } else if(start.getSuperclass() != null && end.isAssignableFrom(start.getSuperclass())){
+            Class<?> sup = start.getSuperclass();
+            int supMod = sup.getModifiers();
+            if(Modifier.isPublic(supMod) && !Modifier.isFinal(supMod)) {
+                return sup;
+            }
+        }
+        for(Class<?> next: start.getInterfaces()) {
+            if(end.isAssignableFrom(next)) {
+                return next;
+            }
+        }
+        return null;
+    }
+
     @Override
     public Object initiateSpied(Object returnValue, NODE node) {
+        Class<?> bestClass = findBestClass(returnValue.getClass(), node.getRepresentingClass());
+        if(bestClass == null) {
+            node.setFailedNode(true);
+            node.setComments("Cannot find proper class to mock");
+            return returnValue;
+        }
         try {
-            return Mockito.mock(returnValue.getClass(),
+            return Mockito.mock(bestClass,
                     Mockito.withSettings()
                             .defaultAnswer(new EnvAns(returnValue, node))
                             .extraInterfaces(extraInterface));
         } catch (Exception e) {
-            return Mockito.mock(node.getRepresentingClass(),
-                    Mockito.withSettings()
-                            .defaultAnswer(new EnvAns(returnValue, node))
-                            .extraInterfaces(extraInterface));
+            return returnValue;
         }
     }
 

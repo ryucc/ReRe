@@ -200,7 +200,7 @@ public class TopoOrderObjectWrapper<NODE extends ReReObjectNode<NODE>, MANAGER e
         }
     }
 
-    class TopSortData<NODE> {
+    static class TopSortData<NODE> {
         protected final Queue<Object> topologicalReady;
         protected final Map<Object, Integer> childCount;
         protected final Map<Object, List<Object>> parents;

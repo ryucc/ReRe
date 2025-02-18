@@ -8,10 +8,9 @@ package org.rere.api;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.EnvironmentNodeManager;
 import org.rere.core.listener.interceptor.EnvironmentObjectListener;
+import org.rere.core.synthesizer.mockito.MockitoSynthesizer;
 import org.rere.core.wrap.EnvironmentObjectWrapper;
 import org.rere.core.wrap.ReReWrapResult;
-import org.rere.core.serde.ReReSerde;
-import org.rere.core.synthesizer.mockito.MockitoSynthesizer;
 
 import java.util.ArrayList;
 
@@ -30,23 +29,11 @@ public class ReRe {
     public ReRe(ReReSettings reReSettings) {
         reReIntermediateData = new ReReIntermediateData(new ArrayList<>());
         EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener(reReSettings);
-        EnvironmentNodeManager environmentNodeManager = new EnvironmentNodeManager(environmentObjectListener);
+        EnvironmentNodeManager environmentNodeManager = new EnvironmentNodeManager(environmentObjectListener, reReSettings);
         this.environmentObjectWrapper = new EnvironmentObjectWrapper(environmentNodeManager);
         environmentObjectListener.setEnvironmentObjectWrapper(environmentObjectWrapper);
     }
 
-    /**
-     * User implementation of serialization. This may be useful when a class is final, ReRe is not able to spy on final classes. But if the class is serializable, replay is still possible.
-     * TODO not implemented yet.
-     *
-     * @param clazz      The target class to serialize.
-     * @param serializer User's custom implementation of ReReSerde for class T.
-     * @param <T>        Generic template for the target class to serialize.
-     * @param <S>        Generic template for custom implementation of ReReSerde for class T
-     */
-    public <T, S extends ReReSerde<T>> void registerSerializer(Class<T> clazz, S serializer) {
-
-    }
 
     /**
      * Returns the record data used internally. This might be used since the code synthesizer

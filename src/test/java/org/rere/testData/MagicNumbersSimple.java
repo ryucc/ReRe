@@ -41,7 +41,7 @@ public class MagicNumbersSimple {
             /**
              * Add block
              */
-            EnvironmentNode userAddValue = EnvironmentNode.ofPrimitive(Integer.class, "1");
+            EnvironmentNode userAddValue = EnvironmentNode.ofPrimitive(int.class, "1");
             UserMethodCall add = new UserMethodCall(LocalSymbol.param(0),
                     "add",
                     List.of(userAddValue),
@@ -51,7 +51,7 @@ public class MagicNumbersSimple {
             /**
              * Times block
              */
-            EnvironmentNode userTimesValue = EnvironmentNode.ofPrimitive(Integer.class, "2");
+            EnvironmentNode userTimesValue = EnvironmentNode.ofPrimitive(int.class, "2");
             UserMethodCall times = new UserMethodCall(LocalSymbol.returnValue(0),
                     "times",
                     List.of(userTimesValue),
@@ -61,7 +61,7 @@ public class MagicNumbersSimple {
             /**
              * 2nd Add block
              */
-            EnvironmentNode userAdd2Value = EnvironmentNode.ofPrimitive(Integer.class, "4");
+            EnvironmentNode userAdd2Value = EnvironmentNode.ofPrimitive(int.class, "4");
             UserMethodCall add2 = new UserMethodCall(LocalSymbol.returnValue(1),
                     "add",
                     List.of(userAdd2Value),
@@ -72,7 +72,7 @@ public class MagicNumbersSimple {
             /**
              * Divide block
              */
-            EnvironmentNode userDivideValue = EnvironmentNode.ofPrimitive(Integer.class, "2");
+            EnvironmentNode userDivideValue = EnvironmentNode.ofPrimitive(int.class, "2");
             UserMethodCall divide = new UserMethodCall(LocalSymbol.returnValue(2),
                     "divide",
                     List.of(userDivideValue),
@@ -83,7 +83,7 @@ public class MagicNumbersSimple {
             /**
              * Divide block
              */
-            EnvironmentNode userMinusValue = EnvironmentNode.ofPrimitive(Integer.class, "3");
+            EnvironmentNode userMinusValue = EnvironmentNode.ofPrimitive(int.class, "3");
             UserMethodCall minus = new UserMethodCall(LocalSymbol.returnValue(3),
                     "minus",
                     List.of(userMinusValue),

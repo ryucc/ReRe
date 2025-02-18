@@ -15,7 +15,7 @@ import org.rere.core.data.methods.MethodResult;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class EnvironmentObjectListenerNullTests {
-    private static class NullDice {
+    public static class NullDice {
         // TODO: can't mock with out declared constructor
         NullDice(){}
 

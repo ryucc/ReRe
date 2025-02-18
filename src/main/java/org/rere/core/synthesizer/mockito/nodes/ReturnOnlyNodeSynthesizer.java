@@ -57,7 +57,7 @@ public class ReturnOnlyNodeSynthesizer implements EnvironmentNodeSynthesizer {
         }
         typeBuilder.addMethod(methodBuilder.build());
         environmentId++;
-        return new SynthResult(methodName);
+        return new SynthResult(methodName, root.getRuntimeClass());
 
     }
 }

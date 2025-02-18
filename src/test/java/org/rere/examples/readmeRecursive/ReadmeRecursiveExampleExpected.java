@@ -18,6 +18,7 @@ public class ReadmeRecursiveExampleExpected {
   private static final DefaultSerde defaultSerde = new DefaultSerde();
 
   public static String environmentNode2() throws Exception {
+    // Hello World!
     return (String) defaultSerde.deserialize("rO0ABXQADEhlbGxvIFdvcmxkIQ==");
   }
 
