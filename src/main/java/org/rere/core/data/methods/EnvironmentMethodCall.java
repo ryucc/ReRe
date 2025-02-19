@@ -10,9 +10,7 @@ import org.rere.core.data.objects.LocalSymbol;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,8 +27,20 @@ public class EnvironmentMethodCall implements Serializable {
 
     private final Signature signature;
 
-    public void setParamClasses(List<Class<?>> paramClasses) {
+    public List<Class<?>> getParamRuntimeClasses() {
+        return paramRuntimeClasses;
+    }
+
+    private List<Class<?>> paramRuntimeClasses;
+
+    public void setParamRuntimeClasses(List<Class<?>> paramClasses) {
+        this.paramRuntimeClasses = paramClasses;
+    }
+    public void setParamRepresentingClasses(List<Class<?>> paramClasses) {
         this.signature.setParamClasses(paramClasses);
+    }
+    public List<Class<?>> getParamRepresentingClasses() {
+        return this.signature.getParamClasses();
     }
     // Dynamic
     private final UUID uuid;

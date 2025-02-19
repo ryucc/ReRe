@@ -15,10 +15,10 @@ import static org.mockito.Mockito.mock;
 
 import java.lang.Exception;
 import java.lang.RuntimeException;
-import org.rere.core.serde.DefaultSerde;
+import org.rere.core.serde.PrimitiveSerde;
 
 public class ReadmeExampleExpected {
-  private static final DefaultSerde defaultSerde = new DefaultSerde();
+  private static final PrimitiveSerde defaultSerde = new PrimitiveSerde();
 
   public static ReadmeExample.Dice environmentNode0() throws Exception {
     ReadmeExample.Dice mockObject = mock(ReadmeExample.Dice.class);

@@ -14,43 +14,43 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class DefaultSerdeTest {
-    DefaultSerde defaultSerde = new DefaultSerde();
+    PrimitiveSerde primitiveSerde = new PrimitiveSerde();
 
     @Test
     public void testInt() throws Exception {
         Integer a = 1;
-        String ser = defaultSerde.serialize(a);
-        int b = (int) defaultSerde.deserialize(ser);
+        String ser = primitiveSerde.serialize(a);
+        int b = (int) primitiveSerde.deserialize(ser);
         assertThat(a).isEqualTo(b);
     }
     @Test
     public void testDouble() throws Exception {
         double a = 1;
-        String ser = defaultSerde.serialize(a);
-        double b = (double) defaultSerde.deserialize(ser);
+        String ser = primitiveSerde.serialize(a);
+        double b = (double) primitiveSerde.deserialize(ser);
         assertThat(a).isEqualTo(b);
     }
 
     @Test
     public void testSer() throws Exception {
         Class<?> a = Class.class;
-        String ser = defaultSerde.serialize(a);
-        Class<?> b = (Class<?>) defaultSerde.deserialize(ser);
+        String ser = primitiveSerde.serialize(a);
+        Class<?> b = (Class<?>) primitiveSerde.deserialize(ser);
         assertThat(a).isEqualTo(b);
     }
 
     @Test
     public void testSerializable() throws Exception {
         SerializableClass a = new SerializableClass(1);
-        String ser = defaultSerde.serialize(a);
-        SerializableClass b = (SerializableClass) defaultSerde.deserialize(ser);
+        String ser = primitiveSerde.serialize(a);
+        SerializableClass b = (SerializableClass) primitiveSerde.deserialize(ser);
         assertThat(b).isEqualTo(a);
     }
 
     @Test
     public void testNotSerializable() {
         NotSerializable a = new NotSerializable();
-        assertThatThrownBy(() -> defaultSerde.serialize(a)).isInstanceOf(SerializationException.class);
+        assertThatThrownBy(() -> primitiveSerde.serialize(a)).isInstanceOf(SerializationException.class);
     }
 
     record SerializableClass(int a) implements Serializable {

@@ -20,10 +20,10 @@ import static org.mockito.Mockito.mock;
 
 import java.lang.Exception;
 import java.lang.RuntimeException;
-import org.rere.core.serde.DefaultSerde;
+import org.rere.core.serde.PrimitiveSerde;
 
 public class TemplateExampleExpected {
-  private static final DefaultSerde defaultSerde = new DefaultSerde();
+  private static final PrimitiveSerde defaultSerde = new PrimitiveSerde();
 
   public static TemplateExample.TemplateDice environmentNode0() throws Exception {
     TemplateExample.TemplateDice mockObject = mock(TemplateExample.TemplateDice.class);

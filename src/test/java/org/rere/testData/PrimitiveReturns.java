@@ -10,7 +10,7 @@ import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.methods.MethodResult;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.junit.jupiter.api.Test;
-import org.rere.core.serde.DefaultSerde;
+import org.rere.core.serde.PrimitiveSerde;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,7 +55,7 @@ public class PrimitiveReturns {
 
             /* getString */
             EnvironmentMethodCall methodCall3 = new EnvironmentMethodCall(PrimitiveGenerator.class.getMethod("getString"));
-            methodCall3.setReturnNode(EnvironmentNode.ofPrimitive(String.class, new DefaultSerde().serialize("Hello, World!")));
+            methodCall3.setReturnNode(EnvironmentNode.ofPrimitive(String.class, new PrimitiveSerde().serialize("Hello, World!")));
             methodCall3.setResult(MethodResult.RETURN);
             node.addMethodCall(methodCall3);
             return node;

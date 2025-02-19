@@ -15,6 +15,7 @@ import org.rere.core.data.methods.UserMethodCall;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.data.objects.Member;
 import org.rere.core.listener.utils.ClassUtils;
+import org.rere.core.synthesizer.mockito.CodeUtils;
 import org.rere.core.synthesizer.mockito.nodes.EnvironmentNodeSynthesizer;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -31,9 +32,11 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
     private final EnvironmentNodeSynthesizer environmentNodeSynthesizer;
     private int answerId;
 
-    public BasicAnswerSynthesizer(EnvironmentNodeSynthesizer environmentNodeSynthesizer) {
+    private final String packageName;
+    public BasicAnswerSynthesizer(String packageName, EnvironmentNodeSynthesizer environmentNodeSynthesizer) {
         this.answerId = 0;
         this.environmentNodeSynthesizer = environmentNodeSynthesizer;
+        this.packageName = packageName;
     }
 
     private String symbolNamer(LocalSymbol s) {
@@ -70,13 +73,13 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
                 .returns(ParameterizedTypeName.get(Answer.class,
                         ClassUtils.getWrapped(rootMethodCall.getReturnClass())));
         methodBuilder.beginControlFlow("return ($T invocation) ->", InvocationOnMock.class);
-        List<Class<?>> paramTypes = rootMethodCall.getSignature().getParamClasses();
-        for (int i = 0; i < paramTypes.size(); i++) {
+        List<Class<?>> paramRuntimeTypes = rootMethodCall.getParamRuntimeClasses();
+        List<Class<?>> paramRepresentingTypes = rootMethodCall.getParamRepresentingClasses();
+        for (int i = 0; i < paramRuntimeTypes.size(); i++) {
             String paramName = symbolNamer(new LocalSymbol(LocalSymbol.Source.PARAMETER, i));
-            Type rawType = paramTypes.get(i);
-            TypeName type = ParameterizedTypeName.get(rawType);
+            Class<?> rawType = CodeUtils.getBestClass(packageName, paramRuntimeTypes.get(i), paramRepresentingTypes.get(i));
             //TypeName type = ParameterizedTypeName.get(rawType, rawType.getTypeParameters());
-            methodBuilder.addStatement("$T $L = invocation.getArgument($L)", type, paramName, String.valueOf(i));
+            methodBuilder.addStatement("$T $L = invocation.getArgument($L)", rawType, paramName, String.valueOf(i));
         }
 
         Set<LocalSymbol> explored = exploredUsedSymbols(rootMethodCall, rootMethodCall.getUserMethodCalls());

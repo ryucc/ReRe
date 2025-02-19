@@ -13,7 +13,7 @@ import org.rere.core.listener.utils.EnvironmentObjectSpy;
 import org.rere.core.serde.ReReSerde;
 import org.rere.core.wrap.SingleNodeWrapper;
 import org.rere.core.wrap.mockito.MockitoSingleNodeWrapper;
-import org.rere.core.serde.DefaultSerde;
+import org.rere.core.serde.PrimitiveSerde;
 import org.rere.core.serde.exceptions.SerializationException;
 
 import java.io.Serializable;
@@ -21,9 +21,9 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 
 public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
-    private static final DefaultSerde defaultSerde = new DefaultSerde();
+    private static final PrimitiveSerde PRIMITIVE_SERDE = new PrimitiveSerde();
     private SingleNodeWrapper<EnvironmentNode> leafNodeWrapper;
-    final Map<Class<?>, Class<? extends ReReSerde<?>>> customSerde;
+    final Map<Class<?>, Class<? extends ReReSerde>> customSerde;
 
     public EnvironmentNodeManager(ReReMethodInterceptor<EnvironmentNode> listener, ReReSettings reReSettings) {
         //this.leafNodeWrapper = new EnvironmentNodeWrapper(listener);
@@ -58,15 +58,31 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
 
     public Object synthesizeLeafNode(Object original, EnvironmentNode node) {
         Object wrapped;
-        if (ClassUtils.isWrapperOrPrimitive(original.getClass())) {
+        if (customSerde.containsKey(original.getClass())) {
+            try {
+                Class<? extends ReReSerde> serializer = customSerde.get(original.getClass());
+                ReReSerde reReSerde = serializer.getConstructor().newInstance();
+                node.setValue(reReSerde.serialize(original));
+                node.setSerialized(true);
+                node.setSerializer(customSerde.get(original.getClass()));
+                node.setTerminal(true);
+                wrapped = original;
+            } catch (Exception e) {
+                node.setTerminal(true);
+                node.setFailedNode(true);
+                node.setComments("Custom serialization failed: " + e);
+                wrapped = original;
+            }
+        } else if (ClassUtils.isWrapperOrPrimitive(original.getClass())) {
             node.setValue(original.toString());
             node.setTerminal(true);
             wrapped = original;
         } else if(original.getClass().equals(String.class)) {
             node.setTerminal(true);
             node.setSerialized(true);
+            node.setSerializer(PrimitiveSerde.class);
             try {
-                node.setValue(defaultSerde.serialize(original));
+                node.setValue(PRIMITIVE_SERDE.serialize(original));
                 node.setComments((String) original);
             } catch (SerializationException e) {
                 node.setFailedNode(true);
@@ -80,8 +96,9 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
                 Throwable.class.isAssignableFrom(original.getClass())) {
             node.setTerminal(true);
             node.setSerialized(true);
+            node.setSerializer(PrimitiveSerde.class);
             try {
-                node.setValue(defaultSerde.serialize(original));
+                node.setValue(PRIMITIVE_SERDE.serialize(original));
             } catch (SerializationException e) {
                 node.setFailedNode(true);
                 node.setComments(e.getMessage());

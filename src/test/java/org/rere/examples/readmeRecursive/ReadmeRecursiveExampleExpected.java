@@ -12,10 +12,10 @@ import static org.mockito.Mockito.mock;
 import java.lang.Exception;
 import java.lang.RuntimeException;
 import java.lang.String;
-import org.rere.core.serde.DefaultSerde;
+import org.rere.core.serde.PrimitiveSerde;
 
 public class ReadmeRecursiveExampleExpected {
-  private static final DefaultSerde defaultSerde = new DefaultSerde();
+  private static final PrimitiveSerde defaultSerde = new PrimitiveSerde();
 
   public static String environmentNode2() throws Exception {
     // Hello World!

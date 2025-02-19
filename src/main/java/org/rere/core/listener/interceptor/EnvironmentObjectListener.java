@@ -99,7 +99,8 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
             argClasses[i] = runtimeClass;
             //params.add(result.userNode());
         }
-        edge.setParamClasses(Arrays.asList(argClasses));
+        edge.setParamRuntimeClasses(Arrays.asList(argClasses));
+        edge.setParamRepresentingClasses(Arrays.asList(orignalMethod.getParameterTypes()));
 
         try {
             orignalMethod.setAccessible(true);

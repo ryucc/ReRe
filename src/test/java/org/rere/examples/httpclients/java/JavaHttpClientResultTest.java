@@ -7,13 +7,13 @@ package org.rere.examples.httpclients.java;
 
 import java.net.URI;
 import java.net.http.HttpClient;
+import java.net.http.HttpHeaders;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 
 public class JavaHttpClientResultTest {
     public static void main(String[] args) throws Exception {
-        /*
         HttpClient client = JavaHttpClientExampleExpected.create();
 
         System.out.println("/*");
@@ -21,7 +21,9 @@ public class JavaHttpClientResultTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         System.out.println(response.body());
-                */
         System.out.println("*/");
+
+        HttpHeaders httpHeaders = JavaHttpClientExampleExpected.environmentNode2();
+        System.out.println(httpHeaders.map());
     }
 }

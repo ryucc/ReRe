@@ -36,6 +36,7 @@ public class EnvironmentNode implements Serializable, ReReObjectNode<Environment
     private boolean terminal;
     private boolean serialized;
     private boolean failedNode;
+    private Class<?> serializer;
 
     public EnvironmentNode(List<EnvironmentMethodCall> environmentMethodCalls,
                            String value,
@@ -58,15 +59,7 @@ public class EnvironmentNode implements Serializable, ReReObjectNode<Environment
     }
 
     public static EnvironmentNode ofNull(Class<?> clazz) {
-        return new EnvironmentNode(new ArrayList<>(),
-                "null",
-                true,
-                false,
-                false,
-                clazz,
-                clazz,
-                "",
-                new ArrayList<>());
+        return new EnvironmentNode(new ArrayList<>(), "null", true, false, false, clazz, clazz, "", new ArrayList<>());
     }
 
     public static EnvironmentNode ofFailed(Class<?> clazz, String comments) {
@@ -82,15 +75,7 @@ public class EnvironmentNode implements Serializable, ReReObjectNode<Environment
     }
 
     public static EnvironmentNode ofPrimitive(Class<?> clazz, String value) {
-        return new EnvironmentNode(new ArrayList<>(),
-                value,
-                true,
-                false,
-                false,
-                clazz,
-                clazz,
-                "",
-                new ArrayList<>());
+        return new EnvironmentNode(new ArrayList<>(), value, true, false, false, clazz, clazz, "", new ArrayList<>());
     }
 
     public static EnvironmentNode ofInternal(Class<?> runtimeClass, Class<?> representingClass) {
@@ -103,6 +88,14 @@ public class EnvironmentNode implements Serializable, ReReObjectNode<Environment
                 representingClass,
                 "",
                 new ArrayList<>());
+    }
+
+    public Class<?> getSerializer() {
+        return serializer;
+    }
+
+    public void setSerializer(Class<?> serializer) {
+        this.serializer = serializer;
     }
 
     @Override

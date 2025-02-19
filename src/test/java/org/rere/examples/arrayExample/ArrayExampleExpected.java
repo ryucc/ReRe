@@ -20,10 +20,10 @@ import static org.mockito.Mockito.mock;
 
 import java.lang.Exception;
 import java.lang.RuntimeException;
-import org.rere.core.serde.DefaultSerde;
+import org.rere.core.serde.PrimitiveSerde;
 
 public class ArrayExampleExpected {
-  private static final DefaultSerde defaultSerde = new DefaultSerde();
+  private static final PrimitiveSerde defaultSerde = new PrimitiveSerde();
 
   public static ArrayExample.Dice environmentNode1() throws Exception {
     ArrayExample.Dice mockObject = mock(ArrayExample.Dice.class);

@@ -20,7 +20,6 @@ a.closest("[data-ved]"))?D(f)||"":"";f=f||"";if(a.hasAttribute("jsname"))a=a.get
 package org.rere.examples.httpclients.apache;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -36,10 +35,10 @@ import org.apache.http.message.BasicHeaderElement;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.http.message.BufferedHeader;
-import org.rere.core.serde.DefaultSerde;
+import org.rere.core.serde.PrimitiveSerde;
 
 public class ApacheHttpClientExampleExpected {
-  private static final DefaultSerde defaultSerde = new DefaultSerde();
+  private static final PrimitiveSerde PRIMITIVE_SERDE = new PrimitiveSerde();
 
   public static BasicStatusLine environmentNode2() throws Exception {
     BasicStatusLine mockObject = mock(BasicStatusLine.class);

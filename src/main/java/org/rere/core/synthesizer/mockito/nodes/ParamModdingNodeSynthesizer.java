@@ -12,6 +12,8 @@ import org.rere.core.data.objects.LocalSymbol;
 import org.rere.core.data.methods.MethodResult;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.utils.ClassUtils;
+import org.rere.core.serde.PrimitiveSerde;
+import org.rere.core.synthesizer.mockito.CodeUtils;
 import org.rere.core.synthesizer.mockito.MockitoSynthesizer;
 import org.rere.core.synthesizer.mockito.methods.BasicAnswerSynthesizer;
 import org.rere.core.synthesizer.mockito.methods.EnvironmentAnswerSynthesizer;
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static org.rere.core.synthesizer.mockito.CodeUtils.declareMock;
 import static org.rere.core.synthesizer.mockito.CodeUtils.generateDo;
+import static org.rere.core.synthesizer.mockito.CodeUtils.getBestClass;
 import static org.rere.core.synthesizer.mockito.CodeUtils.groupMethods;
 
 //TODO topological sort again.
@@ -39,7 +42,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
 
 
     public ParamModdingNodeSynthesizer(String packageName) {
-        this.answerSynthesizer = new BasicAnswerSynthesizer(this);
+        this.answerSynthesizer = new BasicAnswerSynthesizer(packageName, this);
         this.environmentId = 0;
         this.packageName = packageName;
     }
@@ -142,7 +145,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
 
     public void generateRootMethod(TypeSpec.Builder typeBuilder, EnvironmentNode root, String methodName) {
 
-        Class<?> declaringClass = getBestClass(root.getRuntimeClass(), root.getRepresentingClass());
+        Class<?> declaringClass = getBestClass(packageName, root.getRuntimeClass(), root.getRepresentingClass());
         MethodSpec.Builder rootMethodBuilder = MethodSpec.methodBuilder(methodName)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .addException(Exception.class)
@@ -158,30 +161,6 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         typeBuilder.addMethod(rootMethodBuilder.build());
     }
 
-
-    private boolean getVisibility(Class<?> clazz) {
-        int modifiers = clazz.getModifiers();;
-        if (java.lang.reflect.Modifier.isPublic(modifiers)){
-            return true;
-        } else if(java.lang.reflect.Modifier.isPrivate(modifiers)) {
-            return false;
-        }
-        Package pack = clazz.getPackage();
-        return pack.getName().equals(packageName);
-    }
-
-    //TODO, use implemented interfaces first
-    public Class<?> getBestClass(Class<?> runtimeClass, Class<?> lowerBoundClass) {
-        if(runtimeClass.equals(String.class)) {
-            return runtimeClass;
-        }
-        boolean visible = getVisibility(runtimeClass);
-        boolean notFinal = !java.lang.reflect.Modifier.isFinal(runtimeClass.getModifiers());
-        if(visible && notFinal) {
-            return runtimeClass;
-        }
-        return lowerBoundClass;
-    }
 
     public void addComments(MethodSpec.Builder methodBuilder, String comments) {
         if(comments.contains("\n")) {
@@ -200,7 +179,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         String methodName = "environmentNode" + environmentId;
         environmentId++;
 
-        Class<?> declaringClass = getBestClass(root.getRuntimeClass(), root.getRepresentingClass());
+        Class<?> declaringClass = CodeUtils.getBestClass(packageName, root.getRuntimeClass(), root.getRepresentingClass());
 
 
 
@@ -212,10 +191,14 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         if (root.getComments() != null && !root.getComments().isEmpty()) {
             addComments(methodBuilder, root.getComments());
         }
-
         if (root.isSerialized()) {
             Class<?> clazz = root.getRuntimeClass();
-            methodBuilder.addStatement("return ($T) defaultSerde.deserialize($S)", clazz, root.getValue());
+            Class<?> serdeClass = root.getSerializer();
+            if(serdeClass.equals(PrimitiveSerde.class)) {
+                methodBuilder.addStatement("return ($T) defaultSerde.deserialize($S)", clazz, root.getValue());
+            } else {
+                methodBuilder.addStatement("return ($T) new $T().deserialize($S)", clazz, serdeClass, root.getValue());
+            }
             typeBuilder.addMethod(methodBuilder.build());
             return new SynthResult(methodName + "()", clazz);
         }

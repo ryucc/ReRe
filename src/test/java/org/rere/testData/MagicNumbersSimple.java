@@ -97,7 +97,8 @@ public class MagicNumbersSimple {
             root.addMethodCall(methodCall);
 
             methodCall.setReturnClass(MyInt.class);
-            methodCall.setParamClasses(List.of(MyInt.class));
+            methodCall.setParamRuntimeClasses(List.of(MyInt.class));
+            methodCall.setParamRepresentingClasses(List.of(MyInt.class));
 
             return root;
         } catch (Exception e) {

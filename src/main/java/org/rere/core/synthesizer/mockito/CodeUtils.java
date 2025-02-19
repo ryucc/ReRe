@@ -17,6 +17,30 @@ import java.util.stream.Collectors;
 
 public class CodeUtils {
 
+
+    public static boolean getVisibility(String packageName, Class<?> clazz) {
+        int modifiers = clazz.getModifiers();;
+        if (java.lang.reflect.Modifier.isPublic(modifiers)){
+            return true;
+        } else if(java.lang.reflect.Modifier.isPrivate(modifiers)) {
+            return false;
+        }
+        Package pack = clazz.getPackage();
+        return pack.getName().equals(packageName);
+    }
+
+    //TODO, use implemented interfaces first
+    public static Class<?> getBestClass(String packageName, Class<?> runtimeClass, Class<?> lowerBoundClass) {
+        if(runtimeClass.equals(String.class)) {
+            return runtimeClass;
+        }
+        boolean visible = getVisibility(packageName, runtimeClass);
+        boolean notFinal = !java.lang.reflect.Modifier.isFinal(runtimeClass.getModifiers());
+        if(visible && notFinal) {
+            return runtimeClass;
+        }
+        return lowerBoundClass;
+    }
     public static List<MockitoSynthesizer.MethodGroup> groupMethods(List<EnvironmentMethodCall> environmentMethodCalls) {
         Map<Signature, List<EnvironmentMethodCall>> m = environmentMethodCalls.stream()
                 .collect(Collectors.groupingBy(EnvironmentMethodCall::getSignature));

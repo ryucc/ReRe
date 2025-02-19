@@ -6,7 +6,9 @@
 package org.rere.api;
 
 import org.rere.core.serde.ReReSerde;
+import org.rere.core.serde.java.net.http.HttpHeadersSerde;
 
+import java.net.http.HttpHeaders;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -14,11 +16,11 @@ import java.util.Set;
 
 public class ReReSettings {
     final Set<Class<?>> skipMethodTracingClasses;
-    final Map<Class<?>, Class<? extends ReReSerde<?>>> customSerde;
+    final Map<Class<?>, Class<? extends ReReSerde>> customSerde;
     final boolean noParameterModding;
     public ReReSettings(Set<Class<?>> skipMethodTracingClasses,
                         boolean noParameterModding,
-                        Map<Class<?>, Class<? extends ReReSerde<?>>> customSerde) {
+                        Map<Class<?>, Class<? extends ReReSerde>> customSerde) {
         this.skipMethodTracingClasses = skipMethodTracingClasses;
         this.customSerde = customSerde;
         this.noParameterModding = noParameterModding;
@@ -28,9 +30,10 @@ public class ReReSettings {
         noParameterModding = false;
         skipMethodTracingClasses = new HashSet<>();
         customSerde = new HashMap<>();
+        customSerde.put(HttpHeaders.class, HttpHeadersSerde.class);
     }
 
-    public Map<Class<?>, Class<? extends ReReSerde<?>>> getCustomSerde() {
+    public Map<Class<?>, Class<? extends ReReSerde>> getCustomSerde() {
         return customSerde;
     }
 
@@ -62,11 +65,10 @@ public class ReReSettings {
      *
      * @param clazz      The target class to serialize.
      * @param serializer User's custom implementation of ReReSerde for class T.
-     * @param <T>        Generic template for the target class to serialize.
      */
-    public <T> ReReSettings registerSerializer(Class<T> clazz, Class<? extends ReReSerde<T>> serializer) {
+    public ReReSettings registerSerializer(Class<?> clazz, Class<? extends ReReSerde> serializer) {
         Set<Class<?>> set = new HashSet<>(skipMethodTracingClasses);
-        Map<Class<?>, Class<? extends ReReSerde<?>>> serdeCopy = new HashMap<>(customSerde);
+        Map<Class<?>, Class<? extends ReReSerde>> serdeCopy = new HashMap<>(customSerde);
         serdeCopy.put(clazz, serializer);
         return new ReReSettings(set, noParameterModding, serdeCopy);
     }

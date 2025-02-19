@@ -16,7 +16,7 @@ import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-public class DefaultSerde implements ReReSerde<Object> {
+public class PrimitiveSerde implements ReReSerde {
     private static final Base64.Encoder encoder = Base64.getEncoder();
     private static final Base64.Decoder decoder = Base64.getDecoder();
 

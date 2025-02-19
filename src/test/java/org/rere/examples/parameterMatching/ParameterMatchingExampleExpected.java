@@ -11,10 +11,10 @@ import static org.mockito.Mockito.mock;
 
 import java.lang.Exception;
 import java.lang.RuntimeException;
-import org.rere.core.serde.DefaultSerde;
+import org.rere.core.serde.PrimitiveSerde;
 
 public class ParameterMatchingExampleExpected {
-  private static final DefaultSerde defaultSerde = new DefaultSerde();
+  private static final PrimitiveSerde defaultSerde = new PrimitiveSerde();
 
   public static ParameterMatchingExample.PrivateDice environmentNode0() throws Exception {
     ParameterMatchingExample.PrivateDice mockObject = mock(ParameterMatchingExample.PrivateDice.class);

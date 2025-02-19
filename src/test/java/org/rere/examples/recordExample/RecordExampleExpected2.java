@@ -18,10 +18,10 @@ import java.lang.Integer;
 import java.lang.RuntimeException;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.rere.core.serde.DefaultSerde;
+import org.rere.core.serde.PrimitiveSerde;
 
 public class RecordExampleExpected2 {
-  private static final DefaultSerde defaultSerde = new DefaultSerde();
+  private static final PrimitiveSerde defaultSerde = new PrimitiveSerde();
 
   public static Answer<Integer> getAnswer0() {
     return (InvocationOnMock invocation) -> {

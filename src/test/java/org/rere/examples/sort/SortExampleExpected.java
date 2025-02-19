@@ -16,10 +16,10 @@ import java.lang.Void;
 import java.util.ArrayList;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.rere.core.serde.DefaultSerde;
+import org.rere.core.serde.PrimitiveSerde;
 
 public class SortExampleExpected {
-  private static final DefaultSerde defaultSerde = new DefaultSerde();
+  private static final PrimitiveSerde defaultSerde = new PrimitiveSerde();
 
   public static Answer<Void> getAnswer0() {
     return (InvocationOnMock invocation) -> {

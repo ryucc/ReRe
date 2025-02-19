@@ -7,15 +7,13 @@ package org.rere.core.synthesizer.mockito;
 
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.methods.Signature;
 import org.rere.core.data.objects.EnvironmentNode;
-import org.rere.core.serde.DefaultSerde;
-import org.rere.core.synthesizer.mockito.nodes.EnvironmentNodeSynthesizer;
+import org.rere.core.serde.PrimitiveSerde;
 import org.rere.core.synthesizer.mockito.nodes.ParamModdingNodeSynthesizer;
 
 import javax.lang.model.element.Modifier;
@@ -45,9 +43,9 @@ public class MockitoSynthesizer {
 
         environmentNodeSynthesizer.generateRootMethod(typeBuilder, root, methodName);
 
-        FieldSpec defaultSerde = FieldSpec.builder(DefaultSerde.class, "defaultSerde")
+        FieldSpec defaultSerde = FieldSpec.builder(PrimitiveSerde.class, "defaultSerde")
                 .addModifiers(Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
-                .initializer("new $T()", DefaultSerde.class)
+                .initializer("new $T()", PrimitiveSerde.class)
                 .build();
         typeBuilder.addField(defaultSerde);
 

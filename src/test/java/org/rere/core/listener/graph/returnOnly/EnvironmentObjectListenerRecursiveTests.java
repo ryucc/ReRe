@@ -7,8 +7,7 @@ package org.rere.core.listener.graph.returnOnly;
 
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.interceptor.EnvironmentObjectListener;
-import org.rere.core.serde.DefaultSerde;
-import org.rere.core.serde.ReReSerde;
+import org.rere.core.serde.PrimitiveSerde;
 import org.rere.testData.GraphCompare;
 import org.junit.jupiter.api.Test;
 import org.rere.core.data.methods.EnvironmentMethodCall;
@@ -33,7 +32,7 @@ public class EnvironmentObjectListenerRecursiveTests {
         getCall.setReturnNode(reponseEnvironmentNode);
         getCall.setResult(MethodResult.RETURN);
         expectedRoot.addMethodCall(getCall);
-        EnvironmentNode bodyEnvironmentNode = EnvironmentNode.ofPrimitive(String.class, new DefaultSerde().serialize("Hello World!"));
+        EnvironmentNode bodyEnvironmentNode = EnvironmentNode.ofPrimitive(String.class, new PrimitiveSerde().serialize("Hello World!"));
         EnvironmentMethodCall getBodyCall = new EnvironmentMethodCall(HttpResponse.class.getMethod("getBody"));
         getBodyCall.setReturnNode(bodyEnvironmentNode);
         getBodyCall.setResult(MethodResult.RETURN);
