@@ -7,6 +7,7 @@ package org.rere.core.data.methods;
 
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.data.objects.LocalSymbol;
+import org.rere.core.data.objects.UserNode;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -56,10 +57,21 @@ public class EnvironmentMethodCall implements Serializable {
     private Class<?> returnClass;
     private MethodResult result;
 
+    public List<UserNode> getParameterNodes() {
+        return parameterNodes;
+    }
+
+    public void setParameterNodes(List<UserNode> parameterNodes) {
+        this.parameterNodes = parameterNodes;
+    }
+
+    private List<UserNode> parameterNodes;
+
     public EnvironmentMethodCall(Method method) {
         this.uuid = UUID.randomUUID();
         this.signature = new Signature(method);
         this.userMethodCalls = new ArrayList<>();
+        this.parameterNodes = new ArrayList<>();
     }
 
     public Class<?> getReturnClass() {

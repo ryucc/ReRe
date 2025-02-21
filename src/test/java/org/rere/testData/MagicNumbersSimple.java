@@ -11,6 +11,7 @@ import org.rere.core.data.objects.LocalSymbol;
 import org.rere.core.data.methods.MethodResult;
 import org.rere.core.data.methods.UserMethodCall;
 import org.rere.core.data.objects.EnvironmentNode;
+import org.rere.core.data.objects.UserNode;
 import org.rere.core.synthesizer.mockito.MockitoSynthesizer;
 import org.junit.jupiter.api.Test;
 
@@ -47,6 +48,7 @@ public class MagicNumbersSimple {
                     List.of(userAddValue),
                     List.of(LocalSymbol.local(0)),
                     MyInt.class);
+            add.setReturnNode(new UserNode(MyInt.class, MyInt.class));
             methodCall.addUserMethodCall(add);
             /**
              * Times block
@@ -57,6 +59,7 @@ public class MagicNumbersSimple {
                     List.of(userTimesValue),
                     List.of(LocalSymbol.local(0)),
                     MyInt.class);
+            times.setReturnNode(new UserNode(MyInt.class, MyInt.class));
             methodCall.addUserMethodCall(times);
             /**
              * 2nd Add block
@@ -67,6 +70,7 @@ public class MagicNumbersSimple {
                     List.of(userAdd2Value),
                     List.of(LocalSymbol.local(0)),
                     MyInt.class);
+            add2.setReturnNode(new UserNode(MyInt.class, MyInt.class));
             methodCall.addUserMethodCall(add2);
 
             /**
@@ -78,6 +82,7 @@ public class MagicNumbersSimple {
                     List.of(userDivideValue),
                     List.of(LocalSymbol.local(0)),
                     MyInt.class);
+            divide.setReturnNode(new UserNode(MyInt.class, MyInt.class));
             methodCall.addUserMethodCall(divide);
 
             /**
@@ -89,6 +94,7 @@ public class MagicNumbersSimple {
                     List.of(userMinusValue),
                     List.of(LocalSymbol.local(0)),
                     MyInt.class);
+            minus.setReturnNode(new UserNode(MyInt.class, MyInt.class));
             methodCall.addUserMethodCall(minus);
 
             methodCall.setReturnSymbol(new LocalSymbol(LocalSymbol.Source.RETURN_VALUE, 4));
@@ -99,6 +105,7 @@ public class MagicNumbersSimple {
             methodCall.setReturnClass(MyInt.class);
             methodCall.setParamRuntimeClasses(List.of(MyInt.class));
             methodCall.setParamRepresentingClasses(List.of(MyInt.class));
+            methodCall.setParameterNodes(List.of(new UserNode(MyInt.class, MyInt.class)));
 
             return root;
         } catch (Exception e) {

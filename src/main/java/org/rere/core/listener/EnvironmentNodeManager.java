@@ -65,12 +65,13 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
                 node.setValue(reReSerde.serialize(original));
                 node.setSerialized(true);
                 node.setSerializer(customSerde.get(original.getClass()));
+                node.setComments(original.toString());
                 node.setTerminal(true);
                 wrapped = original;
             } catch (Exception e) {
                 node.setTerminal(true);
                 node.setFailedNode(true);
-                node.setComments("Custom serialization failed: " + e);
+                node.setComments("Custom serialization failed: " + e + "\nOriginal content: " + original);
                 wrapped = original;
             }
         } else if (ClassUtils.isWrapperOrPrimitive(original.getClass())) {
@@ -83,7 +84,7 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
             node.setSerializer(PrimitiveSerde.class);
             try {
                 node.setValue(PRIMITIVE_SERDE.serialize(original));
-                node.setComments((String) original);
+                node.setComments(original.toString());
             } catch (SerializationException e) {
                 node.setFailedNode(true);
                 node.setComments(e.getMessage());
@@ -96,6 +97,7 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
                 Throwable.class.isAssignableFrom(original.getClass())) {
             node.setTerminal(true);
             node.setSerialized(true);
+            node.setComments(original.toString());
             node.setSerializer(PrimitiveSerde.class);
             try {
                 node.setValue(PRIMITIVE_SERDE.serialize(original));

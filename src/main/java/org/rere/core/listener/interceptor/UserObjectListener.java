@@ -46,7 +46,7 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
         this.userObjectWrapper = userObjectWrapper;
     }
     public Object interceptInterface(Object original,
-                                     Method orignalMethod,
+                                     Method originalMethod,
                                      UserNode userNode,
                                      Object[] allArguments) throws Throwable {
         List<EnvironmentNode> environmentNodes = new ArrayList<>();
@@ -54,7 +54,7 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
         List<LocalSymbol> parameterSourceList = new ArrayList<>();
         for (int i = 0; i < allArguments.length; i++) {
             Object arg = allArguments[i];
-            Class<?> representingClass = orignalMethod.getParameterTypes()[i];
+            Class<?> representingClass = originalMethod.getParameterTypes()[i];
             if (arg instanceof UserObjectSpy) {
                 UserNode node = ((UserObjectSpy) arg).getReReUserNode();
                 parameterSourceList.add(node.getSymbol());
@@ -83,7 +83,7 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
 
         EnvironmentMethodCall scopeMethod = userNode.getScope();
 
-        String methodName = orignalMethod.getName();
+        String methodName = originalMethod.getName();
         LocalSymbol operand = userNode.getSymbol();
         UserMethodCall userMethodCall = new UserMethodCall(operand, methodName, environmentNodes, parameterSourceList);
         scopeMethod.addUserMethodCall(userMethodCall);
@@ -94,8 +94,8 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
         int currentReturnIndex = scopeMethod.getLastReturnIndex();
 
         try {
-            orignalMethod.setAccessible(true);
-            Object ret = orignalMethod.invoke(original, wrappedArguments.toArray());
+            originalMethod.setAccessible(true);
+            Object ret = originalMethod.invoke(original, wrappedArguments.toArray());
             if (ret == null) {
                 return null;
             } else {
@@ -113,13 +113,15 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
                 ret = ((UserObjectSpy) ret).getReReOriginObject();
             }
             LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.RETURN_VALUE, currentReturnIndex);
-            ReReWrapResult<?, UserNode> result = userObjectWrapper.createRoot(ret, orignalMethod.getReturnType(), scopeMethod, symbol);
+            ReReWrapResult<?, UserNode> result = userObjectWrapper.createRoot(ret, originalMethod.getReturnType(), scopeMethod, symbol);
+            userMethodCall.setReturnNode(result.node());
             return result.wrapped();
         } catch (InvocationTargetException e) {
             Throwable real = e.getTargetException();
             LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.THROW, currentReturnIndex);
             ReReWrapResult<?, UserNode> result = userObjectWrapper.createRoot(real, real.getClass(), scopeMethod, symbol);
             result.node().setSymbol(symbol);
+            userMethodCall.setReturnNode(result.node());
             throw (Throwable) result.wrapped();
         } catch (IllegalAccessException e) {
             // ReRe does not have permissions to invoke the method.

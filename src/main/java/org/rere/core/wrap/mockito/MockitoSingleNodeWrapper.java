@@ -53,7 +53,7 @@ public class MockitoSingleNodeWrapper<NODE extends ReReObjectNode<?>> implements
         Class<?> bestClass = findBestClass(returnValue.getClass(), node.getRepresentingClass());
         if(bestClass == null) {
             node.setFailedNode(true);
-            node.setComments("Cannot find proper class to mock");
+            node.setComments("Cannot find proper class to mock " + returnValue.getClass());
             return returnValue;
         }
         try {
@@ -62,6 +62,8 @@ public class MockitoSingleNodeWrapper<NODE extends ReReObjectNode<?>> implements
                             .defaultAnswer(new EnvAns(returnValue, node))
                             .extraInterfaces(extraInterface));
         } catch (Exception e) {
+            node.setFailedNode(true);
+            node.setComments("Cannot mock class " + bestClass);
             return returnValue;
         }
     }

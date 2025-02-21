@@ -14,6 +14,7 @@ import org.rere.core.data.objects.LocalSymbol;
 import org.rere.core.data.methods.UserMethodCall;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.data.objects.Member;
+import org.rere.core.data.objects.UserNode;
 import org.rere.core.listener.utils.ClassUtils;
 import org.rere.core.synthesizer.mockito.CodeUtils;
 import org.rere.core.synthesizer.mockito.nodes.EnvironmentNodeSynthesizer;
@@ -75,7 +76,13 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
         methodBuilder.beginControlFlow("return ($T invocation) ->", InvocationOnMock.class);
         List<Class<?>> paramRuntimeTypes = rootMethodCall.getParamRuntimeClasses();
         List<Class<?>> paramRepresentingTypes = rootMethodCall.getParamRepresentingClasses();
+        List<UserNode> paramNodes = rootMethodCall.getParameterNodes();
         for (int i = 0; i < paramRuntimeTypes.size(); i++) {
+            UserNode curNode = paramNodes.get(i);
+            if(curNode.isFailedNode()) {
+                methodBuilder.addComment("Failed node");
+                methodBuilder.addComment(curNode.getComments());
+            }
             String paramName = symbolNamer(new LocalSymbol(LocalSymbol.Source.PARAMETER, i));
             Class<?> rawType = CodeUtils.getBestClass(packageName, paramRuntimeTypes.get(i), paramRepresentingTypes.get(i));
             //TypeName type = ParameterizedTypeName.get(rawType, rawType.getTypeParameters());
@@ -147,8 +154,19 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
         String returnName = symbolNamer(returnSymbol);
         // TODO find where null comes from
         if (returnType == null || returnType.equals(void.class) || returnType.equals(Void.class) ||!explored.contains(returnSymbol)) {
+            UserNode returnNode = userMethodCall.getReturnNode();
+            if(returnNode.isFailedNode()) {
+                methodBuilder.addComment("return node failed");
+            }
+            if(!returnNode.getComments().isEmpty()) {
+                methodBuilder.addComment("$L", returnNode.getComments());
+            }
             methodBuilder.addStatement("$L.$L($L)", source, userMethodCall.getMethodName(), paramString);
         } else {
+            UserNode returnNode = userMethodCall.getReturnNode();
+            if(!returnNode.getComments().isEmpty()) {
+                methodBuilder.addComment("$L", returnNode.getComments());
+            }
             methodBuilder.addStatement("$T $L = ($T) $L.$L($L)",
                     returnType,
                     returnName,

@@ -26,13 +26,20 @@ public class JavaHttpClientExample {
                 .build();
         HttpClient rereClient = reRe.createSpiedObject(client, HttpClient.class);
 
-
         System.out.println("/*");
-        HttpRequest request = HttpRequest.newBuilder().uri(new URI("https://www.google.com")).GET().build();
-        System.out.println(request.headers().map().size());
-        HttpResponse<String> response = rereClient.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpRequest getRequest = HttpRequest.newBuilder().uri(new URI("https://mit-license.org")).GET().build();
+        HttpResponse<String> response = rereClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
+
         System.out.println(response.body());
-        System.out.println(request.headers().map().size());
+        /*
+
+        HttpRequest postRequest = HttpRequest.newBuilder()
+                .uri(URI.create("https://mit-license.org"))
+                .POST(HttpRequest.BodyPublishers.ofString("{\"action\":\"hello\"}"))
+                .build();
+        HttpResponse<String> postResponse = rereClient.send(postRequest, HttpResponse.BodyHandlers.ofString());
+        System.out.println(postResponse.body());
+        */
 
 
         System.out.println("*/");

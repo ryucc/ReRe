@@ -77,6 +77,7 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
 
         Object[] wrappedArguments = new Object[allArguments.length];
         Class<?>[] argClasses = new Class[allArguments.length];
+        List<UserNode> paramNodes = new ArrayList<>();
 
         //List<UserNode> params = new ArrayList<>();
 
@@ -96,9 +97,12 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
             Class<?> representingClass = orignalMethod.getParameterTypes()[i];
             ReReWrapResult<?, UserNode> result = userObjectWrapper.createRoot(cur, representingClass, edge, accessSymbol);
             wrappedArguments[i] = result.wrapped();
+            paramNodes.add(result.node());
             argClasses[i] = runtimeClass;
             //params.add(result.userNode());
         }
+
+        edge.setParameterNodes(paramNodes);
         edge.setParamRuntimeClasses(Arrays.asList(argClasses));
         edge.setParamRepresentingClasses(Arrays.asList(orignalMethod.getParameterTypes()));
 

@@ -27,12 +27,6 @@ public class UserNode implements ReReObjectNode<UserNode> {
      * upper bound is good as long as user doesn't type cast downwards
      */
     private final Class<?> runtimeClass;
-
-    @Override
-    public Class<?> getRepresentingClass() {
-        return representingClass;
-    }
-
     private final Class<?> representingClass;
     private final List<UserNode> directChildren;
     /**
@@ -40,7 +34,18 @@ public class UserNode implements ReReObjectNode<UserNode> {
      */
     private EnvironmentMethodCall scope;
     private LocalSymbol symbol;
+
+    public String getComments() {
+        return comments;
+    }
+
     private String comments;
+
+    public boolean isFailedNode() {
+        return failedNode;
+    }
+
+    private boolean failedNode;
 
     public UserNode(Class<?> runtimeClass,
                     Class<?> representingClass,
@@ -58,25 +63,18 @@ public class UserNode implements ReReObjectNode<UserNode> {
         this.failedNode = failedNode;
     }
 
-    private boolean failedNode;
     public UserNode(Class<?> runtimeClass, Class<?> representingClass) {
 
-        this(runtimeClass,
-                representingClass,
-                new ArrayList<>(),
-                null,
-                null,
-                "",
-                false);
+        this(runtimeClass, representingClass, new ArrayList<>(), null, null, "", false);
     }
 
     public UserNode(Class<?> runtimeClass, String comments) {
-        this(runtimeClass, runtimeClass,
-                new ArrayList<>(),
-                null,
-                null,
-                comments,
-                false);
+        this(runtimeClass, runtimeClass, new ArrayList<>(), null, null, comments, false);
+    }
+
+    @Override
+    public Class<?> getRepresentingClass() {
+        return representingClass;
     }
 
     public List<UserNode> getDirectChildren() {
