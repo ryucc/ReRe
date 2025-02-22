@@ -8,21 +8,26 @@ package org.rere.core.synthesizer.mockito;
 import com.squareup.javapoet.MethodSpec;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.methods.Signature;
+import org.rere.core.data.objects.ReReObjectNode;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CodeUtils {
 
 
     public static boolean getVisibility(String packageName, Class<?> clazz) {
-        int modifiers = clazz.getModifiers();;
-        if (java.lang.reflect.Modifier.isPublic(modifiers)){
+        int modifiers = clazz.getModifiers();
+        if (java.lang.reflect.Modifier.isPublic(modifiers)) {
             return true;
-        } else if(java.lang.reflect.Modifier.isPrivate(modifiers)) {
+        } else if (java.lang.reflect.Modifier.isPrivate(modifiers)) {
             return false;
         }
         Package pack = clazz.getPackage();
@@ -30,17 +35,30 @@ public class CodeUtils {
     }
 
     //TODO, use implemented interfaces first
-    public static Class<?> getBestClass(String packageName, Class<?> runtimeClass, Class<?> lowerBoundClass) {
-        if(runtimeClass.equals(String.class)) {
+    public static Type getBestType(String packageName, ReReObjectNode<?> node) {
+        if (node.getRuntimeClass().equals(Optional.class)) {
+            if(node.getDirectChildren().isEmpty()) {
+                Type[] typeArgs = {Object.class};
+                return new ReReParamType(typeArgs, Optional.class, Optional.class);
+            } else {
+                Type childType = getBestType(packageName, node.getDirectChildren().getFirst());
+                Type[] typeArgs = {childType};
+                return new ReReParamType(typeArgs, Optional.class, Optional.class);
+            }
+        }
+        Class<?> runtimeClass = node.getRuntimeClass();
+        Class<?> lowerBoundClass = node.getRepresentingClass();
+        if (runtimeClass.equals(String.class)) {
             return runtimeClass;
         }
         boolean visible = getVisibility(packageName, runtimeClass);
         boolean notFinal = !java.lang.reflect.Modifier.isFinal(runtimeClass.getModifiers());
-        if(visible && notFinal) {
+        if (visible && notFinal) {
             return runtimeClass;
         }
         return lowerBoundClass;
     }
+
     public static List<MockitoSynthesizer.MethodGroup> groupMethods(List<EnvironmentMethodCall> environmentMethodCalls) {
         Map<Signature, List<EnvironmentMethodCall>> m = environmentMethodCalls.stream()
                 .collect(Collectors.groupingBy(EnvironmentMethodCall::getSignature));
@@ -49,7 +67,8 @@ public class CodeUtils {
                 .map(e -> new MockitoSynthesizer.MethodGroup(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
     }
-    public static void declareMock(Class<?> clazz, String name, MethodSpec.Builder methodBuilder) {
+
+    public static void declareMock(Type clazz, String name, MethodSpec.Builder methodBuilder) {
         methodBuilder.addStatement("$T $L = mock($T.class)", clazz, name, clazz);
     }
 
@@ -59,6 +78,7 @@ public class CodeUtils {
         String paramString = CodeUtils.generateParamString(signature.getParamTypes());
         methodBuilder.addStatement("$L.when(mockObject).$L($L)", ans, signature.getMethodName(), paramString);
     }
+
     public static String generateParamString(List<Type> paramTypes) {
         List<String> params = new ArrayList<>();
         for (Type clazz : paramTypes) {
@@ -86,5 +106,44 @@ public class CodeUtils {
         }
 
         return String.join(", ", params);
+    }
+
+    private static class ReReParamType implements ParameterizedType {
+        private final Type[] typeArgs;
+        private final Type rawType;
+        private final Type ownerType;
+
+        public ReReParamType(Type[] typeArgs, Type rawType, Type ownerType) {
+            this.typeArgs = typeArgs;
+            this.rawType = rawType;
+            this.ownerType = ownerType;
+        }
+
+        @Override
+        public Type[] getActualTypeArguments() {
+            return typeArgs;
+        }
+
+        @Override
+        public Type getRawType() {
+            return rawType;
+        }
+
+        @Override
+        public Type getOwnerType() {
+            return ownerType;
+        }
+
+        @Override
+        public String getTypeName() {
+            String fmt = "%s<%s>";
+
+            return String.format(fmt,
+                    rawType,
+                    Arrays.stream(typeArgs)
+                            .map(Type::getTypeName)
+                            .collect(Collectors.joining(", ")));
+        }
+
     }
 }

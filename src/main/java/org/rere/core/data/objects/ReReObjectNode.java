@@ -5,6 +5,8 @@
 
 package org.rere.core.data.objects;
 
+import java.util.List;
+
 public interface ReReObjectNode<T> {
 
     Class<?> getRepresentingClass();
@@ -12,4 +14,5 @@ public interface ReReObjectNode<T> {
     void setFailedNode(boolean flag);
     void setComments(String comments);
     void addChild(T child);
+    List<? extends ReReObjectNode<T>> getDirectChildren();
 }

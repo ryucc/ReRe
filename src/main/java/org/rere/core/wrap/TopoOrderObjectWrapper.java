@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -81,7 +82,28 @@ public class TopoOrderObjectWrapper<NODE extends ReReObjectNode<NODE>, MANAGER e
                 continue;
             }
             explored.add(cur);
-            if (ClassUtils.isRecord(cur.getClass())) {
+           if (cur instanceof Optional) {
+               Optional<Object> optional = (Optional<Object>) cur;
+               if(optional.isPresent()) {
+                   childCount.put(cur, 1);
+                   Object child = optional.get();
+                   // Build parent pointer for topological sort
+                   if (!parents.containsKey(child)) {
+                       parents.put(child, new ArrayList<>());
+                   }
+                   parents.get(child).add(cur);
+                   if (explored.contains(child)) {
+                       curNode.addChild(nodeMap.get(child));
+                       continue;
+                   }
+                   front.add(child);
+                   NODE childNode = nodeManager.createEmpty(child.getClass(), child);
+                   curNode.addChild(childNode);
+                   nodeMap.put(child, childNode);
+               } else {
+                   topologicalReady.add(cur);
+               }
+           } else if (ClassUtils.isRecord(cur.getClass())) {
                 List<Object> components = getRecordFields(cur);
                 Field[] recordComponents = cur.getClass().getDeclaredFields();
                 childCount.put(cur, components.size());
@@ -142,6 +164,13 @@ public class TopoOrderObjectWrapper<NODE extends ReReObjectNode<NODE>, MANAGER e
                 List<Object> components = getRecordFields(cur);
                 List<Object> wrappedComponents = components.stream().map(toWrapped::get).collect(Collectors.toList());
                 wrapped = ObjectInitializer.initRecord(cur.getClass(), wrappedComponents);
+            } else if (cur instanceof Optional) {
+                if(((Optional<?>) cur).isEmpty()) {
+                    wrapped = cur;
+                } else {
+                    Object inner = ((Optional<?>) cur).get();
+                    wrapped = Optional.of(toWrapped.get(inner));
+                }
             } else {
                 NODE node = toNode.get(cur);
                 wrapped = nodeManager.synthesizeLeafNode(cur, node);
@@ -205,6 +234,7 @@ public class TopoOrderObjectWrapper<NODE extends ReReObjectNode<NODE>, MANAGER e
         protected final Map<Object, Integer> childCount;
         protected final Map<Object, List<Object>> parents;
         protected final Map<Object, NODE> nodeMap;
+
         public TopSortData(Queue<Object> topologicalReady,
                            Map<Object, Integer> childCount,
                            Map<Object, List<Object>> parents,

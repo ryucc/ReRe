@@ -7,7 +7,6 @@ package org.rere.core.synthesizer.mockito.methods;
 
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.objects.LocalSymbol;
@@ -75,7 +74,6 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
                         ClassUtils.getWrapped(rootMethodCall.getReturnClass())));
         methodBuilder.beginControlFlow("return ($T invocation) ->", InvocationOnMock.class);
         List<Class<?>> paramRuntimeTypes = rootMethodCall.getParamRuntimeClasses();
-        List<Class<?>> paramRepresentingTypes = rootMethodCall.getParamRepresentingClasses();
         List<UserNode> paramNodes = rootMethodCall.getParameterNodes();
         for (int i = 0; i < paramRuntimeTypes.size(); i++) {
             UserNode curNode = paramNodes.get(i);
@@ -84,7 +82,7 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
                 methodBuilder.addComment(curNode.getComments());
             }
             String paramName = symbolNamer(new LocalSymbol(LocalSymbol.Source.PARAMETER, i));
-            Class<?> rawType = CodeUtils.getBestClass(packageName, paramRuntimeTypes.get(i), paramRepresentingTypes.get(i));
+            Type rawType = CodeUtils.getBestType(packageName, paramNodes.get(i));
             //TypeName type = ParameterizedTypeName.get(rawType, rawType.getTypeParameters());
             methodBuilder.addStatement("$T $L = invocation.getArgument($L)", rawType, paramName, String.valueOf(i));
         }

@@ -8,6 +8,7 @@ package org.rere.core.wrap.mockito;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.objects.ArrayMember;
 import org.rere.core.data.objects.LocalSymbol;
+import org.rere.core.data.objects.OptionalMember;
 import org.rere.core.data.objects.RecordMember;
 import org.rere.core.data.objects.UserNode;
 import org.rere.core.listener.UserNodeManager;
@@ -18,6 +19,7 @@ import org.rere.core.wrap.TopoOrderObjectWrapper;
 import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 
@@ -46,7 +48,15 @@ public class UserObjectWrapper {
             UserNode cur = nodeQueue.poll();
             cur.setScope(scope);
             explored.add(cur);
-            if (cur.getRuntimeClass().isArray()) {
+            if(cur.getRuntimeClass().equals(Optional.class) && !cur.getDirectChildren().isEmpty()) {
+                UserNode child = cur.getDirectChildren().get(0);
+                if (!explored.contains(child)) {
+                    LocalSymbol childSymbol = cur.getSymbol().copy();
+                    childSymbol.appendPath(new OptionalMember());
+                    child.setSymbol(childSymbol);
+                    nodeQueue.add(child);
+                }
+            } else if (cur.getRuntimeClass().isArray()) {
                 for (int i = 0; i < cur.getDirectChildren().size(); i++) {
                     UserNode child = cur.getDirectChildren().get(i);
                     if (!explored.contains(child)) {

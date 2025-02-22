@@ -42,7 +42,7 @@ public class HttpExampleTests {
     }
 
     @Test
-    //@Disabled("Google content changes everytime")
+    @Disabled("Google content changes everytime")
     public void testJavaExample() throws Exception {
         String[] args = {};
         JavaHttpClientExample.main(args);

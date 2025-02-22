@@ -8,9 +8,9 @@ package org.rere.core.synthesizer.mockito.nodes;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.rere.core.data.methods.EnvironmentMethodCall;
-import org.rere.core.data.objects.LocalSymbol;
 import org.rere.core.data.methods.MethodResult;
 import org.rere.core.data.objects.EnvironmentNode;
+import org.rere.core.data.objects.LocalSymbol;
 import org.rere.core.listener.utils.ClassUtils;
 import org.rere.core.serde.PrimitiveSerde;
 import org.rere.core.synthesizer.mockito.CodeUtils;
@@ -19,26 +19,28 @@ import org.rere.core.synthesizer.mockito.methods.BasicAnswerSynthesizer;
 import org.rere.core.synthesizer.mockito.methods.EnvironmentAnswerSynthesizer;
 
 import javax.lang.model.element.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.rere.core.synthesizer.mockito.CodeUtils.declareMock;
 import static org.rere.core.synthesizer.mockito.CodeUtils.generateDo;
-import static org.rere.core.synthesizer.mockito.CodeUtils.getBestClass;
+import static org.rere.core.synthesizer.mockito.CodeUtils.getBestType;
 import static org.rere.core.synthesizer.mockito.CodeUtils.groupMethods;
 
 //TODO topological sort again.
 public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
 
     private final EnvironmentAnswerSynthesizer answerSynthesizer;
-    private int environmentId;
     private final String packageName;
+    private int environmentId;
 
 
     public ParamModdingNodeSynthesizer(String packageName) {
@@ -53,11 +55,11 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         String methodName = "environmentNode" + environmentId;
         environmentId++;
 
-        Class<?> runtimeRecordClass = root.getRuntimeClass();
+        Type returnType = getBestType(packageName, root);
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .addException(Exception.class)
-                .returns(runtimeRecordClass);
+                .returns(returnType);
 
         Queue<EnvironmentNode> front = new ArrayDeque<>();
         Set<EnvironmentNode> explored = new HashSet<>();
@@ -79,8 +81,8 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
             nameIndex++;
             variableNames.put(cur, objectName);
             front.addAll(cur.getDirectChildren());
-            methodBuilder.addStatement("$T $L", cur.getRuntimeClass(), objectName);
-            if (!ClassUtils.isRecord(cur.getRuntimeClass()) || cur.getDirectChildren().isEmpty()) {
+            methodBuilder.addStatement("$T $L", getBestType(packageName, cur), objectName);
+            if (cur.getRuntimeClass().isArray() || cur.getDirectChildren().isEmpty()) {
                 readyQueue.add(cur);
             } else {
                 for (EnvironmentNode child : cur.getDirectChildren()) {
@@ -99,6 +101,14 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
                         .collect(Collectors.joining(","));
                 methodBuilder.addStatement("$L = new $T($L)", variableNames.get(cur), cur.getRuntimeClass(), children);
 
+            } else if (cur.getRuntimeClass().equals(Optional.class)) {
+                if(cur.getDirectChildren().isEmpty()) {
+                    methodBuilder.addStatement("$L = $T.empty()", variableNames.get(cur), Optional.class);
+                } else {
+                    methodBuilder.addStatement("$L = $T.of($L)", variableNames.get(cur),
+                            Optional.class,
+                            variableNames.get(cur.getDirectChildren().get(0)));
+                }
             } else if (cur.getRuntimeClass().isArray()) {
                 methodBuilder.addStatement("$L = new $T[$L]",
                         variableNames.get(cur),
@@ -127,7 +137,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         }
         methodBuilder.addStatement("return $L", variableNames.get(root));
         typeBuilder.addMethod(methodBuilder.build());
-        return new SynthResult(methodName + "()", runtimeRecordClass);
+        return new SynthResult(methodName + "()", returnType);
 
     }
 
@@ -137,7 +147,9 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
             String cast = String.format("(%s) ", root.getRuntimeClass().getName());
             return new SynthResult(cast + root.getValue(), root.getRuntimeClass());
         }
-        if (ClassUtils.isRecord(root.getRuntimeClass()) || root.getRuntimeClass().isArray()) {
+        if (root.getRuntimeClass().equals(Optional.class)) {
+            return generateRecordEnvironmentNode(typeBuilder, root);
+        } else if (ClassUtils.isRecord(root.getRuntimeClass()) || root.getRuntimeClass().isArray()) {
             return generateRecordEnvironmentNode(typeBuilder, root);
         }
         return generateLeafEnvironmentNode(typeBuilder, root);
@@ -145,7 +157,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
 
     public void generateRootMethod(TypeSpec.Builder typeBuilder, EnvironmentNode root, String methodName) {
 
-        Class<?> declaringClass = getBestClass(packageName, root.getRuntimeClass(), root.getRepresentingClass());
+        Type declaringClass = getBestType(packageName, root);
         MethodSpec.Builder rootMethodBuilder = MethodSpec.methodBuilder(methodName)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .addException(Exception.class)
@@ -163,9 +175,9 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
 
 
     public void addComments(MethodSpec.Builder methodBuilder, String comments) {
-        if(comments.contains("\n")) {
+        if (comments.contains("\n")) {
             methodBuilder.addCode("/*\n");
-            for(String s: comments.split("\n")) {
+            for (String s : comments.split("\n")) {
                 methodBuilder.addCode(" * $L\n", s);
             }
             methodBuilder.addCode("*/\n");
@@ -179,8 +191,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         String methodName = "environmentNode" + environmentId;
         environmentId++;
 
-        Class<?> declaringClass = CodeUtils.getBestClass(packageName, root.getRuntimeClass(), root.getRepresentingClass());
-
+        Type declaringClass = CodeUtils.getBestType(packageName, root);
 
 
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName)
@@ -194,7 +205,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         if (root.isSerialized()) {
             Class<?> clazz = root.getRuntimeClass();
             Class<?> serdeClass = root.getSerializer();
-            if(serdeClass.equals(PrimitiveSerde.class)) {
+            if (serdeClass.equals(PrimitiveSerde.class)) {
                 methodBuilder.addStatement("return ($T) defaultSerde.deserialize($S)", clazz, root.getValue());
             } else {
                 methodBuilder.addStatement("return ($T) new $T().deserialize($S)", clazz, serdeClass, root.getValue());

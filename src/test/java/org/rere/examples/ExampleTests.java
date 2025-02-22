@@ -13,6 +13,8 @@ import org.rere.examples.arrayExample.ArrayExample2;
 import org.rere.examples.exception.ThrowExample;
 import org.rere.examples.genericTemplate.TemplateExample;
 import org.rere.examples.identityFunction.IdentityFunctionExample;
+import org.rere.examples.optionalExample.OptionalExample;
+import org.rere.examples.optionalExample.OptionalExample2;
 import org.rere.examples.parameterMatching.ParameterMatchingExample;
 import org.rere.examples.readme.ReadmeExample;
 import org.rere.examples.readmeRecursive.ReadmeRecursiveExample;
@@ -30,7 +32,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
 public class ExampleTests {
-    private static final boolean RESET_TESTS = !false;
+    private static final boolean RESET_TESTS = false;
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
     private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
     private final PrintStream originalOut = System.out;
@@ -73,7 +75,30 @@ public class ExampleTests {
         String expected = Files.readString(output);
         assertThat(outContent.toString()).isEqualTo(expected);
     }
-
+    @Test
+    public void testOptionalExample() throws IOException {
+        String[] args = {};
+        OptionalExample.main(args);
+        Path output = Path.of("src/test/java/org/rere/examples/optionalExample/OptionalExampleExpected.java");
+        if (RESET_TESTS) {
+            Files.writeString(output, outContent.toString());
+            return;
+        }
+        String expected = Files.readString(output);
+        assertThat(outContent.toString()).isEqualTo(expected);
+    }
+    @Test
+    public void testOptionalExample2() throws IOException {
+        String[] args = {};
+        OptionalExample2.main(args);
+        Path output = Path.of("src/test/java/org/rere/examples/optionalExample/OptionalExampleExpected2.java");
+        if (RESET_TESTS) {
+            Files.writeString(output, outContent.toString());
+            return;
+        }
+        String expected = Files.readString(output);
+        assertThat(outContent.toString()).isEqualTo(expected);
+    }
     @Test
     public void testArrayExample() throws IOException {
         String[] args = {};
