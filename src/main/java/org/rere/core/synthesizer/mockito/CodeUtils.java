@@ -23,6 +23,17 @@ import java.util.stream.Collectors;
 public class CodeUtils {
 
 
+    public static void addComments(MethodSpec.Builder methodBuilder, String comments) {
+        if (comments.contains("\n")) {
+            methodBuilder.addCode("/*\n");
+            for (String s : comments.split("\n")) {
+                methodBuilder.addCode(" * $L\n", s);
+            }
+            methodBuilder.addCode("*/\n");
+        } else {
+            methodBuilder.addComment("$L", comments);
+        }
+    }
     public static boolean getVisibility(String packageName, Class<?> clazz) {
         int modifiers = clazz.getModifiers();
         if (java.lang.reflect.Modifier.isPublic(modifiers)) {
@@ -41,7 +52,7 @@ public class CodeUtils {
                 Type[] typeArgs = {Object.class};
                 return new ReReParamType(typeArgs, Optional.class, Optional.class);
             } else {
-                Type childType = getBestType(packageName, node.getDirectChildren().getFirst());
+                Type childType = getBestType(packageName, node.getDirectChildren().get(0));
                 Type[] typeArgs = {childType};
                 return new ReReParamType(typeArgs, Optional.class, Optional.class);
             }

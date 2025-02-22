@@ -63,7 +63,7 @@ public class MockitoSingleNodeWrapper<NODE extends ReReObjectNode<?>> implements
                             .extraInterfaces(extraInterface));
         } catch (Exception e) {
             node.setFailedNode(true);
-            node.setComments("Cannot mock class " + bestClass);
+            node.setComments("Cannot mock class " + bestClass + " " + e);
             return returnValue;
         }
     }

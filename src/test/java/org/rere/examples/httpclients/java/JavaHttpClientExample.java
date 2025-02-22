@@ -30,6 +30,8 @@ public class JavaHttpClientExample {
         HttpRequest getRequest = HttpRequest.newBuilder().uri(new URI("https://mit-license.org")).GET().build();
         HttpResponse<String> response = rereClient.send(getRequest, HttpResponse.BodyHandlers.ofString());
 
+
+
         System.out.println(response.body());
         /*
 

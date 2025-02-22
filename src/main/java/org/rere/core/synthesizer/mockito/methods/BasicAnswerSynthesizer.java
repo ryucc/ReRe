@@ -79,7 +79,7 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
             UserNode curNode = paramNodes.get(i);
             if(curNode.isFailedNode()) {
                 methodBuilder.addComment("Failed node");
-                methodBuilder.addComment(curNode.getComments());
+                CodeUtils.addComments(methodBuilder, curNode.getComments());
             }
             String paramName = symbolNamer(new LocalSymbol(LocalSymbol.Source.PARAMETER, i));
             Type rawType = CodeUtils.getBestType(packageName, paramNodes.get(i));
@@ -157,13 +157,13 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
                 methodBuilder.addComment("return node failed");
             }
             if(!returnNode.getComments().isEmpty()) {
-                methodBuilder.addComment("$L", returnNode.getComments());
+                CodeUtils.addComments(methodBuilder, returnNode.getComments());
             }
             methodBuilder.addStatement("$L.$L($L)", source, userMethodCall.getMethodName(), paramString);
         } else {
             UserNode returnNode = userMethodCall.getReturnNode();
             if(!returnNode.getComments().isEmpty()) {
-                methodBuilder.addComment("$L", returnNode.getComments());
+                CodeUtils.addComments(methodBuilder, returnNode.getComments());
             }
             methodBuilder.addStatement("$T $L = ($T) $L.$L($L)",
                     returnType,

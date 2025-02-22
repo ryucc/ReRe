@@ -174,17 +174,6 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
     }
 
 
-    public void addComments(MethodSpec.Builder methodBuilder, String comments) {
-        if (comments.contains("\n")) {
-            methodBuilder.addCode("/*\n");
-            for (String s : comments.split("\n")) {
-                methodBuilder.addCode(" * $L\n", s);
-            }
-            methodBuilder.addCode("*/\n");
-        } else {
-            methodBuilder.addComment("$L", comments);
-        }
-    }
 
     public SynthResult generateLeafEnvironmentNode(TypeSpec.Builder typeBuilder, EnvironmentNode root) {
 
@@ -200,7 +189,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
                 .returns(declaringClass);
 
         if (root.getComments() != null && !root.getComments().isEmpty()) {
-            addComments(methodBuilder, root.getComments());
+            CodeUtils.addComments(methodBuilder, root.getComments());
         }
         if (root.isSerialized()) {
             Class<?> clazz = root.getRuntimeClass();
