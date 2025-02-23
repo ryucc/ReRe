@@ -134,7 +134,7 @@ public class MagicNumbers {
 
         MyInt a = new MyInt(100);
 
-        ReRe rere = new ReRe(new ReReSettings());
+        ReRe rere = new ReRe(new ReReSettings().withParameterModding(true));
         MathMagic wrapped = rere.createSpiedObject(magic, MathMagic.class);
 
         wrapped.magic(a);

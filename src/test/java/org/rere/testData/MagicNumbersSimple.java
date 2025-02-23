@@ -6,6 +6,7 @@
 package org.rere.testData;
 
 import org.rere.api.ReRe;
+import org.rere.api.ReReSettings;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.objects.LocalSymbol;
 import org.rere.core.data.methods.MethodResult;
@@ -119,7 +120,7 @@ public class MagicNumbersSimple {
 
         MyInt a = new MyInt(100);
 
-        ReRe rere = new ReRe();
+        ReRe rere = new ReRe(new ReReSettings().withParameterModding(true));
         MathMagic wrapped = rere.createSpiedObject(magic, MathMagic.class);
 
         wrapped.magic(a);

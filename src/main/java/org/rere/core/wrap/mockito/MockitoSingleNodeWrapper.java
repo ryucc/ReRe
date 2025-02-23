@@ -14,6 +14,10 @@ import org.mockito.stubbing.Answer;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletionStage;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class MockitoSingleNodeWrapper<NODE extends ReReObjectNode<?>> implements SingleNodeWrapper<NODE> {
@@ -24,48 +28,55 @@ public class MockitoSingleNodeWrapper<NODE extends ReReObjectNode<?>> implements
         this.listener = listener;
         this.extraInterface = extraInterface;
     }
-
-    public Class<?> findBestClass(Class<?> start, Class<?> end) {
-        if(!end.isAssignableFrom(start)) {
-            return null;
+    public List<Class<?>> findBestClass(Class<?> start, Class<?> end) {
+        if(CompletionStage.class.isAssignableFrom(start)) {
+            return new ArrayList<>();
         }
+        if(!end.isAssignableFrom(start)) {
+            return new ArrayList<>();
+        }
+        List<Class<?>> ans = new ArrayList<>();
 
         int mod = start.getModifiers();
         if(Modifier.isPublic(mod) && !Modifier.isFinal(mod)) {
-            return start;
-        } else if(start.getSuperclass() != null && end.isAssignableFrom(start.getSuperclass())){
+            ans.add(start);
+        }
+        if(start.getSuperclass() != null && end.isAssignableFrom(start.getSuperclass())){
             Class<?> sup = start.getSuperclass();
             int supMod = sup.getModifiers();
             if(Modifier.isPublic(supMod) && !Modifier.isFinal(supMod)) {
-                return sup;
+                ans.add(sup);
             }
         }
         for(Class<?> next: start.getInterfaces()) {
+            if(next.getMethods().length == 0) continue;
             if(end.isAssignableFrom(next)) {
-                return next;
+                ans.add(next);
             }
         }
-        return null;
+        if(!ans.contains(end) && !end.equals(Object.class)) {
+            ans.add(end);
+        }
+        return ans;
     }
-
     @Override
     public Object initiateSpied(Object returnValue, NODE node) {
-        Class<?> bestClass = findBestClass(returnValue.getClass(), node.getRepresentingClass());
-        if(bestClass == null) {
-            node.setFailedNode(true);
-            node.setComments("Cannot find proper class to mock " + returnValue.getClass());
-            return returnValue;
+        List<Class<?>> classes = findBestClass(node.getRuntimeClass(), node.getRepresentingClass());
+        List<Exception> failReasons = new ArrayList<>();
+
+        for(Class<?> bestClass: classes) {
+            try {
+                return Mockito.mock(bestClass,
+                        Mockito.withSettings()
+                                .defaultAnswer(new EnvAns(returnValue, node))
+                                .extraInterfaces(extraInterface));
+            } catch (Exception e) {
+                failReasons.add(e);
+            }
         }
-        try {
-            return Mockito.mock(bestClass,
-                    Mockito.withSettings()
-                            .defaultAnswer(new EnvAns(returnValue, node))
-                            .extraInterfaces(extraInterface));
-        } catch (Exception e) {
-            node.setFailedNode(true);
-            node.setComments("Cannot mock class " + bestClass + " " + e);
-            return returnValue;
-        }
+        node.setFailedNode(true);
+        node.setComments(failReasons.stream().map(Throwable::toString).collect(Collectors.joining("\n")));
+        return returnValue;
     }
 
     /*

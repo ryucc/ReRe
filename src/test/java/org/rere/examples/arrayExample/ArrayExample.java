@@ -6,6 +6,7 @@
 package org.rere.examples.arrayExample;
 
 import org.rere.api.ReRe;
+import org.rere.api.ReReSettings;
 
 import java.util.Random;
 
@@ -14,7 +15,7 @@ public class ArrayExample {
 
         Dice[] twoDice = {new Dice(), new Dice()};
 
-        ReRe rere = new ReRe();
+        ReRe rere = new ReRe(new ReReSettings().withParameterModding(true));
         Dice[] wrappedDice = rere.createSpiedObject(twoDice, twoDice.getClass());
 
         System.out.println("/*");

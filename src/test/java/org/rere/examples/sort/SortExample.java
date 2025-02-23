@@ -6,6 +6,7 @@
 package org.rere.examples.sort;
 
 import org.rere.api.ReRe;
+import org.rere.api.ReReSettings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ public class SortExample {
         List<MyInt> arr = new ArrayList<>(List.of(new MyInt(3), new MyInt(2)));
         BubbleSorter bubbleSorter = new BubbleSorter();
 
-        ReRe rere = new ReRe();
+        ReRe rere = new ReRe(new ReReSettings().withParameterModding(true));
         BubbleSorter wrapped = rere.createSpiedObject(bubbleSorter, bubbleSorter.getClass());
         wrapped.sort(arr);
         System.out.println("/*");

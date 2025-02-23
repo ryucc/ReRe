@@ -6,6 +6,7 @@
 package org.rere.examples.optionalExample;
 
 import org.rere.api.ReRe;
+import org.rere.api.ReReSettings;
 
 import javax.swing.text.html.Option;
 import java.util.Optional;
@@ -16,7 +17,7 @@ public class OptionalExample {
 
         Optional<Dice> optionalDice = Optional.of(new Dice());
 
-        ReRe rere = new ReRe();
+        ReRe rere = new ReRe(new ReReSettings().withParameterModding(true));
         Optional<Dice> wrappedDice = rere.createSpiedObject(optionalDice, optionalDice.getClass());
 
         System.out.println("/*");

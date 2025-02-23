@@ -6,6 +6,7 @@
 package org.rere.examples.identityFunction;
 
 import org.rere.api.ReRe;
+import org.rere.api.ReReSettings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +16,7 @@ public class IdentityFunctionExample {
         List<Integer> arr = new ArrayList<>(List.of(3, 1, 2));
         IdentityFunction identityFunction = new IdentityFunction();
 
-        ReRe rere = new ReRe();
+        ReRe rere = new ReRe(new ReReSettings().withParameterModding(true));
         IdentityFunction wrapped = rere.createSpiedObject(identityFunction, identityFunction.getClass());
         wrapped.call(arr);
         String code = rere.exportMockito("org.rere.examples.identityFunction",

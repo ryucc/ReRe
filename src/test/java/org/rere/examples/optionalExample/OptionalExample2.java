@@ -6,6 +6,7 @@
 package org.rere.examples.optionalExample;
 
 import org.rere.api.ReRe;
+import org.rere.api.ReReSettings;
 
 import java.util.Optional;
 import java.util.Random;
@@ -16,7 +17,7 @@ public class OptionalExample2 {
         Optional<Dice> twoDice = Optional.of(new Dice());
         DiceRoller diceRoller = new DiceRoller();
 
-        ReRe rere = new ReRe();
+        ReRe rere = new ReRe(new ReReSettings().withParameterModding(true));
         DiceRoller wrappedRoller = rere.createSpiedObject(diceRoller, DiceRoller.class);
 
         System.out.println("/*");

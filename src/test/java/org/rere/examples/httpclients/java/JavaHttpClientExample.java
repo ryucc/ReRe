@@ -18,7 +18,7 @@ import java.time.Duration;
 public class JavaHttpClientExample {
     public static void main(String[] args) throws Exception {
 
-        ReRe reRe = new ReRe(new ReReSettings().withNoParameterModding(false));
+        ReRe reRe = new ReRe(new ReReSettings().withParameterModding(false));
         HttpClient client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .followRedirects(HttpClient.Redirect.NORMAL)

@@ -36,7 +36,7 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
     private EnvironmentObjectWrapper environmentObjectWrapper;
     private final UserObjectWrapper userObjectWrapper;
 
-    private final boolean noParameterMod;
+    private final boolean parameterModding;
     private final Set<Class<?>> skipModClasses;
 
     public EnvironmentObjectListener() {
@@ -48,7 +48,7 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
         UserObjectListener userObjectListener = new UserObjectListener(environmentObjectWrapper);
         userObjectWrapper = new UserObjectWrapper(new TopoOrderObjectWrapper<>(new UserNodeManager(userObjectListener)));
         userObjectListener.setUserObjectWrapper(userObjectWrapper);
-        noParameterMod = reReSettings.noParameterModding();
+        parameterModding = reReSettings.parameterModding();
         skipModClasses = reReSettings.skipMethodTracingClasses();
     }
 
@@ -83,7 +83,7 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
 
         for (int i = 0; i < allArguments.length; i++) {
             Object cur = allArguments[i];
-            if(noParameterMod){
+            if(!parameterModding){
                 wrappedArguments[i] = cur;
                 continue;
             }

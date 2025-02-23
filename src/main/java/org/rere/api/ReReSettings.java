@@ -17,20 +17,19 @@ import java.util.Set;
 public class ReReSettings {
     final Set<Class<?>> skipMethodTracingClasses;
     final Map<Class<?>, Class<? extends ReReSerde>> customSerde;
-    final boolean noParameterModding;
+    final boolean parameterModding;
     public ReReSettings(Set<Class<?>> skipMethodTracingClasses,
-                        boolean noParameterModding,
+                        boolean parameterModding,
                         Map<Class<?>, Class<? extends ReReSerde>> customSerde) {
         this.skipMethodTracingClasses = skipMethodTracingClasses;
         this.customSerde = customSerde;
-        this.noParameterModding = noParameterModding;
+        this.parameterModding = parameterModding;
     }
 
     public ReReSettings() {
-        noParameterModding = false;
+        parameterModding = false;
         skipMethodTracingClasses = new HashSet<>();
         customSerde = new HashMap<>();
-        customSerde.put(HttpHeaders.class, HttpHeadersSerde.class);
     }
 
     public Map<Class<?>, Class<? extends ReReSerde>> getCustomSerde() {
@@ -41,8 +40,8 @@ public class ReReSettings {
         return skipMethodTracingClasses;
     }
 
-    public boolean noParameterModding() {
-        return noParameterModding;
+    public boolean parameterModding() {
+        return parameterModding;
     }
 
     /**
@@ -52,11 +51,11 @@ public class ReReSettings {
      * parameters are immutable, or the method calls on the parameters are read-only, this no parameter modding option
      * can be enabled for cleaner output code.
      *
-     * @param noParameterModding new boolean value.
-     * @return A copy of ReReSettings with new noParameterModding value.
+     * @param parameterModding new boolean value.
+     * @return A copy of ReReSettings with new parameterModding value.
      */
-    public ReReSettings withNoParameterModding(boolean noParameterModding) {
-        return new ReReSettings(skipMethodTracingClasses, noParameterModding, customSerde);
+    public ReReSettings withParameterModding(boolean parameterModding) {
+        return new ReReSettings(skipMethodTracingClasses, parameterModding, customSerde);
     }
 
     /**
@@ -70,7 +69,7 @@ public class ReReSettings {
         Set<Class<?>> set = new HashSet<>(skipMethodTracingClasses);
         Map<Class<?>, Class<? extends ReReSerde>> serdeCopy = new HashMap<>(customSerde);
         serdeCopy.put(clazz, serializer);
-        return new ReReSettings(set, noParameterModding, serdeCopy);
+        return new ReReSettings(set, parameterModding, serdeCopy);
     }
 
     /**
@@ -84,6 +83,6 @@ public class ReReSettings {
     public ReReSettings addSkipClass(Class<?> skipClass) {
         Set<Class<?>> set = new HashSet<>(skipMethodTracingClasses);
         set.add(skipClass);
-        return new ReReSettings(set, noParameterModding, customSerde);
+        return new ReReSettings(set, parameterModding, customSerde);
     }
 }

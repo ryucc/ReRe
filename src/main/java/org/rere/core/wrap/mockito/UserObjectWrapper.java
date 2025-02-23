@@ -36,6 +36,9 @@ public class UserObjectWrapper {
                                                   Class<?> type,
                                                   EnvironmentMethodCall scope,
                                                   LocalSymbol symbol) {
+        if(original instanceof Throwable) {
+            return new ReReWrapResult<>(original, new UserNode(original.getClass(), type));
+        }
         ReReWrapResult<?, UserNode> wrapped = topoOrderWrapper.createRoot(original, type);
 
         // DFS

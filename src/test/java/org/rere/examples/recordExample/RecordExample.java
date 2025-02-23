@@ -2,6 +2,7 @@
 package org.rere.examples.recordExample;
 
 import org.rere.api.ReRe;
+import org.rere.api.ReReSettings;
 
 import java.util.Random;
 
@@ -10,7 +11,7 @@ public class RecordExample {
 
         TwoDice twoDice = new TwoDice(new Dice(), new Dice());
 
-        ReRe rere = new ReRe();
+        ReRe rere = new ReRe(new ReReSettings().withParameterModding(true));
         TwoDice wrappedDice = rere.createSpiedObject(twoDice, TwoDice.class);
 
         System.out.println("/*");

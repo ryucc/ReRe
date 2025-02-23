@@ -45,10 +45,49 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
     public void setUserObjectWrapper(UserObjectWrapper userObjectWrapper) {
         this.userObjectWrapper = userObjectWrapper;
     }
+
+    public Method findMethod(Class<?> clazz, String methodName, Object[] allArguments) throws NoSuchMethodException {
+        List<Method> candidates = new ArrayList<>();
+        for(Method method: clazz.getMethods()) {
+            if(!method.getName().equals(methodName)) continue;
+            if(method.getParameterTypes().length != allArguments.length) continue;
+            boolean match = true;
+            for (int i = 0; i < method.getParameterTypes().length; i++) {
+                if(allArguments[i] == null) continue;
+                Class<?> actualClass = allArguments[i].getClass();
+                if(!method.getParameterTypes()[i].isAssignableFrom(actualClass)) {
+                    match = false;
+                    break;
+                }
+            }
+            if(match) {
+                candidates.add(method);
+            }
+        }
+        if(candidates.isEmpty()) {
+            throw new NoSuchMethodException();
+        }
+
+        Method bestMethod = candidates.get(0);
+        for(Method next: candidates) {
+            for(int i = 0; i < bestMethod.getParameterCount(); i++) {
+                if(!next.getParameterTypes()[i].isAssignableFrom(bestMethod.getParameterTypes()[i])) {
+                    bestMethod = next;
+                }
+            }
+        }
+        return bestMethod;
+    }
     public Object interceptInterface(Object original,
-                                     Method originalMethod,
+                                     Method implementedMethod,
                                      UserNode userNode,
                                      Object[] allArguments) throws Throwable {
+        Method originalMethod;
+        try {
+            originalMethod = findMethod(userNode.getRuntimeClass(), implementedMethod.getName(), allArguments);
+        } catch (NoSuchMethodException e) {
+            originalMethod = implementedMethod;
+        }
         List<EnvironmentNode> environmentNodes = new ArrayList<>();
         List<Object> wrappedArguments = new ArrayList<>();
         List<LocalSymbol> parameterSourceList = new ArrayList<>();
@@ -83,7 +122,7 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
 
         EnvironmentMethodCall scopeMethod = userNode.getScope();
 
-        String methodName = originalMethod.getName();
+        String methodName = implementedMethod.getName();
         LocalSymbol operand = userNode.getSymbol();
         UserMethodCall userMethodCall = new UserMethodCall(operand, methodName, environmentNodes, parameterSourceList);
         scopeMethod.addUserMethodCall(userMethodCall);
@@ -94,9 +133,12 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
         int currentReturnIndex = scopeMethod.getLastReturnIndex();
 
         try {
-            originalMethod.setAccessible(true);
-            Object ret = originalMethod.invoke(original, wrappedArguments.toArray());
+            implementedMethod.setAccessible(true);
+            Object ret = implementedMethod.invoke(original, wrappedArguments.toArray());
             if (ret == null) {
+                // BUG did not set return node
+                // TODO: check everywhere to set return node
+                userMethodCall.setReturnNode(new UserNode(originalMethod.getReturnType(), originalMethod.getReturnType()));
                 return null;
             } else {
                 userMethodCall.setReturnType(ret.getClass());
@@ -105,6 +147,7 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
             if (ret instanceof EnvironmentObjectSpy) {
                 // Environment object: untrack. Even if its member is user object, the method calls will be traced.
                 // Stateful: need to make it into a environment - user object
+                userMethodCall.setReturnNode(new UserNode(originalMethod.getReturnType(), originalMethod.getReturnType()));
                 return ((EnvironmentObjectSpy) ret).getReReOriginObject();
             }
             if (ret instanceof UserObjectSpy) {
