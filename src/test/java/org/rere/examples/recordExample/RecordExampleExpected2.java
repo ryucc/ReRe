@@ -69,7 +69,7 @@ public class RecordExampleExpected2 {
     return mockObject;
   }
 
-  public static RecordExample2.DiceRoller create() throws Exception {
+  public static RecordExample2.DiceRoller create() {
     try {
       return environmentNode0();
     }

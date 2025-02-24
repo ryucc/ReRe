@@ -70,7 +70,7 @@ public class OptionalExampleExpected2 {
     return mockObject;
   }
 
-  public static OptionalExample2.DiceRoller create() throws Exception {
+  public static OptionalExample2.DiceRoller create() {
     try {
       return environmentNode0();
     }

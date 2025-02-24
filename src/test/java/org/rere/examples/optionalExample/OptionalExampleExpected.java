@@ -35,7 +35,7 @@ public class OptionalExampleExpected {
     return object0;
   }
 
-  public static Optional<OptionalExample.Dice> create() throws Exception {
+  public static Optional<OptionalExample.Dice> create() {
     try {
       return environmentNode0();
     }

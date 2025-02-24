@@ -160,7 +160,6 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         Type declaringClass = getBestType(packageName, root);
         MethodSpec.Builder rootMethodBuilder = MethodSpec.methodBuilder(methodName)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .addException(Exception.class)
                 .returns(declaringClass);
         EnvironmentNodeSynthesizer.SynthResult result = generateEnvironmentNode(typeBuilder, root);
 

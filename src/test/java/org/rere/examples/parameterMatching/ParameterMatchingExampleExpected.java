@@ -22,7 +22,7 @@ public class ParameterMatchingExampleExpected {
     return mockObject;
   }
 
-  public static ParameterMatchingExample.PrivateDice create() throws Exception {
+  public static ParameterMatchingExample.PrivateDice create() {
     try {
       return environmentNode0();
     }

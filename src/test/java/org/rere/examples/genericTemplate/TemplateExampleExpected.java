@@ -32,7 +32,7 @@ public class TemplateExampleExpected {
     return mockObject;
   }
 
-  public static TemplateExample.TemplateDice create() throws Exception {
+  public static TemplateExample.TemplateDice create() {
     try {
       return environmentNode0();
     }

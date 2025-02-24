@@ -30,7 +30,7 @@ public class IdentityFunctionExampleExpected {
     return mockObject;
   }
 
-  public static IdentityFunctionExample.IdentityFunction create() throws Exception {
+  public static IdentityFunctionExample.IdentityFunction create() {
     try {
       return environmentNode0();
     }

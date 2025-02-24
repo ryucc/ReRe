@@ -31,7 +31,7 @@ public class ThrowExampleExpected {
     return mockObject;
   }
 
-  public static ThrowExample.ErrorDice create() throws Exception {
+  public static ThrowExample.ErrorDice create() {
     try {
       return environmentNode0();
     }

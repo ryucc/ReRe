@@ -27,7 +27,7 @@ public class ReadmeExampleExpected {
     return mockObject;
   }
 
-  public static ReadmeExample.Dice create() throws Exception {
+  public static ReadmeExample.Dice create() {
     try {
       return environmentNode0();
     }

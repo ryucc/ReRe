@@ -34,7 +34,7 @@ public class ReadmeRecursiveExampleExpected {
     return mockObject;
   }
 
-  public static ReadmeRecursiveExample.HttpClient create() throws Exception {
+  public static ReadmeRecursiveExample.HttpClient create() {
     try {
       return environmentNode0();
     }

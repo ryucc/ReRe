@@ -43,7 +43,7 @@ public class SortExampleExpected {
     return mockObject;
   }
 
-  public static SortExample.BubbleSorter method() throws Exception {
+  public static SortExample.BubbleSorter method() {
     try {
       return environmentNode0();
     }

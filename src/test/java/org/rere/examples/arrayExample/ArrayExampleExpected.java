@@ -49,7 +49,7 @@ public class ArrayExampleExpected {
     return object0;
   }
 
-  public static ArrayExample.Dice[] create() throws Exception {
+  public static ArrayExample.Dice[] create() {
     try {
       return environmentNode0();
     }

@@ -69,7 +69,7 @@ public class ArrayExampleExpected2 {
     return mockObject;
   }
 
-  public static ArrayExample2.DiceRoller create() throws Exception {
+  public static ArrayExample2.DiceRoller create() {
     try {
       return environmentNode0();
     }

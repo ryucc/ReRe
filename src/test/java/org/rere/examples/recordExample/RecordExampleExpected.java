@@ -47,7 +47,7 @@ public class RecordExampleExpected {
     return object0;
   }
 
-  public static RecordExample.TwoDice create() throws Exception {
+  public static RecordExample.TwoDice create() {
     try {
       return environmentNode0();
     }
