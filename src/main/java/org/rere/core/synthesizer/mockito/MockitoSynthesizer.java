@@ -54,6 +54,7 @@ public class MockitoSynthesizer {
                 .addStaticImport(ArgumentMatchers.class, "*")
                 .addStaticImport(Mockito.class, "doReturn")
                 .addStaticImport(Mockito.class, "doAnswer")
+                .addStaticImport(Mockito.class, "doThrow")
                 .addStaticImport(Mockito.class, "doNothing")
                 .addStaticImport(Mockito.class, "mock")
                 .build();
