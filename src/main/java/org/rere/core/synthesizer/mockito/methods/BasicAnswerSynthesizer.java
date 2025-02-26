@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
     private final EnvironmentNodeSynthesizer environmentNodeSynthesizer;
     private int answerId;
+    // TODO: fix local param to be answer-local.
+    int localParamId = 0;
 
     private final String packageName;
     public BasicAnswerSynthesizer(String packageName, EnvironmentNodeSynthesizer environmentNodeSynthesizer) {
@@ -130,7 +132,6 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
         List<EnvironmentNode> locals = userMethodCall.getLocalParameters();
         // Generate parameter string
         List<String> paramNames = new ArrayList<>();
-        int localParamId = 0;
         for (int i = 0; i < paramSources.size(); i++) {
             LocalSymbol symbol = paramSources.get(i);
             if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV && locals.get(symbol.getIndex()).isTerminal()) {
