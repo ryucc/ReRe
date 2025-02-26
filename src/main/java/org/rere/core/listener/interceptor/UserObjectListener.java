@@ -91,6 +91,7 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
         List<EnvironmentNode> environmentNodes = new ArrayList<>();
         List<Object> wrappedArguments = new ArrayList<>();
         List<LocalSymbol> parameterSourceList = new ArrayList<>();
+        EnvironmentMethodCall scopeMethod = userNode.getScope();
         for (int i = 0; i < allArguments.length; i++) {
             Object arg = allArguments[i];
             Class<?> representingClass = originalMethod.getParameterTypes()[i];
@@ -106,6 +107,19 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
                 // Let's assume environments are stateless first... handle this later.
                 System.err.println("User method call received environment object as parameter.");
             } else {
+                boolean foundMatch = false;
+                for(int j =0; j < scopeMethod.getFailedUserObjects().size(); j++) {
+                    if (scopeMethod.getFailedUserObjects().get(j) == arg) {
+                        wrappedArguments.add(arg);
+                        UserNode node = scopeMethod.getFailedUserNodes().get(j);
+                        parameterSourceList.add(node.getSymbol());
+                        foundMatch = true;
+                        break;
+                    }
+                }
+                if(foundMatch) {
+                    continue;
+                }
                 // TODO
                 ReReWrapResult<?, EnvironmentNode> listenResult =
                         environmentObjectWrapper.createRoot(arg, representingClass);
@@ -119,9 +133,6 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
             }
         }
         // register method call to scope
-
-        EnvironmentMethodCall scopeMethod = userNode.getScope();
-
         String methodName = implementedMethod.getName();
         LocalSymbol operand = userNode.getSymbol();
         UserMethodCall userMethodCall = new UserMethodCall(operand, methodName, environmentNodes, parameterSourceList);
@@ -158,6 +169,10 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
             LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.RETURN_VALUE, currentReturnIndex);
             ReReWrapResult<?, UserNode> result = userObjectWrapper.createRoot(ret, originalMethod.getReturnType(), scopeMethod, symbol);
             userMethodCall.setReturnNode(result.node());
+            if(result.node().isFailedNode()) {
+                scopeMethod.getFailedUserObjects().add(ret);
+                scopeMethod.getFailedUserNodes().add(result.node());
+            }
             return result.wrapped();
         } catch (InvocationTargetException e) {
             Throwable real = e.getTargetException();

@@ -99,6 +99,10 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
             wrappedArguments[i] = result.wrapped();
             paramNodes.add(result.node());
             argClasses[i] = runtimeClass;
+            if(result.node().isFailedNode()) {
+                edge.getFailedUserObjects().add(result.wrapped());
+                edge.getFailedUserNodes().add(result.node());
+            }
             //params.add(result.userNode());
         }
 

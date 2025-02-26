@@ -28,24 +28,12 @@ public class EnvironmentMethodCall implements Serializable {
 
     private final Signature signature;
 
-    public List<Class<?>> getParamRuntimeClasses() {
-        return paramRuntimeClasses;
-    }
-
-    private List<Class<?>> paramRuntimeClasses;
-
-    public void setParamRuntimeClasses(List<Class<?>> paramClasses) {
-        this.paramRuntimeClasses = paramClasses;
-    }
-    public void setParamRepresentingClasses(List<Class<?>> paramClasses) {
-        this.signature.setParamClasses(paramClasses);
-    }
-    public List<Class<?>> getParamRepresentingClasses() {
-        return this.signature.getParamClasses();
-    }
+    private transient final List<Object> failedUserObjects;
+    private transient final List<UserNode> failedUserNodes;
     // Dynamic
     private final UUID uuid;
     private final List<UserMethodCall> userMethodCalls;
+    private List<Class<?>> paramRuntimeClasses;
     private EnvironmentNode mockReturn;
     /* TODO later: the return values need to be stored on the node.
         In case user objects are stored, then modified later across method calls.
@@ -56,6 +44,39 @@ public class EnvironmentMethodCall implements Serializable {
     private LocalSymbol returnSymbol;
     private Class<?> returnClass;
     private MethodResult result;
+    private List<UserNode> parameterNodes;
+    public EnvironmentMethodCall(Method method) {
+        this.failedUserObjects = new ArrayList<>();
+        this.failedUserNodes = new ArrayList<>();
+        this.uuid = UUID.randomUUID();
+        this.signature = new Signature(method);
+        this.userMethodCalls = new ArrayList<>();
+        this.parameterNodes = new ArrayList<>();
+    }
+
+    public List<Object> getFailedUserObjects() {
+        return failedUserObjects;
+    }
+
+    public List<UserNode> getFailedUserNodes() {
+        return failedUserNodes;
+    }
+
+    public List<Class<?>> getParamRuntimeClasses() {
+        return paramRuntimeClasses;
+    }
+
+    public void setParamRuntimeClasses(List<Class<?>> paramClasses) {
+        this.paramRuntimeClasses = paramClasses;
+    }
+
+    public List<Class<?>> getParamRepresentingClasses() {
+        return this.signature.getParamClasses();
+    }
+
+    public void setParamRepresentingClasses(List<Class<?>> paramClasses) {
+        this.signature.setParamClasses(paramClasses);
+    }
 
     public List<UserNode> getParameterNodes() {
         return parameterNodes;
@@ -63,15 +84,6 @@ public class EnvironmentMethodCall implements Serializable {
 
     public void setParameterNodes(List<UserNode> parameterNodes) {
         this.parameterNodes = parameterNodes;
-    }
-
-    private List<UserNode> parameterNodes;
-
-    public EnvironmentMethodCall(Method method) {
-        this.uuid = UUID.randomUUID();
-        this.signature = new Signature(method);
-        this.userMethodCalls = new ArrayList<>();
-        this.parameterNodes = new ArrayList<>();
     }
 
     public Class<?> getReturnClass() {

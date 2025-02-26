@@ -134,7 +134,8 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
         List<String> paramNames = new ArrayList<>();
         for (int i = 0; i < paramSources.size(); i++) {
             LocalSymbol symbol = paramSources.get(i);
-            if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV && locals.get(symbol.getIndex()).isTerminal()) {
+            if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV
+                    && ClassUtils.isWrapperOrPrimitive(locals.get(symbol.getIndex()).getRuntimeClass())) {
                 //Primitive values
                 paramNames.add(locals.get(symbol.getIndex()).getValue());
             } else if (symbol.getSource() == LocalSymbol.Source.LOCAL_ENV) {

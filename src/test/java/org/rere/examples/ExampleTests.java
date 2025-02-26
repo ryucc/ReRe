@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.rere.examples.arrayExample.ArrayExample;
 import org.rere.examples.arrayExample.ArrayExample2;
 import org.rere.examples.exception.ThrowExample;
+import org.rere.examples.finalTracing.FinalTracingExample;
 import org.rere.examples.genericTemplate.TemplateExample;
 import org.rere.examples.identityFunction.IdentityFunctionExample;
 import org.rere.examples.optionalExample.OptionalExample;
@@ -62,7 +63,18 @@ public class ExampleTests {
         String expected = Files.readString(output);
         assertThat(outContent.toString()).isEqualTo(expected);
     }
-
+    @Test
+    public void testFinalTracingExample() throws IOException {
+        String[] args = {};
+        FinalTracingExample.main(args);
+        Path output = Path.of("src/test/java/org/rere/examples/finalTracing/FinalTracingExampleExpected.java");
+        if (RESET_TESTS) {
+            Files.writeString(output, outContent.toString());
+            return;
+        }
+        String expected = Files.readString(output);
+        assertThat(outContent.toString()).isEqualTo(expected);
+    }
     @Test
     public void testReadmeRecursiveExample() throws IOException {
         String[] args = {};
