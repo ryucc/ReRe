@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
+import static java.lang.reflect.Modifier.isFinal;
+
 @SuppressWarnings("unchecked")
 public class MockitoSingleNodeWrapper<NODE extends ReReObjectNode<?>> implements SingleNodeWrapper<NODE> {
     private final ReReMethodInterceptor<NODE> listener;
@@ -38,13 +40,13 @@ public class MockitoSingleNodeWrapper<NODE extends ReReObjectNode<?>> implements
         List<Class<?>> ans = new ArrayList<>();
 
         int mod = start.getModifiers();
-        if(Modifier.isPublic(mod) && !Modifier.isFinal(mod)) {
+        if(Modifier.isPublic(mod) && !isFinal(mod)) {
             ans.add(start);
         }
         if(start.getSuperclass() != null && end.isAssignableFrom(start.getSuperclass())){
             Class<?> sup = start.getSuperclass();
             int supMod = sup.getModifiers();
-            if(Modifier.isPublic(supMod) && !Modifier.isFinal(supMod)) {
+            if(Modifier.isPublic(supMod) && !isFinal(supMod)) {
                 ans.add(sup);
             }
         }
@@ -59,8 +61,19 @@ public class MockitoSingleNodeWrapper<NODE extends ReReObjectNode<?>> implements
         }
         return ans;
     }
+
+    public Object failFinal(Object returnValue, NODE node) {
+        node.setComments("ReRe cannot spy on final class: " + node.getRepresentingClass()
+        + "\n" + "Further method tracing maybe incorrect on this object."
+        + "\n" + "If this is a environment object, consider using custom serialization.");
+        node.setFailedNode(true);
+        return returnValue;
+    }
     @Override
     public Object initiateSpied(Object returnValue, NODE node) {
+        if(isFinal(node.getRepresentingClass().getModifiers())) {
+            return failFinal(returnValue, node);
+        }
         List<Class<?>> classes = findBestClass(node.getRuntimeClass(), node.getRepresentingClass());
         List<Exception> failReasons = new ArrayList<>();
 

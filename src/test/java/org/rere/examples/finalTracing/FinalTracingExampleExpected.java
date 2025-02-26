@@ -29,16 +29,9 @@ public class FinalTracingExampleExpected {
       FinalTracingExample.Dice param0 = invocation.getArgument(0);
       // Failed node
       /*
-       * org.mockito.exceptions.base.MockitoException: 
-       * Mockito cannot mock this class: class org.rere.examples.finalTracing.FinalTracingExample$MyInt.
-       * Can not mock final classes with the following settings :
-       *  - explicit serialization (e.g. withSettings().serializable())
-       *  - extra interfaces (e.g. withSettings().extraInterfaces(...))
-       * 
-       * You are seeing this disclaimer because Mockito is configured to create inlined mocks.
-       * You can learn about inline mocks and their limitations under item #39 of the Mockito class javadoc.
-       * 
-       * Underlying exception : org.mockito.exceptions.base.MockitoException: Unsupported settings with this type 'org.rere.examples.finalTracing.FinalTracingExample$MyInt'
+       * ReRe cannot spy on final class: class org.rere.examples.finalTracing.FinalTracingExample$MyInt
+       * Further method tracing maybe incorrect on this object.
+       * If this is a environment object, consider using custom serialization.
       */
       FinalTracingExample.MyInt param1 = invocation.getArgument(1);
       param0.roll(param1);
@@ -51,16 +44,9 @@ public class FinalTracingExampleExpected {
       FinalTracingExample.Dice param0 = invocation.getArgument(0);
       // Failed node
       /*
-       * org.mockito.exceptions.base.MockitoException: 
-       * Mockito cannot mock this class: class org.rere.examples.finalTracing.FinalTracingExample$MyInt.
-       * Can not mock final classes with the following settings :
-       *  - explicit serialization (e.g. withSettings().serializable())
-       *  - extra interfaces (e.g. withSettings().extraInterfaces(...))
-       * 
-       * You are seeing this disclaimer because Mockito is configured to create inlined mocks.
-       * You can learn about inline mocks and their limitations under item #39 of the Mockito class javadoc.
-       * 
-       * Underlying exception : org.mockito.exceptions.base.MockitoException: Unsupported settings with this type 'org.rere.examples.finalTracing.FinalTracingExample$MyInt'
+       * ReRe cannot spy on final class: class org.rere.examples.finalTracing.FinalTracingExample$MyInt
+       * Further method tracing maybe incorrect on this object.
+       * If this is a environment object, consider using custom serialization.
       */
       FinalTracingExample.MyInt param1 = invocation.getArgument(1);
       param0.roll(param1);
@@ -73,16 +59,9 @@ public class FinalTracingExampleExpected {
       FinalTracingExample.Dice param0 = invocation.getArgument(0);
       // Failed node
       /*
-       * org.mockito.exceptions.base.MockitoException: 
-       * Mockito cannot mock this class: class org.rere.examples.finalTracing.FinalTracingExample$MyInt.
-       * Can not mock final classes with the following settings :
-       *  - explicit serialization (e.g. withSettings().serializable())
-       *  - extra interfaces (e.g. withSettings().extraInterfaces(...))
-       * 
-       * You are seeing this disclaimer because Mockito is configured to create inlined mocks.
-       * You can learn about inline mocks and their limitations under item #39 of the Mockito class javadoc.
-       * 
-       * Underlying exception : org.mockito.exceptions.base.MockitoException: Unsupported settings with this type 'org.rere.examples.finalTracing.FinalTracingExample$MyInt'
+       * ReRe cannot spy on final class: class org.rere.examples.finalTracing.FinalTracingExample$MyInt
+       * Further method tracing maybe incorrect on this object.
+       * If this is a environment object, consider using custom serialization.
       */
       FinalTracingExample.MyInt param1 = invocation.getArgument(1);
       param0.roll(param1);
@@ -95,16 +74,9 @@ public class FinalTracingExampleExpected {
       FinalTracingExample.Dice param0 = invocation.getArgument(0);
       // Failed node
       /*
-       * org.mockito.exceptions.base.MockitoException: 
-       * Mockito cannot mock this class: class org.rere.examples.finalTracing.FinalTracingExample$MyInt.
-       * Can not mock final classes with the following settings :
-       *  - explicit serialization (e.g. withSettings().serializable())
-       *  - extra interfaces (e.g. withSettings().extraInterfaces(...))
-       * 
-       * You are seeing this disclaimer because Mockito is configured to create inlined mocks.
-       * You can learn about inline mocks and their limitations under item #39 of the Mockito class javadoc.
-       * 
-       * Underlying exception : org.mockito.exceptions.base.MockitoException: Unsupported settings with this type 'org.rere.examples.finalTracing.FinalTracingExample$MyInt'
+       * ReRe cannot spy on final class: class org.rere.examples.finalTracing.FinalTracingExample$MyInt
+       * Further method tracing maybe incorrect on this object.
+       * If this is a environment object, consider using custom serialization.
       */
       FinalTracingExample.MyInt param1 = invocation.getArgument(1);
       param0.roll(param1);
@@ -117,16 +89,9 @@ public class FinalTracingExampleExpected {
       FinalTracingExample.Dice param0 = invocation.getArgument(0);
       // Failed node
       /*
-       * org.mockito.exceptions.base.MockitoException: 
-       * Mockito cannot mock this class: class org.rere.examples.finalTracing.FinalTracingExample$MyInt.
-       * Can not mock final classes with the following settings :
-       *  - explicit serialization (e.g. withSettings().serializable())
-       *  - extra interfaces (e.g. withSettings().extraInterfaces(...))
-       * 
-       * You are seeing this disclaimer because Mockito is configured to create inlined mocks.
-       * You can learn about inline mocks and their limitations under item #39 of the Mockito class javadoc.
-       * 
-       * Underlying exception : org.mockito.exceptions.base.MockitoException: Unsupported settings with this type 'org.rere.examples.finalTracing.FinalTracingExample$MyInt'
+       * ReRe cannot spy on final class: class org.rere.examples.finalTracing.FinalTracingExample$MyInt
+       * Further method tracing maybe incorrect on this object.
+       * If this is a environment object, consider using custom serialization.
       */
       FinalTracingExample.MyInt param1 = invocation.getArgument(1);
       param0.roll(param1);
