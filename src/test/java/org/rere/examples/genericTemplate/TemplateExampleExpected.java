@@ -20,6 +20,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
 import java.lang.Exception;
+import java.lang.Integer;
 import java.lang.RuntimeException;
 import org.rere.core.serde.PrimitiveSerde;
 
@@ -28,8 +29,18 @@ public class TemplateExampleExpected {
 
   public static TemplateExample.TemplateDice environmentNode0() throws Exception {
     TemplateExample.TemplateDice mockObject = mock(TemplateExample.TemplateDice.class);
-    doReturn((java.lang.Integer) 1).doReturn((java.lang.Integer) 1).doReturn((java.lang.Integer) 1).doReturn((java.lang.Integer) 1).doReturn((java.lang.Integer) 1).when(mockObject).getObject();
-    doReturn((int) 1).doReturn((int) 5).doReturn((int) 2).doReturn((int) 6).doReturn((int) 6).when(mockObject).roll();
+    Integer local0 = 1;
+    Integer local1 = 1;
+    Integer local2 = 1;
+    Integer local3 = 1;
+    Integer local4 = 1;
+    doReturn(local0).doReturn(local1).doReturn(local2).doReturn(local3).doReturn(local4).when(mockObject).getObject();
+    int local5 = 1;
+    int local6 = 5;
+    int local7 = 2;
+    int local8 = 6;
+    int local9 = 6;
+    doReturn(local5).doReturn(local6).doReturn(local7).doReturn(local8).doReturn(local9).when(mockObject).roll();
     return mockObject;
   }
 

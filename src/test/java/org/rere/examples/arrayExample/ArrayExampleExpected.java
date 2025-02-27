@@ -28,13 +28,23 @@ public class ArrayExampleExpected {
 
   public static ArrayExample.Dice environmentNode1() throws Exception {
     ArrayExample.Dice mockObject = mock(ArrayExample.Dice.class);
-    doReturn((int) 1).doReturn((int) 5).doReturn((int) 2).doReturn((int) 6).doReturn((int) 6).when(mockObject).roll();
+    int local0 = 1;
+    int local1 = 5;
+    int local2 = 2;
+    int local3 = 6;
+    int local4 = 6;
+    doReturn(local0).doReturn(local1).doReturn(local2).doReturn(local3).doReturn(local4).when(mockObject).roll();
     return mockObject;
   }
 
   public static ArrayExample.Dice environmentNode2() throws Exception {
     ArrayExample.Dice mockObject = mock(ArrayExample.Dice.class);
-    doReturn((int) 1).doReturn((int) 5).doReturn((int) 2).doReturn((int) 6).doReturn((int) 6).when(mockObject).roll();
+    int local0 = 1;
+    int local1 = 5;
+    int local2 = 2;
+    int local3 = 6;
+    int local4 = 6;
+    doReturn(local0).doReturn(local1).doReturn(local2).doReturn(local3).doReturn(local4).when(mockObject).roll();
     return mockObject;
   }
 

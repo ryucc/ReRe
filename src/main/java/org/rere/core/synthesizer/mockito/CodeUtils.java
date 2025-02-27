@@ -9,6 +9,7 @@ import com.squareup.javapoet.MethodSpec;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.methods.Signature;
 import org.rere.core.data.objects.ReReObjectNode;
+import org.rere.core.listener.utils.ClassUtils;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -60,6 +61,8 @@ public class CodeUtils {
         Class<?> runtimeClass = node.getRuntimeClass();
         Class<?> lowerBoundClass = node.getRepresentingClass();
         if (runtimeClass.equals(String.class)) {
+            return runtimeClass;
+        } else if(ClassUtils.isWrapperOrPrimitive(runtimeClass)) {
             return runtimeClass;
         }
         boolean visible = getVisibility(packageName, runtimeClass);

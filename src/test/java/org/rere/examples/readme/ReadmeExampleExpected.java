@@ -24,7 +24,12 @@ public class ReadmeExampleExpected {
   public static ReadmeExample.Dice environmentNode0() throws Exception {
     ReadmeExample.Dice mockObject = mock(ReadmeExample.Dice.class);
     doNothing().when(mockObject).chill();
-    doReturn((int) 4).doReturn((int) 5).doReturn((int) 2).doReturn((int) 4).doReturn((int) 3).when(mockObject).roll();
+    int local0 = 4;
+    int local1 = 5;
+    int local2 = 2;
+    int local3 = 4;
+    int local4 = 3;
+    doReturn(local0).doReturn(local1).doReturn(local2).doReturn(local3).doReturn(local4).when(mockObject).roll();
     return mockObject;
   }
 

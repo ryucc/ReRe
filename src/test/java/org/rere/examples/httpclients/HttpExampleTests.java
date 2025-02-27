@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.rere.examples.httpclients.apache.ApacheHttpClientExample;
+import org.rere.examples.httpclients.apache.ApacheMockClientExample;
 import org.rere.examples.httpclients.java.JavaHttpClientExample;
 import org.rere.examples.readme.ReadmeExample;
 
@@ -33,12 +34,27 @@ public class HttpExampleTests {
     public void setUpStreams() {
         System.setOut(new PrintStream(outContent));
         System.setErr(new PrintStream(errContent));
+
     }
 
     @AfterEach
     public void restoreStreams() {
         System.setOut(originalOut);
         System.setErr(originalErr);
+    }
+
+    @Test
+    //@Disabled("Google content changes everytime")
+    public void testApacheExample() throws Exception {
+        String[] args = {};
+        ApacheHttpClientExample.main(args);
+        Path output = Path.of("src/test/java/org/rere/examples/httpclients/apache/ApacheHttpClientExampleExpected.java");
+        if (!RESET_TESTS) {
+            Files.writeString(output, outContent.toString());
+            return;
+        }
+        String expected = Files.readString(output);
+        assertThat(outContent.toString()).isEqualTo(expected);
     }
 
     @Test

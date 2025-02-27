@@ -25,13 +25,15 @@ public class ReadmeRecursiveExampleExpected {
 
   public static ReadmeRecursiveExample.HttpResponse environmentNode1() throws Exception {
     ReadmeRecursiveExample.HttpResponse mockObject = mock(ReadmeRecursiveExample.HttpResponse.class);
-    doReturn(environmentNode2()).when(mockObject).getBody();
+    String local0 = environmentNode2();
+    doReturn(local0).when(mockObject).getBody();
     return mockObject;
   }
 
   public static ReadmeRecursiveExample.HttpClient environmentNode0() throws Exception {
     ReadmeRecursiveExample.HttpClient mockObject = mock(ReadmeRecursiveExample.HttpClient.class);
-    doReturn(environmentNode1()).when(mockObject).get(anyInt());
+    ReadmeRecursiveExample.HttpResponse local0 = environmentNode1();
+    doReturn(local0).when(mockObject).get(anyInt());
     return mockObject;
   }
 

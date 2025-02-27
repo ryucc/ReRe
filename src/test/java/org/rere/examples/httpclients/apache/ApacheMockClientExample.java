@@ -20,6 +20,8 @@ import java.io.IOException;
 
 public class ApacheMockClientExample {
     public static void main(String[] args) throws Exception {
+        /*
+         */
         CloseableHttpClient httpclient = ApacheHttpClientExampleExpected.environmentNode0();
         HttpGet httpGet = new HttpGet("http://www.google.com");
         CloseableHttpResponse response1 = httpclient.execute(httpGet);

@@ -19,7 +19,8 @@ public class ParameterMatchingExampleExpected {
 
   public static ParameterMatchingExample.PrivateDice environmentNode0() throws Exception {
     ParameterMatchingExample.PrivateDice mockObject = mock(ParameterMatchingExample.PrivateDice.class);
-    doReturn((int) 10).when(mockObject).roll(anyInt(), anyDouble(), anyLong(), anyShort(), anyChar(), anyByte(), anyBoolean(), anyFloat(), anyString());
+    int local0 = 10;
+    doReturn(local0).when(mockObject).roll(anyInt(), anyDouble(), anyLong(), anyShort(), anyChar(), anyByte(), anyBoolean(), anyFloat(), anyString());
     return mockObject;
   }
 

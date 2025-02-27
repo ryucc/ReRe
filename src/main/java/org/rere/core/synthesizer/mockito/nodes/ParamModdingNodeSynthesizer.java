@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
@@ -144,8 +145,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
     @Override
     public SynthResult generateEnvironmentNode(TypeSpec.Builder typeBuilder, EnvironmentNode root) {
         if (ClassUtils.isWrapperOrPrimitive(root.getRuntimeClass())) {
-            String cast = String.format("(%s) ", root.getRuntimeClass().getName());
-            return new SynthResult(cast + root.getValue(), root.getRuntimeClass());
+            return new SynthResult(root.getValue(), root.getRuntimeClass());
         }
         if (root.getRuntimeClass().equals(Optional.class)) {
             return generateRecordEnvironmentNode(typeBuilder, root);
@@ -205,13 +205,29 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         declareMock(declaringClass, "mockObject", methodBuilder);
 
         List<MockitoSynthesizer.MethodGroup> methodGroups = groupMethods(root.getMethodCalls());
+        int localId = 0;
         for (MockitoSynthesizer.MethodGroup methodGroup : methodGroups) {
             List<String> answerList = new ArrayList<>();
             // TODO better grouping
+            // TODO declare nodes first
+            Map<EnvironmentNode, String> nameMap = new HashMap<>();
+            for (EnvironmentMethodCall methodCall : methodGroup.methodCalls()) {
+                if (methodCall.getResult().equals(MethodResult.THROW) ||
+                        (!methodCall.isVoid() && methodCall.getReturnSymbol()
+                        .getSource() == LocalSymbol.Source.LOCAL_ENV && methodCall.getUserMethodCalls().isEmpty())) {
+                    String returnName = generateEnvironmentNode(typeBuilder, methodCall.getDest()).methodName();
+                    String varName = "local" + localId;
+                    localId++;
+                    methodBuilder.addStatement("$T $L = $L", getBestType(packageName,methodCall.getDest()),
+                            varName, returnName);
+                    nameMap.put(methodCall.getDest(), varName);
+                }
+            }
+
             for (EnvironmentMethodCall methodCall : methodGroup.methodCalls()) {
                 // TODO clean up
                 if (methodCall.getResult().equals(MethodResult.THROW)) {
-                    String returnName = generateEnvironmentNode(typeBuilder, methodCall.getDest()).methodName();
+                    String returnName = nameMap.get(methodCall.getDest());
                     String doThrow = String.format("doThrow(%s)", returnName);
                     answerList.add(doThrow);
                 } else if (methodCall.getReturnSymbol()
@@ -219,7 +235,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
                     if (methodCall.isVoid()) {
                         answerList.add("doNothing()");
                     } else {
-                        String returnName = generateEnvironmentNode(typeBuilder, methodCall.getDest()).methodName();
+                        String returnName = nameMap.get(methodCall.getDest());
                         String doAnswer = String.format("doReturn(%s)", returnName);
                         answerList.add(doAnswer);
                     }
