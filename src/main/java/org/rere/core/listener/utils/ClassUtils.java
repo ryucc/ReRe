@@ -5,6 +5,7 @@
 
 package org.rere.core.listener.utils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -33,6 +34,65 @@ public class ClassUtils {
             Long.class,
             Float.class,
             Double.class));
+
+    public static boolean arrayEquals(Object arr, Object brr) {
+        if(arr == null && brr == null) {
+            return true;
+        } else if(arr == null || brr == null) {
+            return false;
+        }
+        if (!arr.getClass().equals(brr.getClass())) {
+            return false;
+        }
+        if(isWrapperOrPrimitive(arr.getClass())) {
+            return arr.equals(brr);
+        }
+
+        int lenA = Array.getLength(arr);
+        int lenB = Array.getLength(brr);
+        if (lenA != lenB) {
+            return false;
+        }
+        for(int i = 0; i < lenA; i++) {
+            Object a = Array.get(arr, i);
+            Object b = Array.get(brr, i);
+            if(!arrayEquals(a, b)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    public static <T> T deepCopyArray(T arr) {
+        if(arr == null) {
+            return null;
+        } else if(ClassUtils.isWrapperOrPrimitive(arr.getClass())) {
+            return arr;
+        }
+        int len = Array.getLength(arr);
+        Class<?> type = arr.getClass().getComponentType();
+        T copy = (T) Array.newInstance(type , len);
+        for (int i = 0; i < len; i++) {
+            Array.set(copy, i, deepCopyArray(Array.get(arr, i)));
+        }
+        return copy;
+    }
+    public static <T> void shallowCopyIntoArray(T src, T dest) {
+        int len = Array.getLength(src);
+        for (int i = 0; i < len; i++) {
+            Array.set(dest, i, Array.get(src, i));
+        }
+    }
+
+    public static boolean isPrimitiveArray(Class<?> a) {
+        if(isWrapperOrPrimitive(a)) {
+            return false;
+        }
+        Class<?> next = a;
+        while(next.isArray()) {
+            next = next.getComponentType();
+        }
+        return isWrapperOrPrimitive(next);
+    }
 
     private static Class<?> initRecordClass() {
         try {

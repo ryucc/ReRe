@@ -13,6 +13,7 @@ import org.rere.core.data.objects.LocalSymbol;
 import org.rere.core.data.objects.UserNode;
 import org.rere.core.listener.EnvironmentNodeManager;
 import org.rere.core.listener.UserNodeManager;
+import org.rere.core.listener.utils.ClassUtils;
 import org.rere.core.listener.utils.EnvironmentObjectSpy;
 import org.rere.core.listener.utils.UserObjectSpy;
 import org.rere.core.wrap.EnvironmentObjectWrapper;
@@ -24,6 +25,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.Set;
 
@@ -72,6 +75,16 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
                                      EnvironmentNode sourceNode,
                                      Object[] allArguments) throws Throwable {
 
+        Map<Integer, Object> initialArrays = new HashMap<>();
+        for(int i = 0; i < allArguments.length; i++) {
+            Object arg = allArguments[i];
+            if(arg == null) continue;
+            if(ClassUtils.isPrimitiveArray(arg.getClass())) {
+                Object copy = ClassUtils.deepCopyArray(arg);
+                initialArrays.put(i, copy);
+            }
+        }
+
         EnvironmentMethodCall edge = new EnvironmentMethodCall(orignalMethod);
         Object returnValue;
 
@@ -84,6 +97,11 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
         for (int i = 0; i < allArguments.length; i++) {
             Object cur = allArguments[i];
             if(!parameterModding){
+                wrappedArguments[i] = cur;
+                continue;
+            }
+            if(cur != null && ClassUtils.isPrimitiveArray(cur.getClass())) {
+                // TODO need to match by reference for return value
                 wrappedArguments[i] = cur;
                 continue;
             }
@@ -124,6 +142,19 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
             // ReRe does not have permissions to invoke the method.
             // should never happen?
             throw new RuntimeException(e);
+        }
+        /*
+         *  Record changes to primitive arrays here.
+         *  primitive array changes on throws: skip for now. Maybe todo later.
+         */
+        for(int i = 0; i < allArguments.length; i++) {
+            Object arg = allArguments[i];
+            if(arg == null) continue;
+            if(ClassUtils.isPrimitiveArray(arg.getClass()) &&
+                !ClassUtils.arrayEquals(initialArrays.get(i), arg)) {
+                Object copy = ClassUtils.deepCopyArray(arg);
+                edge.getEndResult().put(i, copy);
+            }
         }
 
         edge.setResult(MethodResult.RETURN);

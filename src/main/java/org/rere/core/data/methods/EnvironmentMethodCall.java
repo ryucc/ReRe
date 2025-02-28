@@ -12,7 +12,9 @@ import org.rere.core.data.objects.UserNode;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class EnvironmentMethodCall implements Serializable {
@@ -45,6 +47,8 @@ public class EnvironmentMethodCall implements Serializable {
     private Class<?> returnClass;
     private MethodResult result;
     private List<UserNode> parameterNodes;
+    private Map<Integer, Object> endResult;
+
     public EnvironmentMethodCall(Method method) {
         this.failedUserObjects = new ArrayList<>();
         this.failedUserNodes = new ArrayList<>();
@@ -52,6 +56,15 @@ public class EnvironmentMethodCall implements Serializable {
         this.signature = new Signature(method);
         this.userMethodCalls = new ArrayList<>();
         this.parameterNodes = new ArrayList<>();
+        this.endResult = new HashMap<>();
+    }
+
+    public Map<Integer, Object> getEndResult() {
+        return endResult;
+    }
+
+    public void setEndResult(Map<Integer, Object> endResult) {
+        this.endResult = endResult;
     }
 
     public List<Object> getFailedUserObjects() {

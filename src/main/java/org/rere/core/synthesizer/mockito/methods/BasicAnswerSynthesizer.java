@@ -15,6 +15,8 @@ import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.data.objects.Member;
 import org.rere.core.data.objects.UserNode;
 import org.rere.core.listener.utils.ClassUtils;
+import org.rere.core.serde.PrimitiveSerde;
+import org.rere.core.serde.exceptions.SerializationException;
 import org.rere.core.synthesizer.mockito.CodeUtils;
 import org.rere.core.synthesizer.mockito.nodes.EnvironmentNodeSynthesizer;
 import org.mockito.invocation.InvocationOnMock;
@@ -70,14 +72,14 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
         /*
 
          */
+        int arrayId = 0;
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(answerName)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .returns(ParameterizedTypeName.get(Answer.class,
                         ClassUtils.getWrapped(rootMethodCall.getReturnClass())));
         methodBuilder.beginControlFlow("return ($T invocation) ->", InvocationOnMock.class);
-        List<Class<?>> paramRuntimeTypes = rootMethodCall.getParamRuntimeClasses();
         List<UserNode> paramNodes = rootMethodCall.getParameterNodes();
-        for (int i = 0; i < paramRuntimeTypes.size(); i++) {
+        for (int i = 0; i < paramNodes.size(); i++) {
             UserNode curNode = paramNodes.get(i);
             if(curNode.isFailedNode()) {
                 methodBuilder.addComment("Failed node");
@@ -98,6 +100,19 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
                     userMethodCalls.get(i),
                     new LocalSymbol(LocalSymbol.Source.RETURN_VALUE, i),
                     explored);
+        }
+        for (Integer i: rootMethodCall.getEndResult().keySet()) {
+            Object arr = rootMethodCall.getEndResult().get(i);
+            try {
+                String s = new PrimitiveSerde().serialize(arr);
+                String varName = "array" + arrayId;
+                methodBuilder.addStatement("Object $L = new $T().deserialize(\"$L\")", varName,
+                        PrimitiveSerde.class, s);
+                methodBuilder.addStatement("$T.shallowCopyIntoArray($L, invocation.getArgument($L))", ClassUtils.class,
+                        varName, i);
+            } catch (SerializationException e) {
+                continue;
+            }
         }
         if (!rootMethodCall.isVoid()) {
 

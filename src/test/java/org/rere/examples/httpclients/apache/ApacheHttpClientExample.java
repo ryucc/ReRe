@@ -20,7 +20,7 @@ import java.io.IOException;
 
 public class ApacheHttpClientExample {
     public static void main(String[] args) throws IOException, InterruptedException {
-        ReRe reRe = new ReRe(new ReReSettings().withParameterModding(false));
+        ReRe reRe = new ReRe(new ReReSettings().withParameterModding(true));
         CloseableHttpClient httpclient = HttpClients.createDefault();
         CloseableHttpClient rereClient = reRe.createSpiedObject(httpclient, CloseableHttpClient.class);
         HttpGet httpGet = new HttpGet("https://mit-license.org");
@@ -28,14 +28,19 @@ public class ApacheHttpClientExample {
 
         try {
             System.out.println("/*");
+            System.out.println(response1.getStatusLine());
             HttpEntity entity1 = response1.getEntity();
+            // do something useful with the response body
+            // and ensure it is fully consumed
 
+            StatusLine statusLine = response1.getStatusLine();
+            System.out.println(statusLine.getStatusCode() + " " + statusLine.getReasonPhrase());
             System.out.println(EntityUtils.toString(entity1));
+
             System.out.println("*/");
         } finally {
             response1.close();
         }
-        EnvironmentNode node = reRe.getReReRecordData().roots().get(0);
         System.out.println(reRe.exportMockito("org.rere.examples.httpclients.apache", "create", "ApacheHttpClientExampleExpected"));
     }
 }

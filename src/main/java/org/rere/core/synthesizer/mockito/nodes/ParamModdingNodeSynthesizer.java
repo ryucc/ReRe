@@ -231,7 +231,8 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
                     String doThrow = String.format("doThrow(%s)", returnName);
                     answerList.add(doThrow);
                 } else if (methodCall.getReturnSymbol()
-                        .getSource() == LocalSymbol.Source.LOCAL_ENV && methodCall.getUserMethodCalls().isEmpty()) {
+                        .getSource() == LocalSymbol.Source.LOCAL_ENV && methodCall.getUserMethodCalls().isEmpty()
+                        && methodCall.getEndResult().isEmpty()) {
                     if (methodCall.isVoid()) {
                         answerList.add("doNothing()");
                     } else {
