@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -45,15 +44,40 @@ public class CodeUtils {
         Package pack = clazz.getPackage();
         return pack.getName().equals(packageName);
     }
-
-    //TODO, use implemented interfaces first
-    public static Type getBestType(String packageName, ReReObjectNode<?> node) {
+    public static Type getVisibleBestType(String packageName, ReReObjectNode<?> node) {
         if (node.getRuntimeClass().equals(Optional.class)) {
             if(node.getDirectChildren().isEmpty()) {
                 Type[] typeArgs = {Object.class};
                 return new ReReParamType(typeArgs, Optional.class, Optional.class);
             } else {
-                Type childType = getBestType(packageName, node.getDirectChildren().get(0));
+                Type childType = getVisibleBestType(packageName, node.getDirectChildren().get(0));
+                Type[] typeArgs = {childType};
+                return new ReReParamType(typeArgs, Optional.class, Optional.class);
+            }
+        }
+        Class<?> runtimeClass = node.getRuntimeClass();
+        Class<?> lowerBoundClass = node.getRepresentingClass();
+        if (runtimeClass.equals(String.class)) {
+            return runtimeClass;
+        } else if(ClassUtils.isWrapperOrPrimitive(runtimeClass)) {
+            return runtimeClass;
+        }
+        boolean visible = getVisibility(packageName, runtimeClass);
+        if (visible) {
+            return runtimeClass;
+        }
+        return lowerBoundClass;
+    }
+
+    //TODO, use implemented interfaces first
+    // TODO final is okay for user nodes
+    public static Type getNonFinalBestType(String packageName, ReReObjectNode<?> node) {
+        if (node.getRuntimeClass().equals(Optional.class)) {
+            if(node.getDirectChildren().isEmpty()) {
+                Type[] typeArgs = {Object.class};
+                return new ReReParamType(typeArgs, Optional.class, Optional.class);
+            } else {
+                Type childType = getNonFinalBestType(packageName, node.getDirectChildren().get(0));
                 Type[] typeArgs = {childType};
                 return new ReReParamType(typeArgs, Optional.class, Optional.class);
             }

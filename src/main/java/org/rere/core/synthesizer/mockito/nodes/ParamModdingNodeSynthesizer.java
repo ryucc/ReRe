@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 import static org.rere.core.synthesizer.mockito.CodeUtils.declareMock;
 import static org.rere.core.synthesizer.mockito.CodeUtils.generateDo;
-import static org.rere.core.synthesizer.mockito.CodeUtils.getBestType;
+import static org.rere.core.synthesizer.mockito.CodeUtils.getNonFinalBestType;
 import static org.rere.core.synthesizer.mockito.CodeUtils.groupMethods;
 
 //TODO topological sort again.
@@ -56,7 +56,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         String methodName = "environmentNode" + environmentId;
         environmentId++;
 
-        Type returnType = getBestType(packageName, root);
+        Type returnType = getNonFinalBestType(packageName, root);
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .addException(Exception.class)
@@ -82,7 +82,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
             nameIndex++;
             variableNames.put(cur, objectName);
             front.addAll(cur.getDirectChildren());
-            methodBuilder.addStatement("$T $L", getBestType(packageName, cur), objectName);
+            methodBuilder.addStatement("$T $L", getNonFinalBestType(packageName, cur), objectName);
             if (cur.getRuntimeClass().isArray() || cur.getDirectChildren().isEmpty()) {
                 readyQueue.add(cur);
             } else {
@@ -157,7 +157,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
 
     public void generateRootMethod(TypeSpec.Builder typeBuilder, EnvironmentNode root, String methodName) {
 
-        Type declaringClass = getBestType(packageName, root);
+        Type declaringClass = getNonFinalBestType(packageName, root);
         MethodSpec.Builder rootMethodBuilder = MethodSpec.methodBuilder(methodName)
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .returns(declaringClass);
@@ -179,7 +179,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
         String methodName = "environmentNode" + environmentId;
         environmentId++;
 
-        Type declaringClass = CodeUtils.getBestType(packageName, root);
+        Type declaringClass = CodeUtils.getVisibleBestType(packageName, root);
 
 
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder(methodName)
@@ -191,15 +191,14 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
             CodeUtils.addComments(methodBuilder, root.getComments());
         }
         if (root.isSerialized()) {
-            Class<?> clazz = root.getRuntimeClass();
             Class<?> serdeClass = root.getSerializer();
             if (serdeClass.equals(PrimitiveSerde.class)) {
-                methodBuilder.addStatement("return ($T) defaultSerde.deserialize($S)", clazz, root.getValue());
+                methodBuilder.addStatement("return ($T) defaultSerde.deserialize($S)", declaringClass, root.getValue());
             } else {
-                methodBuilder.addStatement("return ($T) new $T().deserialize($S)", clazz, serdeClass, root.getValue());
+                methodBuilder.addStatement("return ($T) new $T().deserialize($S)", declaringClass, serdeClass, root.getValue());
             }
             typeBuilder.addMethod(methodBuilder.build());
-            return new SynthResult(methodName + "()", clazz);
+            return new SynthResult(methodName + "()", declaringClass);
         }
 
         declareMock(declaringClass, "mockObject", methodBuilder);
@@ -218,7 +217,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
                     String returnName = generateEnvironmentNode(typeBuilder, methodCall.getDest()).methodName();
                     String varName = "local" + localId;
                     localId++;
-                    methodBuilder.addStatement("$T $L = $L", getBestType(packageName,methodCall.getDest()),
+                    methodBuilder.addStatement("$T $L = $L", getNonFinalBestType(packageName,methodCall.getDest()),
                             varName, returnName);
                     nameMap.put(methodCall.getDest(), varName);
                 }

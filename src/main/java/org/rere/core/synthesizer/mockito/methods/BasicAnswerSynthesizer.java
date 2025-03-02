@@ -86,7 +86,11 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
                 CodeUtils.addComments(methodBuilder, curNode.getComments());
             }
             String paramName = symbolNamer(new LocalSymbol(LocalSymbol.Source.PARAMETER, i));
-            Type rawType = CodeUtils.getBestType(packageName, paramNodes.get(i));
+            Type rawType = CodeUtils.getVisibleBestType(packageName, paramNodes.get(i));
+            if(rawType.equals(Object.class)) {
+                System.out.println(paramNodes.get(i).getRuntimeClass());
+                System.out.println(paramNodes.get(i).getRepresentingClass());
+            }
             //TypeName type = ParameterizedTypeName.get(rawType, rawType.getTypeParameters());
             methodBuilder.addStatement("$T $L = invocation.getArgument($L)", rawType, paramName, String.valueOf(i));
         }
