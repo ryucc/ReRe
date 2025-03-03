@@ -73,6 +73,20 @@ public class ReReSettings {
     }
 
     /**
+     * Merge with a new set of settings. The input settings are chosen if duplicate.
+     *
+     * @param otherSettings  new set of settings to update with.
+     * @return Merged settings.
+     */
+    public ReReSettings merge(ReReSettings otherSettings) {
+        Map<Class<?>, Class<? extends ReReSerde>> copySerde = new HashMap<>(customSerde);
+        copySerde.putAll(otherSettings.getCustomSerde());
+        Set<Class<?>> skipCopy = new HashSet<>(skipMethodTracingClasses);
+        skipCopy.addAll(otherSettings.skipMethodTracingClasses());
+        return new ReReSettings(skipCopy, otherSettings.parameterModding(), copySerde);
+    }
+
+    /**
      * Skip method tracing for the class. If skipClass only contains read-only methods, this option
      * Will skip the method tracing for all instances of skipClass, making the generated code more concise.
      * Also improving runtime performance.
