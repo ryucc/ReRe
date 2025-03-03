@@ -7,7 +7,7 @@ Hope you have fun with this project!
 ## Tutorials
 Check out our tutorials on Medium!
 
-- [Mocking a Jdbc connection with ReRe](https://medium.com/@ryucc/mocking-a-jdbc-connection-with-rere-dcb5de8a2618)
+- [Mocking a Jdbc SQL connection with ReRe](https://medium.com/@ryucc/mocking-a-jdbc-connection-with-rere-dcb5de8a2618)
 - [Mocking the java HttpClient with ReRe](https://medium.com/@ryucc/generating-a-mockito-java-httpclient-with-rere-8aefa76ce16b)
 - [Mocking a GRPC Client with ReRe](https://medium.com/@ryucc/mocking-a-grpc-client-with-rere-c856640f24f4)
 
