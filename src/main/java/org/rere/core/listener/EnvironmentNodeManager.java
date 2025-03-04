@@ -23,7 +23,7 @@ import java.util.Map;
 public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
     private static final PrimitiveSerde PRIMITIVE_SERDE = new PrimitiveSerde();
     private SingleNodeWrapper<EnvironmentNode> leafNodeWrapper;
-    final Map<Class<?>, Class<? extends ReReSerde>> customSerde;
+    final Map<Class<?>, Class<? extends ReReSerde<?>>> customSerde;
 
     public EnvironmentNodeManager(ReReMethodInterceptor<EnvironmentNode> listener, ReReSettings reReSettings) {
         //this.leafNodeWrapper = new EnvironmentNodeWrapper(listener);
@@ -83,7 +83,7 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
             node.setSerialized(true);
             node.setSerializer(PrimitiveSerde.class);
             try {
-                node.setValue(PRIMITIVE_SERDE.serialize(original));
+                node.setValue(PRIMITIVE_SERDE.serialize((String) original));
                 node.setComments(original.toString());
             } catch (SerializationException e) {
                 node.setFailedNode(true);
@@ -100,7 +100,7 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
             node.setComments(original.toString());
             node.setSerializer(PrimitiveSerde.class);
             try {
-                node.setValue(PRIMITIVE_SERDE.serialize(original));
+                node.setValue(PRIMITIVE_SERDE.serialize((Serializable) original));
             } catch (SerializationException e) {
                 node.setFailedNode(true);
                 node.setComments(e.getMessage());

@@ -16,11 +16,11 @@ import java.util.Set;
 
 public class ReReSettings {
     final Set<Class<?>> skipMethodTracingClasses;
-    final Map<Class<?>, Class<? extends ReReSerde>> customSerde;
+    final Map<Class<?>, Class<? extends ReReSerde<?>>> customSerde;
     final boolean parameterModding;
     public ReReSettings(Set<Class<?>> skipMethodTracingClasses,
                         boolean parameterModding,
-                        Map<Class<?>, Class<? extends ReReSerde>> customSerde) {
+                        Map<Class<?>, Class<? extends ReReSerde<?>>> customSerde) {
         this.skipMethodTracingClasses = skipMethodTracingClasses;
         this.customSerde = customSerde;
         this.parameterModding = parameterModding;
@@ -32,7 +32,7 @@ public class ReReSettings {
         customSerde = new HashMap<>();
     }
 
-    public Map<Class<?>, Class<? extends ReReSerde>> getCustomSerde() {
+    public Map<Class<?>, Class<? extends ReReSerde<?>>> getCustomSerde() {
         return customSerde;
     }
 
@@ -65,9 +65,9 @@ public class ReReSettings {
      * @param clazz      The target class to serialize.
      * @param serializer User's custom implementation of ReReSerde for class T.
      */
-    public ReReSettings registerSerializer(Class<?> clazz, Class<? extends ReReSerde> serializer) {
+    public ReReSettings registerSerializer(Class<?> clazz, Class<? extends ReReSerde<?>> serializer) {
         Set<Class<?>> set = new HashSet<>(skipMethodTracingClasses);
-        Map<Class<?>, Class<? extends ReReSerde>> serdeCopy = new HashMap<>(customSerde);
+        Map<Class<?>, Class<? extends ReReSerde<?>>> serdeCopy = new HashMap<>(customSerde);
         serdeCopy.put(clazz, serializer);
         return new ReReSettings(set, parameterModding, serdeCopy);
     }
@@ -79,7 +79,7 @@ public class ReReSettings {
      * @return Merged settings.
      */
     public ReReSettings merge(ReReSettings otherSettings) {
-        Map<Class<?>, Class<? extends ReReSerde>> copySerde = new HashMap<>(customSerde);
+        Map<Class<?>, Class<? extends ReReSerde<?>>> copySerde = new HashMap<>(customSerde);
         copySerde.putAll(otherSettings.getCustomSerde());
         Set<Class<?>> skipCopy = new HashSet<>(skipMethodTracingClasses);
         skipCopy.addAll(otherSettings.skipMethodTracingClasses());

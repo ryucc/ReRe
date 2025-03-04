@@ -47,12 +47,6 @@ class DefaultSerdeTest {
         assertThat(b).isEqualTo(a);
     }
 
-    @Test
-    public void testNotSerializable() {
-        NotSerializable a = new NotSerializable();
-        assertThatThrownBy(() -> primitiveSerde.serialize(a)).isInstanceOf(SerializationException.class);
-    }
-
     record SerializableClass(int a) implements Serializable {
     }
 

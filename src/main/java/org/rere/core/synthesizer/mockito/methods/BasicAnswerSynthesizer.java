@@ -23,6 +23,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import javax.lang.model.element.Modifier;
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -108,7 +109,7 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
         for (Integer i: rootMethodCall.getEndResult().keySet()) {
             Object arr = rootMethodCall.getEndResult().get(i);
             try {
-                String s = new PrimitiveSerde().serialize(arr);
+                String s = new PrimitiveSerde().serialize((Serializable) arr);
                 String varName = "array" + arrayId;
                 methodBuilder.addStatement("Object $L = new $T().deserialize(\"$L\")", varName,
                         PrimitiveSerde.class, s);

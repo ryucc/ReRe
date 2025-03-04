@@ -31,7 +31,7 @@ repositories {
 }
 
 group = 'io.github.ryucc'
-version = '0.0.5'
+version = '0.0.6'
 
 publishing {
     publications {
@@ -47,7 +47,7 @@ publishing {
                 }
             }
             pom {
-                name = 'ReRe-0.0.5'
+                name = 'ReRe-' + version
                 description = 'A concise description of my library'
                 url = 'https://github.com/ryucc/ReRe'
                 licenses {
