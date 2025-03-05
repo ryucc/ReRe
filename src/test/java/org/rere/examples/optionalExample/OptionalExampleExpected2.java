@@ -67,7 +67,7 @@ public class OptionalExampleExpected2 {
 
   public static OptionalExample2.DiceRoller environmentNode0() throws Exception {
     OptionalExample2.DiceRoller mockObject = mock(OptionalExample2.DiceRoller.class);
-    doAnswer(getAnswer0()).doAnswer(getAnswer1()).doAnswer(getAnswer2()).doAnswer(getAnswer3()).doAnswer(getAnswer4()).when(mockObject).roll(any());
+    doAnswer(getAnswer0()).doAnswer(getAnswer1()).doAnswer(getAnswer2()).doAnswer(getAnswer3()).doAnswer(getAnswer4()).when(mockObject).roll(any(Optional.class));
     return mockObject;
   }
 

@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.rere.core.synthesizer.mockito.CodeUtils.declareMock;
-import static org.rere.core.synthesizer.mockito.CodeUtils.generateDo;
+import static org.rere.core.synthesizer.mockito.CodeUtils.generateWhen;
 import static org.rere.core.synthesizer.mockito.CodeUtils.groupMethods;
 
 public class ReturnOnlyNodeSynthesizer implements EnvironmentNodeSynthesizer {
@@ -48,7 +48,7 @@ public class ReturnOnlyNodeSynthesizer implements EnvironmentNodeSynthesizer {
                 String doAnswer = String.format("doReturn(%s)", returnName);
                 answerList.add(doAnswer);
             }
-            generateDo(methodBuilder, answerList, methodGroup.signature());
+            generateWhen(methodBuilder, answerList, methodGroup.signature());
         }
         if (root.isTerminal()) {
             methodBuilder.addStatement("return " + root.getValue());

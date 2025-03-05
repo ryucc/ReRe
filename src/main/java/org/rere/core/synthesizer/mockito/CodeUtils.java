@@ -110,14 +110,17 @@ public class CodeUtils {
         methodBuilder.addStatement("$T $L = mock($T.class)", clazz, name, clazz);
     }
 
-    public static void generateDo(MethodSpec.Builder methodBuilder, List<String> answerList, Signature signature) {
+    public static void generateWhen(MethodSpec.Builder methodBuilder, List<String> answerList, Signature signature) {
         String ans = String.join(".", answerList);
 
-        String paramString = CodeUtils.generateParamString(signature.getParamTypes());
-        methodBuilder.addStatement("$L.when(mockObject).$L($L)", ans, signature.getMethodName(), paramString);
+        String paramFormatString = CodeUtils.generateParamString(signature.getParamTypes());
+        Object[] paramClassArgs = signature.getParamTypes().stream().filter(x -> !ClassUtils.isStringOrPrimitive(x))
+                .collect(Collectors.toList()).stream().toArray();
+        methodBuilder.addCode("$L.when(mockObject).$L", ans, signature.getMethodName());
+        methodBuilder.addStatement(paramFormatString, paramClassArgs);
     }
 
-    public static String generateParamString(List<Type> paramTypes) {
+    public static String generateParamString(List<Class<?>> paramTypes) {
         List<String> params = new ArrayList<>();
         for (Type clazz : paramTypes) {
             if (clazz.equals(Integer.class) || clazz.equals(int.class)) {
@@ -139,11 +142,11 @@ public class CodeUtils {
             } else if (clazz.equals(String.class)) {
                 params.add("anyString()");
             } else {
-                params.add("any()");
+                params.add("any($T.class)");
             }
         }
 
-        return String.join(", ", params);
+        return "(" + String.join(", ", params) + ")";
     }
 
     private static class ReReParamType implements ParameterizedType {

@@ -66,7 +66,7 @@ public class ArrayExampleExpected2 {
 
   public static ArrayExample2.DiceRoller environmentNode0() throws Exception {
     ArrayExample2.DiceRoller mockObject = mock(ArrayExample2.DiceRoller.class);
-    doAnswer(getAnswer0()).doAnswer(getAnswer1()).doAnswer(getAnswer2()).doAnswer(getAnswer3()).doAnswer(getAnswer4()).when(mockObject).roll(any());
+    doAnswer(getAnswer0()).doAnswer(getAnswer1()).doAnswer(getAnswer2()).doAnswer(getAnswer3()).doAnswer(getAnswer4()).when(mockObject).roll(any(ArrayExample2.Dice[].class));
     return mockObject;
   }
 

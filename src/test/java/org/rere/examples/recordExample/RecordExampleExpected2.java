@@ -66,7 +66,7 @@ public class RecordExampleExpected2 {
 
   public static RecordExample2.DiceRoller environmentNode0() throws Exception {
     RecordExample2.DiceRoller mockObject = mock(RecordExample2.DiceRoller.class);
-    doAnswer(getAnswer0()).doAnswer(getAnswer1()).doAnswer(getAnswer2()).doAnswer(getAnswer3()).doAnswer(getAnswer4()).when(mockObject).roll(any());
+    doAnswer(getAnswer0()).doAnswer(getAnswer1()).doAnswer(getAnswer2()).doAnswer(getAnswer3()).doAnswer(getAnswer4()).when(mockObject).roll(any(RecordExample2.TwoDice.class));
     return mockObject;
   }
 

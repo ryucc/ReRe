@@ -27,7 +27,7 @@ public class IdentityFunctionExampleExpected {
 
   public static IdentityFunctionExample.IdentityFunction environmentNode0() throws Exception {
     IdentityFunctionExample.IdentityFunction mockObject = mock(IdentityFunctionExample.IdentityFunction.class);
-    doAnswer(getAnswer0()).when(mockObject).call(any());
+    doAnswer(getAnswer0()).when(mockObject).call(any(Object.class));
     return mockObject;
   }
 
