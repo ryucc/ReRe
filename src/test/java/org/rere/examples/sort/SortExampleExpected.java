@@ -15,6 +15,7 @@ import java.lang.Exception;
 import java.lang.RuntimeException;
 import java.lang.Void;
 import java.util.ArrayList;
+import java.util.List;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.rere.core.serde.PrimitiveSerde;
@@ -40,7 +41,7 @@ public class SortExampleExpected {
 
   public static SortExample.BubbleSorter environmentNode0() throws Exception {
     SortExample.BubbleSorter mockObject = mock(SortExample.BubbleSorter.class);
-    doAnswer(getAnswer0()).when(mockObject).sort(any());
+    doAnswer(getAnswer0()).when(mockObject).sort(any(List.class));
     return mockObject;
   }
 

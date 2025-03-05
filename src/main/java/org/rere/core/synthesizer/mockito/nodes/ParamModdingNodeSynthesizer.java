@@ -32,7 +32,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.rere.core.synthesizer.mockito.CodeUtils.declareMock;
-import static org.rere.core.synthesizer.mockito.CodeUtils.generateDo;
+import static org.rere.core.synthesizer.mockito.CodeUtils.generateWhen;
 import static org.rere.core.synthesizer.mockito.CodeUtils.getNonFinalBestType;
 import static org.rere.core.synthesizer.mockito.CodeUtils.groupMethods;
 
@@ -245,7 +245,7 @@ public class ParamModdingNodeSynthesizer implements EnvironmentNodeSynthesizer {
                     answerList.add(doAnswer);
                 }
             }
-            generateDo(methodBuilder, answerList, methodGroup.signature());
+            generateWhen(methodBuilder, answerList, methodGroup.signature());
         }
         if (root.isTerminal()) {
             methodBuilder.addStatement("return " + root.getValue());

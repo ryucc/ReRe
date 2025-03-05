@@ -101,7 +101,7 @@ public class FinalTracingExampleExpected {
 
   public static FinalTracingExample.DiceRoller environmentNode0() throws Exception {
     FinalTracingExample.DiceRoller mockObject = mock(FinalTracingExample.DiceRoller.class);
-    doAnswer(getAnswer0()).doAnswer(getAnswer1()).doAnswer(getAnswer2()).doAnswer(getAnswer3()).doAnswer(getAnswer4()).when(mockObject).roll(any(), any());
+    doAnswer(getAnswer0()).doAnswer(getAnswer1()).doAnswer(getAnswer2()).doAnswer(getAnswer3()).doAnswer(getAnswer4()).when(mockObject).roll(any(FinalTracingExample.Dice.class), any(FinalTracingExample.MyInt.class));
     return mockObject;
   }
 

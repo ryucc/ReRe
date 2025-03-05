@@ -15,14 +15,14 @@ public class Signature implements Serializable {
     private final String returnType;
     private final Type returnClass;
     private final String methodName;
-    private final List<Type> paramTypes;
+    private final List<Class<?>> paramTypes;
     private List<Class<?>> paramClasses;
 
     public Signature(Method method) {
         this.methodName = method.getName();
         this.returnType = method.getReturnType().getName();
         this.returnClass = method.getGenericReturnType();
-        this.paramTypes = Arrays.asList(method.getGenericParameterTypes());
+        this.paramTypes = Arrays.asList(method.getParameterTypes());
     }
 
     public Type getReturnClass() {
@@ -45,7 +45,7 @@ public class Signature implements Serializable {
         return methodName;
     }
 
-    public List<Type> getParamTypes() {
+    public List<Class<?>> getParamTypes() {
         return paramTypes;
     }
 
