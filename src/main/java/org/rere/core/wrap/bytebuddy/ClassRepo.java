@@ -16,6 +16,7 @@ import org.rere.core.listener.exceptions.SubclassingException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class ClassRepo {
         this.interceptor = interceptor;
         this.classCache = new HashMap<>();
         this.fields = fields;
-        interfaces = List.of();
+        interfaces = new ArrayList<>();
     }
 
 

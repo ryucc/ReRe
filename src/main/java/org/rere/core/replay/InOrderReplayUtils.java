@@ -9,11 +9,12 @@ import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.wrap.bytebuddy.ClassRepo;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class InOrderReplayUtils {
     public static EmptyObjectFactory getFactory(InOrderReplayListener listener) {
-        ClassRepo classRepo = new ClassRepo(listener, Map.of());
+        ClassRepo classRepo = new ClassRepo(listener, new HashMap<>());
         return null;
     }
 

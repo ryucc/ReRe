@@ -165,7 +165,7 @@ public class TopoOrderObjectWrapper<NODE extends ReReObjectNode<NODE>, MANAGER e
                 List<Object> wrappedComponents = components.stream().map(toWrapped::get).collect(Collectors.toList());
                 wrapped = ObjectInitializer.initRecord(cur.getClass(), wrappedComponents);
             } else if (cur instanceof Optional) {
-                if(((Optional<?>) cur).isEmpty()) {
+                if(!((Optional<?>) cur).isPresent()) {
                     wrapped = cur;
                 } else {
                     Object inner = ((Optional<?>) cur).get();
