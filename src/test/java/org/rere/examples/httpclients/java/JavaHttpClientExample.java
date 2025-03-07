@@ -5,6 +5,7 @@
 
 package org.rere.examples.httpclients.java;
 
+import org.junit.jupiter.api.Test;
 import org.rere.api.ReRe;
 import org.rere.api.ReReSettings;
 

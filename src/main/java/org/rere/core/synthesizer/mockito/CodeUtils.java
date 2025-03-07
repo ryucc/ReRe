@@ -35,14 +35,26 @@ public class CodeUtils {
         }
     }
     public static boolean getVisibility(String packageName, Class<?> clazz) {
+        // check module
+
+        Package pack = clazz.getPackage();
+        Module mod = clazz.getModule();
+        if(pack != null && mod != null) {
+            boolean notExported = !mod.isExported(pack.getName());
+            boolean notOpen = !mod.isOpen(pack.getName());
+            if(notExported && notOpen) {
+                return false;
+            }
+        }
+
+        // check access
         int modifiers = clazz.getModifiers();
         if (java.lang.reflect.Modifier.isPublic(modifiers)) {
             return true;
         } else if (java.lang.reflect.Modifier.isPrivate(modifiers)) {
             return false;
         }
-        Package pack = clazz.getPackage();
-        return pack.getName().equals(packageName);
+        return pack == null || pack.getName().equals(packageName);
     }
     public static Type getVisibleBestType(String packageName, ReReObjectNode<?> node) {
         if (node.getRuntimeClass().equals(Optional.class)) {

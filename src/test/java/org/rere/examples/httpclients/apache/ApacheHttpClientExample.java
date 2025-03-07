@@ -20,7 +20,7 @@ import java.io.IOException;
 
 public class ApacheHttpClientExample {
     public static void main(String[] args) throws IOException, InterruptedException {
-        ReRe reRe = new ReRe(new ReReSettings().withParameterModding(true));
+        ReRe reRe = new ReRe(new ReReSettings().withParameterModding(false));
         CloseableHttpClient httpclient = HttpClients.createDefault();
         CloseableHttpClient rereClient = reRe.createSpiedObject(httpclient, CloseableHttpClient.class);
         HttpGet httpGet = new HttpGet("https://mit-license.org");

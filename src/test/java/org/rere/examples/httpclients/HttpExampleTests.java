@@ -63,7 +63,7 @@ public class HttpExampleTests {
         String[] args = {};
         JavaHttpClientExample.main(args);
         Path output = Path.of("src/test/java/org/rere/examples/httpclients/java/JavaHttpClientExampleExpected.java");
-        if (!RESET_TESTS) {
+        if (RESET_TESTS) {
             Files.writeString(output, outContent.toString());
             return;
         }
