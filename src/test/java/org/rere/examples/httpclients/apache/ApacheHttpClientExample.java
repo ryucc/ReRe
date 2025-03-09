@@ -24,22 +24,22 @@ public class ApacheHttpClientExample {
         CloseableHttpClient httpclient = HttpClients.createDefault();
         CloseableHttpClient rereClient = reRe.createSpiedObject(httpclient, CloseableHttpClient.class);
         HttpGet httpGet = new HttpGet("https://mit-license.org");
-        CloseableHttpResponse response1 = rereClient.execute(httpGet);
+        CloseableHttpResponse response = rereClient.execute(httpGet);
 
         try {
             System.out.println("/*");
-            System.out.println(response1.getStatusLine());
-            HttpEntity entity1 = response1.getEntity();
+            System.out.println(response.getStatusLine());
+            HttpEntity entity1 = response.getEntity();
             // do something useful with the response body
             // and ensure it is fully consumed
 
-            StatusLine statusLine = response1.getStatusLine();
+            StatusLine statusLine = response.getStatusLine();
             System.out.println(statusLine.getStatusCode() + " " + statusLine.getReasonPhrase());
             System.out.println(EntityUtils.toString(entity1));
 
             System.out.println("*/");
         } finally {
-            response1.close();
+            response.close();
         }
         System.out.println(reRe.exportMockito("org.rere.examples.httpclients.apache", "create", "ApacheHttpClientExampleExpected"));
     }

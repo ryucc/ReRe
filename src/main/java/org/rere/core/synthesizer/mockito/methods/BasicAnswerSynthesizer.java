@@ -111,7 +111,7 @@ public class BasicAnswerSynthesizer implements EnvironmentAnswerSynthesizer {
             try {
                 String s = new PrimitiveSerde().serialize((Serializable) arr);
                 String varName = "array" + arrayId;
-                methodBuilder.addStatement("Object $L = new $T().deserialize(\"$L\")", varName,
+                methodBuilder.addStatement("$T $L = new $T().deserialize(\"$L\")", arr.getClass(), varName,
                         PrimitiveSerde.class, s);
                 methodBuilder.addStatement("$T.shallowCopyIntoArray($L, invocation.getArgument($L))", ClassUtils.class,
                         varName, i);
