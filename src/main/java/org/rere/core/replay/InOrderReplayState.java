@@ -5,7 +5,7 @@
 
 package org.rere.core.replay;
 
-import org.rere.core.data.objects.LocalSymbol;
+import org.rere.core.data.objects.reference.LocalSymbol;
 
 import java.util.HashMap;
 import java.util.HashSet;

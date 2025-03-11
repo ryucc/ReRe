@@ -9,7 +9,7 @@ import org.rere.api.ReReSettings;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.interceptor.ReReMethodInterceptor;
 import org.rere.core.listener.utils.ClassUtils;
-import org.rere.core.listener.utils.EnvironmentObjectSpy;
+import org.rere.core.listener.spies.EnvironmentObjectSpy;
 import org.rere.core.serde.ReReSerde;
 import org.rere.core.wrap.SingleNodeWrapper;
 import org.rere.core.wrap.mockito.MockitoSingleNodeWrapper;
@@ -60,7 +60,7 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
         Object wrapped;
         if (customSerde.containsKey(original.getClass())) {
             try {
-                Class<? extends ReReSerde> serializer = customSerde.get(original.getClass());
+                Class<? extends ReReSerde<?>> serializer = customSerde.get(original.getClass());
                 ReReSerde reReSerde = serializer.getConstructor().newInstance();
                 node.setValue(reReSerde.serialize(original));
                 node.setSerialized(true);

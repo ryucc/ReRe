@@ -5,6 +5,7 @@
 
 package org.rere.core.listener.graph.returnOnly;
 
+import org.rere.api.ReRe;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.interceptor.EnvironmentObjectListener;
 import org.junit.jupiter.api.Test;
@@ -34,14 +35,15 @@ public class EnvironmentObjectListenerPrivateTests {
     public void test() {
 
         PrivateDice dice = new PrivateDice();
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        PrivateDice wrappedDice = environmentObjectListener.createRoot(dice, PrivateDice.class);
+
+        ReRe reRe = new ReRe();
+        PrivateDice wrappedDice = reRe.createSpiedObject(dice, PrivateDice.class);
 
         for (int i = 1; i <= 5; i++) {
             wrappedDice.roll();
         }
 
-        EnvironmentNode root = environmentObjectListener.getRoot();
+        EnvironmentNode root = reRe.getReReRecordData().roots().get(0);
         assertThat(root.getRuntimeClass()).isEqualTo(PrivateDice.class);
         assertThat(root.getMethodCalls()).hasSize(5)
                 .extracting(EnvironmentMethodCall::getResult)

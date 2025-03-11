@@ -3,19 +3,21 @@
  * This program is made available under the terms of the MIT License.
  */
 
-package org.rere.core.listener.interceptor;
+package org.rere.core.replay;
 
 import org.rere.api.ReReSettings;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.methods.MethodResult;
 import org.rere.core.data.objects.EnvironmentNode;
-import org.rere.core.data.objects.reference.LocalSymbol;
 import org.rere.core.data.objects.UserNode;
+import org.rere.core.data.objects.reference.LocalSymbol;
 import org.rere.core.listener.EnvironmentNodeManager;
 import org.rere.core.listener.UserNodeManager;
-import org.rere.core.listener.utils.ClassUtils;
+import org.rere.core.listener.interceptor.ReReMethodInterceptor;
+import org.rere.core.listener.interceptor.UserObjectListener;
 import org.rere.core.listener.spies.EnvironmentObjectSpy;
 import org.rere.core.listener.spies.UserObjectSpy;
+import org.rere.core.listener.utils.ClassUtils;
 import org.rere.core.wrap.EnvironmentObjectWrapper;
 import org.rere.core.wrap.ReReWrapResult;
 import org.rere.core.wrap.TopoOrderObjectWrapper;
@@ -26,14 +28,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /*
 TODO: better type inference
  */
-public class EnvironmentObjectListener implements ReReMethodInterceptor<EnvironmentNode> {
+public class ReplayObjectListener implements ReReMethodInterceptor<EnvironmentNode> {
     private final List<EnvironmentNode> roots;
 
     private EnvironmentObjectWrapper environmentObjectWrapper;
@@ -42,10 +44,10 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
     private final boolean parameterModding;
     private final Set<Class<?>> skipModClasses;
 
-    public EnvironmentObjectListener() {
+    public ReplayObjectListener() {
         this(new ReReSettings());
     }
-    public EnvironmentObjectListener(ReReSettings reReSettings) {
+    public ReplayObjectListener(ReReSettings reReSettings) {
         roots = new ArrayList<>();
         environmentObjectWrapper = new EnvironmentObjectWrapper(new EnvironmentNodeManager(this, reReSettings));
         UserObjectListener userObjectListener = new UserObjectListener(environmentObjectWrapper);
@@ -58,6 +60,17 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
     public void setEnvironmentObjectWrapper(EnvironmentObjectWrapper environmentObjectWrapper) {
         this.environmentObjectWrapper = environmentObjectWrapper;
     }
+
+    public EnvironmentNode getRoot() {
+        return roots.get(0);
+    }
+
+    public <T> T createRoot(Object original, Class<T> targetClass) {
+        ReReWrapResult<T, EnvironmentNode> result = environmentObjectWrapper.createRoot(original, targetClass);
+        roots.add(result.node());
+        return result.wrapped();
+    }
+
 
     public Object interceptInterface(Object original,
                                      Method orignalMethod,

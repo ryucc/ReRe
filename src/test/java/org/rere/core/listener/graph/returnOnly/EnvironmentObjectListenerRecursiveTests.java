@@ -5,6 +5,7 @@
 
 package org.rere.core.listener.graph.returnOnly;
 
+import org.rere.api.ReRe;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.interceptor.EnvironmentObjectListener;
 import org.rere.core.serde.PrimitiveSerde;
@@ -21,11 +22,12 @@ public class EnvironmentObjectListenerRecursiveTests {
     public void test() throws Exception {
         HttpClient client = new HttpClient();
 
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        HttpClient wrappedClient = environmentObjectListener.createRoot(client, HttpClient.class);
+
+        ReRe reRe = new ReRe();
+        HttpClient wrappedClient = reRe.createSpiedObject(client, HttpClient.class);
         String s = wrappedClient.get().getBody();
 
-        EnvironmentNode root = environmentObjectListener.getRoot();
+        EnvironmentNode root = reRe.getReReRecordData().roots().get(0);
         EnvironmentNode expectedRoot = EnvironmentNode.ofInternal(HttpClient.class, HttpClient.class);
         EnvironmentNode reponseEnvironmentNode = EnvironmentNode.ofInternal(HttpResponse.class, HttpResponse.class);
         EnvironmentMethodCall getCall = new EnvironmentMethodCall(HttpClient.class.getMethod("get"));

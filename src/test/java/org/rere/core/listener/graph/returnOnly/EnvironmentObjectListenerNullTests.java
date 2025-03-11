@@ -5,6 +5,7 @@
 
 package org.rere.core.listener.graph.returnOnly;
 
+import org.rere.api.ReRe;
 import org.rere.api.ReReSettings;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.interceptor.EnvironmentObjectListener;
@@ -40,12 +41,12 @@ public class EnvironmentObjectListenerNullTests {
     public void testNull() {
 
         NullDice dice = new NullDice();
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener(new ReReSettings());
-        NullDice wrappedDice = environmentObjectListener.createRoot(dice, NullDice.class);
+        ReRe reRe = new ReRe();
+        NullDice wrappedDice = reRe.createSpiedObject(dice, NullDice.class);
 
         wrappedDice.rollNull();
 
-        EnvironmentNode root = environmentObjectListener.getRoot();
+        EnvironmentNode root = reRe.getReReRecordData().roots().getFirst();
         assertThat(root.getRuntimeClass()).isEqualTo(NullDice.class);
         assertThat(root.getMethodCalls()).hasSize(1)
                 .extracting(EnvironmentMethodCall::getResult)
@@ -59,12 +60,12 @@ public class EnvironmentObjectListenerNullTests {
     public void testVoid() throws Exception {
 
         NullDice dice = new NullDice();
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        NullDice wrappedDice = environmentObjectListener.createRoot(dice, NullDice.class);
+        ReRe reRe = new ReRe();
+        NullDice wrappedDice = reRe.createSpiedObject(dice, NullDice.class);
 
         wrappedDice.rollVoid();
 
-        EnvironmentNode root = environmentObjectListener.getRoot();
+        EnvironmentNode root = reRe.getReReRecordData().roots().getFirst();
         assertThat(root.getRuntimeClass()).isEqualTo(NullDice.class);
         assertThat(root.getMethodCalls()).hasSize(1)
                 .extracting(EnvironmentMethodCall::getResult)

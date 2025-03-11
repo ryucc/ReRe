@@ -14,7 +14,7 @@ import org.rere.core.wrap.bytebuddy.ClassRepo;
 import org.rere.core.listener.ObjectInitializer;
 import org.rere.core.listener.exceptions.InitializationException;
 import org.rere.core.listener.exceptions.SubclassingException;
-import org.rere.core.listener.utils.ObjectSpy;
+import org.rere.core.listener.spies.ObjectSpy;
 import org.rere.core.replay.spies.InOrderReplaySpy;
 
 import java.lang.reflect.Method;

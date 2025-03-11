@@ -6,7 +6,7 @@
 package org.rere.core.data.methods;
 
 import org.rere.core.data.objects.EnvironmentNode;
-import org.rere.core.data.objects.LocalSymbol;
+import org.rere.core.data.objects.reference.LocalSymbol;
 import org.rere.core.data.objects.UserNode;
 
 import java.io.Serializable;

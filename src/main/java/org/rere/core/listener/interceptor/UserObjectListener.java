@@ -7,32 +7,20 @@ package org.rere.core.listener.interceptor;
 
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.methods.UserMethodCall;
-import org.rere.core.data.objects.ArrayMember;
 import org.rere.core.data.objects.EnvironmentNode;
-import org.rere.core.data.objects.LocalSymbol;
-import org.rere.core.data.objects.RecordMember;
+import org.rere.core.data.objects.reference.LocalSymbol;
 import org.rere.core.data.objects.UserNode;
-import org.rere.core.listener.UserNodeManager;
-import org.rere.core.listener.utils.ClassUtils;
-import org.rere.core.listener.utils.EnvironmentObjectSpy;
-import org.rere.core.listener.utils.UserObjectSpy;
+import org.rere.core.listener.spies.EnvironmentObjectSpy;
+import org.rere.core.listener.spies.UserObjectSpy;
 import org.rere.core.wrap.EnvironmentObjectWrapper;
-import org.rere.core.wrap.ReReEnvironmentObjectWrapper;
 import org.rere.core.wrap.ReReWrapResult;
-import org.rere.core.wrap.TopoOrderObjectWrapper;
 import org.rere.core.wrap.mockito.UserObjectWrapper;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Queue;
-import java.util.Set;
 
-import java.net.http.HttpHeaders;
 public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
 
     private final EnvironmentObjectWrapper environmentObjectWrapper;

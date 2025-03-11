@@ -3,10 +3,8 @@
  * This program is made available under the terms of the MIT License.
  */
 
-package org.rere.core.listener;
+package org.rere.core.data.objects.reference;
 
-public class ListenerOptions {
-    // Expand Throwable
-    boolean prehashStrings;
-
+public interface Member {
+    String getPath();
 }

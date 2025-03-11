@@ -8,7 +8,7 @@ package org.rere.testData;
 import org.rere.api.ReRe;
 import org.rere.api.ReReSettings;
 import org.rere.core.data.methods.EnvironmentMethodCall;
-import org.rere.core.data.objects.LocalSymbol;
+import org.rere.core.data.objects.reference.LocalSymbol;
 import org.rere.core.data.methods.MethodResult;
 import org.rere.core.data.methods.UserMethodCall;
 import org.rere.core.data.objects.EnvironmentNode;

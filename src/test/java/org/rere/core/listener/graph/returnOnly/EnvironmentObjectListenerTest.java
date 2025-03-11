@@ -6,6 +6,7 @@
 package org.rere.core.listener.graph.returnOnly;
 
 import org.assertj.core.api.Assertions;
+import org.rere.api.ReRe;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.interceptor.EnvironmentObjectListener;
 import org.junit.jupiter.api.Test;
@@ -16,15 +17,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class EnvironmentObjectListenerTest {
     @Test
     public void test() {
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        MyObjectCreatorFactory wrapped = environmentObjectListener.createRoot(new MyObjectCreatorFactory(), MyObjectCreatorFactory.class);
+        ReRe reRe = new ReRe();
+        MyObjectCreatorFactory wrapped = reRe.createSpiedObject(new MyObjectCreatorFactory(), MyObjectCreatorFactory.class);
         MyObjectCreator creator = wrapped.build();
         MyObject myObject = creator.create();
 
         int id = myObject.getId();
         String value = myObject.getValue();
 
-        EnvironmentNode root = environmentObjectListener.getRoot();
+        EnvironmentNode root = reRe.getReReRecordData().roots().getFirst();
         assertThat(root.isTerminal()).isFalse();
         assertThat(root.getRuntimeClass()).isEqualTo(MyObjectCreatorFactory.class);
         Assertions.assertThat(root.getMethodCalls()).hasSize(1);

@@ -8,7 +8,7 @@ package org.rere.core.listener;
 import org.rere.core.data.objects.UserNode;
 import org.rere.core.listener.interceptor.ReReMethodInterceptor;
 import org.rere.core.listener.utils.ClassUtils;
-import org.rere.core.listener.utils.UserObjectSpy;
+import org.rere.core.listener.spies.UserObjectSpy;
 import org.rere.core.wrap.mockito.MockitoSingleNodeWrapper;
 import org.rere.core.wrap.SingleNodeWrapper;
 

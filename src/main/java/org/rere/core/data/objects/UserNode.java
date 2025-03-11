@@ -6,6 +6,7 @@
 package org.rere.core.data.objects;
 
 import org.rere.core.data.methods.EnvironmentMethodCall;
+import org.rere.core.data.objects.reference.LocalSymbol;
 
 import java.util.ArrayList;
 import java.util.List;

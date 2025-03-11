@@ -3,7 +3,7 @@
  * This program is made available under the terms of the MIT License.
  */
 
-package org.rere.core.listener.utils;
+package org.rere.core.listener.spies;
 
 public interface ObjectSpy {
     void setReReOriginObject(Object original);

@@ -5,6 +5,7 @@
 
 package org.rere.examples;
 
+import org.rere.api.ReRe;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.interceptor.EnvironmentObjectListener;
 import org.rere.core.synthesizer.mockito.MockitoSynthesizer;
@@ -17,13 +18,13 @@ public class UserNodeExample {
         List<Integer> arr = new ArrayList<>(List.of(3, 1));
         ObjectModifier objectModifier = new ObjectModifier();
 
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener();
-        ObjectModifier wrapped = environmentObjectListener.createRoot(objectModifier, ObjectModifier.class);
+        ReRe reRe = new ReRe();
+        ObjectModifier wrapped = reRe.createSpiedObject(objectModifier, ObjectModifier.class);
         MyClass obj = new MyClass();
         MyClass[] myClasses = {obj};
         MyRecord myRecord = new MyRecord(myClasses);
         wrapped.modify(myRecord);
-        EnvironmentNode node = environmentObjectListener.getRoot();
+        EnvironmentNode node = reRe.getReReRecordData().roots().get(0);
         System.out.println(new MockitoSynthesizer("pack", "method").generateMockito(node, "create"));
     }
 

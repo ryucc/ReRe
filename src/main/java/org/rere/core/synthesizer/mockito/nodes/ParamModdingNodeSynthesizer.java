@@ -10,7 +10,7 @@ import com.squareup.javapoet.TypeSpec;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.methods.MethodResult;
 import org.rere.core.data.objects.EnvironmentNode;
-import org.rere.core.data.objects.LocalSymbol;
+import org.rere.core.data.objects.reference.LocalSymbol;
 import org.rere.core.listener.utils.ClassUtils;
 import org.rere.core.serde.PrimitiveSerde;
 import org.rere.core.synthesizer.mockito.CodeUtils;

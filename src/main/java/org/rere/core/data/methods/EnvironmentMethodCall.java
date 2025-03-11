@@ -6,7 +6,7 @@
 package org.rere.core.data.methods;
 
 import org.rere.core.data.objects.EnvironmentNode;
-import org.rere.core.data.objects.LocalSymbol;
+import org.rere.core.data.objects.reference.LocalSymbol;
 import org.rere.core.data.objects.UserNode;
 
 import java.io.Serializable;
@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class EnvironmentMethodCall implements Serializable {
 
@@ -33,11 +32,11 @@ public class EnvironmentMethodCall implements Serializable {
     private transient final List<Object> failedUserObjects;
     private transient final List<UserNode> failedUserNodes;
     // Dynamic
-    private final UUID uuid;
     private final List<UserMethodCall> userMethodCalls;
     private List<Class<?>> paramRuntimeClasses;
     private EnvironmentNode mockReturn;
-    /* TODO later: the return values need to be stored on the node.
+    /* TODO later: stateful object support
+        the return values need to be stored on the node.
         In case user objects are stored, then modified later across method calls.
         Example use case:
         envObj.saveObject(obj);
@@ -52,7 +51,6 @@ public class EnvironmentMethodCall implements Serializable {
     public EnvironmentMethodCall(Method method) {
         this.failedUserObjects = new ArrayList<>();
         this.failedUserNodes = new ArrayList<>();
-        this.uuid = UUID.randomUUID();
         this.signature = new Signature(method);
         this.userMethodCalls = new ArrayList<>();
         this.parameterNodes = new ArrayList<>();
@@ -75,16 +73,8 @@ public class EnvironmentMethodCall implements Serializable {
         return failedUserNodes;
     }
 
-    public List<Class<?>> getParamRuntimeClasses() {
-        return paramRuntimeClasses;
-    }
-
     public void setParamRuntimeClasses(List<Class<?>> paramClasses) {
         this.paramRuntimeClasses = paramClasses;
-    }
-
-    public List<Class<?>> getParamRepresentingClasses() {
-        return this.signature.getParamClasses();
     }
 
     public void setParamRepresentingClasses(List<Class<?>> paramClasses) {

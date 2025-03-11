@@ -6,7 +6,7 @@
 package org.rere.core.replay.spies;
 
 import org.rere.core.data.objects.EnvironmentNode;
-import org.rere.core.listener.utils.ObjectSpy;
+import org.rere.core.listener.spies.ObjectSpy;
 
 public interface InOrderReplaySpy extends ObjectSpy {
     EnvironmentNode getReReNodePointer();

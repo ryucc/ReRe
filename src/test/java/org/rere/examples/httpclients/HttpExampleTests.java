@@ -44,7 +44,7 @@ public class HttpExampleTests {
     }
 
     @Test
-    //@Disabled("Google content changes everytime")
+    @Disabled("Google content changes everytime")
     public void testApacheExample() throws Exception {
         String[] args = {};
         ApacheHttpClientExample.main(args);
