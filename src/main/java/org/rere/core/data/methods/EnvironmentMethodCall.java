@@ -33,7 +33,6 @@ public class EnvironmentMethodCall implements Serializable {
     private transient final List<UserNode> failedUserNodes;
     // Dynamic
     private final List<UserMethodCall> userMethodCalls;
-    private List<Class<?>> paramRuntimeClasses;
     private EnvironmentNode mockReturn;
     /* TODO later: stateful object support
         the return values need to be stored on the node.
@@ -61,20 +60,12 @@ public class EnvironmentMethodCall implements Serializable {
         return endResult;
     }
 
-    public void setEndResult(Map<Integer, Object> endResult) {
-        this.endResult = endResult;
-    }
-
     public List<Object> getFailedUserObjects() {
         return failedUserObjects;
     }
 
     public List<UserNode> getFailedUserNodes() {
         return failedUserNodes;
-    }
-
-    public void setParamRuntimeClasses(List<Class<?>> paramClasses) {
-        this.paramRuntimeClasses = paramClasses;
     }
 
     public void setParamRepresentingClasses(List<Class<?>> paramClasses) {

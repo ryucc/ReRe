@@ -8,6 +8,7 @@ package org.rere.core.replay;
 import org.rere.api.ReReSettings;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.methods.MethodResult;
+import org.rere.core.data.methods.Signature;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.data.objects.UserNode;
 import org.rere.core.data.objects.reference.LocalSymbol;
@@ -57,137 +58,26 @@ public class ReplayObjectListener implements ReReMethodInterceptor<EnvironmentNo
         skipModClasses = reReSettings.skipMethodTracingClasses();
     }
 
-    public void setEnvironmentObjectWrapper(EnvironmentObjectWrapper environmentObjectWrapper) {
-        this.environmentObjectWrapper = environmentObjectWrapper;
-    }
-
-    public EnvironmentNode getRoot() {
-        return roots.get(0);
-    }
-
-    public <T> T createRoot(Object original, Class<T> targetClass) {
-        ReReWrapResult<T, EnvironmentNode> result = environmentObjectWrapper.createRoot(original, targetClass);
-        roots.add(result.node());
-        return result.wrapped();
-    }
-
-
     public Object interceptInterface(Object original,
                                      Method orignalMethod,
                                      EnvironmentNode sourceNode,
                                      Object[] allArguments) throws Throwable {
-
-        Map<Integer, Object> initialArrays = new HashMap<>();
-        for(int i = 0; i < allArguments.length; i++) {
-            Object arg = allArguments[i];
-            if(arg == null) continue;
-            if(ClassUtils.isPrimitiveArray(arg.getClass())) {
-                Object copy = ClassUtils.deepCopyArray(arg);
-                initialArrays.put(i, copy);
+        List<EnvironmentMethodCall> methodCalls = sourceNode.getMethodCalls();
+        Signature signature = new Signature(orignalMethod);
+        EnvironmentMethodCall target = null;
+        // todo: start from current state
+        for(EnvironmentMethodCall methodCall: methodCalls) {
+            if(signature.equals(methodCall.getSignature())) {
+                target = methodCall;
+                break;
             }
         }
-
-        EnvironmentMethodCall edge = new EnvironmentMethodCall(orignalMethod);
-        Object returnValue;
-
-        Object[] wrappedArguments = new Object[allArguments.length];
-        Class<?>[] argClasses = new Class[allArguments.length];
-        List<UserNode> paramNodes = new ArrayList<>();
-
-        //List<UserNode> params = new ArrayList<>();
-
-        for (int i = 0; i < allArguments.length; i++) {
-            Object cur = allArguments[i];
-            if(!parameterModding){
-                wrappedArguments[i] = cur;
-                continue;
-            }
-            if(cur != null && ClassUtils.isPrimitiveArray(cur.getClass())) {
-                // TODO need to match by reference for return value
-                wrappedArguments[i] = cur;
-                continue;
-            }
-            //Class<?> argClass = orignalMethod.getParameterTypes()[i];
-            Class<?> runtimeClass = cur.getClass();
-            if(skipModClasses.contains(runtimeClass)) {
-                wrappedArguments[i] = cur;
-                continue;
-            }
-            LocalSymbol accessSymbol = new LocalSymbol(LocalSymbol.Source.PARAMETER, i);
-            Class<?> representingClass = orignalMethod.getParameterTypes()[i];
-            ReReWrapResult<?, UserNode> result = userObjectWrapper.createRoot(cur, representingClass, edge, accessSymbol);
-            wrappedArguments[i] = result.wrapped();
-            paramNodes.add(result.node());
-            argClasses[i] = runtimeClass;
-            if(result.node().isFailedNode()) {
-                edge.getFailedUserObjects().add(result.wrapped());
-                edge.getFailedUserNodes().add(result.node());
-            }
-            //params.add(result.userNode());
+        if (target == null) {
+            // pure replay: throw some error
+            // checkpointing: call real object.
+            return null;
         }
 
-        edge.setParameterNodes(paramNodes);
-        edge.setParamRuntimeClasses(Arrays.asList(argClasses));
-        edge.setParamRepresentingClasses(Arrays.asList(orignalMethod.getParameterTypes()));
-
-        try {
-            orignalMethod.setAccessible(true);
-            returnValue = orignalMethod.invoke(original, wrappedArguments);
-        } catch (InvocationTargetException e) {
-            ReReWrapResult<?, EnvironmentNode> result = environmentObjectWrapper.createRoot(e.getTargetException(),
-                    e.getTargetException().getClass());
-            edge.setReturnNode(result.node());
-            edge.setResult(MethodResult.THROW);
-            sourceNode.addMethodCall(edge);
-            throw (Throwable) result.wrapped();
-        } catch (IllegalAccessException e) {
-            // ReRe does not have permissions to invoke the method.
-            // should never happen?
-            throw new RuntimeException(e);
-        }
-        /*
-         *  Record changes to primitive arrays here.
-         *  primitive array changes on throws: skip for now. Maybe todo later.
-         */
-        for(int i = 0; i < allArguments.length; i++) {
-            Object arg = allArguments[i];
-            if(arg == null) continue;
-            if(ClassUtils.isPrimitiveArray(arg.getClass()) &&
-                !ClassUtils.arrayEquals(initialArrays.get(i), arg)) {
-                Object copy = ClassUtils.deepCopyArray(arg);
-                edge.getEndResult().put(i, copy);
-            }
-        }
-
-        edge.setResult(MethodResult.RETURN);
-
-        if (returnValue instanceof UserObjectSpy) {
-            UserNode returnedUserNode = ((UserObjectSpy) returnValue).getReReUserNode();
-            LocalSymbol symbol = returnedUserNode.getSymbol();
-            edge.setReturnSymbol(symbol);
-            returnValue = ((UserObjectSpy) returnValue).getReReOriginObject();
-        } else if (returnValue instanceof EnvironmentObjectSpy) {
-            edge.setReturnSymbol(new LocalSymbol(LocalSymbol.Source.LOCAL_ENV, 0));
-            returnValue = ((EnvironmentObjectSpy) returnValue).getReReOriginObject();
-            // TODO: wrap into userNode?
-        } else {
-            edge.setReturnSymbol(new LocalSymbol(LocalSymbol.Source.LOCAL_ENV, 0));
-        }
-
-        /*
-            User objects are wrapped here. At code synthesis, if return value only, return the mock.
-            Else return the reference.
-         */
-
-        // Due to type erasure
-        Class<?> representingReturnType = orignalMethod.getReturnType();
-
-        ReReWrapResult<?, EnvironmentNode> result = environmentObjectWrapper.createRoot(returnValue, representingReturnType);
-        edge.setReturnNode(result.node());
-        edge.setReturnClass(representingReturnType);
-        edge.setResult(MethodResult.RETURN);
-        sourceNode.addMethodCall(edge);
-
-        return result.wrapped();
+        Object result = unwrap(target.getDest());
     }
 }

@@ -41,10 +41,6 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
 
     private final boolean parameterModding;
     private final Set<Class<?>> skipModClasses;
-
-    public EnvironmentObjectListener() {
-        this(new ReReSettings());
-    }
     public EnvironmentObjectListener(ReReSettings reReSettings) {
         roots = new ArrayList<>();
         environmentObjectWrapper = new EnvironmentObjectWrapper(new EnvironmentNodeManager(this, reReSettings));
@@ -114,7 +110,6 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
         }
 
         edge.setParameterNodes(paramNodes);
-        edge.setParamRuntimeClasses(Arrays.asList(argClasses));
         edge.setParamRepresentingClasses(Arrays.asList(orignalMethod.getParameterTypes()));
 
         try {

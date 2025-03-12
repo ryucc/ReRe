@@ -104,7 +104,6 @@ public class MagicNumbersSimple {
             root.addMethodCall(methodCall);
 
             methodCall.setReturnClass(MyInt.class);
-            methodCall.setParamRuntimeClasses(List.of(MyInt.class));
             methodCall.setParamRepresentingClasses(List.of(MyInt.class));
             methodCall.setParameterNodes(List.of(new UserNode(MyInt.class, MyInt.class)));
 
