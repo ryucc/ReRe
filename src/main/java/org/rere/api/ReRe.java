@@ -8,9 +8,18 @@ package org.rere.api;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.EnvironmentNodeManager;
 import org.rere.core.listener.interceptor.EnvironmentObjectListener;
+import org.rere.core.listener.spies.ObjectSpy;
+import org.rere.core.replay.InOrderReplayNode;
+import org.rere.core.replay.ReplayObjectListener;
+import org.rere.core.replay.unwrap.GraphRootUnwrapper;
+import org.rere.core.replay.unwrap.LeafNodeUnwrapper;
+import org.rere.core.replay.unwrap.PrimitiveUnwrapper;
+import org.rere.core.replay.unwrap.SerializedUnwrapper;
+import org.rere.core.replay.unwrap.SingleNodeUnwrapper;
 import org.rere.core.synthesizer.mockito.MockitoSynthesizer;
 import org.rere.core.wrap.EnvironmentObjectWrapper;
 import org.rere.core.wrap.ReReWrapResult;
+import org.rere.core.wrap.mockito.MockitoSingleNodeWrapper;
 
 import java.util.ArrayList;
 
@@ -64,12 +73,28 @@ public class ReRe {
      * Exports the record data as mockito code
      *
      * @param packageName The package name for the generated mockito class e.g. org.rere.api
-     * @param methodName  (Not implemented yet) The method name for generating the mock object
+     * @param methodName  The method name for generating the mock object. e.g. createMock
      * @param className   The class name for the generated mockito code. e.g. ClassNameMockCreator
      * @return The generated mockito code in plaintext
      */
     public String exportMockito(String packageName, String methodName, String className) {
         MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer(packageName, className);
         return mockitoSynthesizer.generateMockito(reReIntermediateData.roots().get(0), methodName);
+    }
+
+    public <T> T createReplayMock(EnvironmentNode node, Class<T> targetClass) {
+
+        ReplayObjectListener replayObjectListener = new ReplayObjectListener();
+        MockitoSingleNodeWrapper<InOrderReplayNode> wrapper = new MockitoSingleNodeWrapper<>(replayObjectListener,
+                ObjectSpy.class);
+        SingleNodeUnwrapper singleNodeUnwrapper = new SingleNodeUnwrapper();
+        singleNodeUnwrapper.registerChild(new PrimitiveUnwrapper());
+        singleNodeUnwrapper.registerChild(new SerializedUnwrapper());
+        singleNodeUnwrapper.registerChild(new LeafNodeUnwrapper(wrapper));
+        GraphRootUnwrapper graphRootUnwrapper = new GraphRootUnwrapper(singleNodeUnwrapper);
+        replayObjectListener.setGraphRootUnwrapper(graphRootUnwrapper);
+
+
+        return targetClass.cast(graphRootUnwrapper.unwrap(node));
     }
 }

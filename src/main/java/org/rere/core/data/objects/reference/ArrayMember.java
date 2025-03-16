@@ -5,12 +5,16 @@
 
 package org.rere.core.data.objects.reference;
 
-public class ArrayMember implements Member{
+public class ArrayMember implements Member {
+    private final int index;
+
     public ArrayMember(int index) {
         this.index = index;
     }
 
-    private final int index;
+    public int getIndex() {
+        return index;
+    }
 
     public String getPath() {
         return String.format("[%d]", index);

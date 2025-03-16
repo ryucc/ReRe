@@ -12,6 +12,8 @@ public interface InOrderReplaySpy extends ObjectSpy {
     EnvironmentNode getReReNodePointer();
     void setReReNodePointer(EnvironmentNode node);
 
+
+
     String FIELD = "reReNodePointer";
     Class<?> TYPE = EnvironmentNode.class;
 }
