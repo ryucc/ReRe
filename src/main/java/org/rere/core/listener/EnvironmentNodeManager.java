@@ -20,6 +20,9 @@ import java.io.Serializable;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 
+/**
+ * Provides methods for spying on an environment object.
+ */
 public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
     private static final PrimitiveSerde PRIMITIVE_SERDE = new PrimitiveSerde();
     private SingleNodeWrapper<EnvironmentNode> leafNodeWrapper;
@@ -46,13 +49,13 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
     }
 
     @Override
-    public EnvironmentNode createNull(Class<?> clazz) {
-        return EnvironmentNode.ofNull(clazz);
+    public EnvironmentNode createNull(Class<?> representingClass) {
+        return EnvironmentNode.ofNull(representingClass);
     }
 
     @Override
-    public EnvironmentNode createFailed(Class<?> clazz, String comments) {
-        return EnvironmentNode.ofFailed(clazz, comments);
+    public EnvironmentNode createFailed(Class<?> representingClass, String comments) {
+        return EnvironmentNode.ofFailed(representingClass, comments);
     }
 
 

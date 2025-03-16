@@ -22,18 +22,18 @@ public class UserNodeManager implements NodeManager<UserNode> {
     }
 
     @Override
-    public UserNode createEmpty(Class<?> clazz, Object original) {
-        return new UserNode(original.getClass(), clazz);
+    public UserNode createEmpty(Class<?> representingClass, Object original) {
+        return new UserNode(original.getClass(), representingClass);
     }
 
     @Override
-    public UserNode createNull(Class<?> clazz) {
-        return new UserNode(clazz, clazz);
+    public UserNode createNull(Class<?> representingClass) {
+        return new UserNode(representingClass, representingClass);
     }
 
     @Override
-    public UserNode createFailed(Class<?> clazz, String comments) {
-        return new UserNode(clazz, comments);
+    public UserNode createFailed(Class<?> representingClass, String comments) {
+        return new UserNode(representingClass, comments);
     }
 
     public Object synthesizeLeafNode(Object original, UserNode node) {
