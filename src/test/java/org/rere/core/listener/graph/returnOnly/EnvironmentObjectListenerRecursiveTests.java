@@ -7,7 +7,6 @@ package org.rere.core.listener.graph.returnOnly;
 
 import org.rere.api.ReRe;
 import org.rere.core.data.objects.EnvironmentNode;
-import org.rere.core.listener.interceptor.EnvironmentObjectListener;
 import org.rere.core.serde.PrimitiveSerde;
 import org.rere.testData.GraphCompare;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,7 @@ public class EnvironmentObjectListenerRecursiveTests {
 
 
         ReRe reRe = new ReRe();
-        HttpClient wrappedClient = reRe.createSpiedObject(client, HttpClient.class);
+        HttpClient wrappedClient = reRe.createReReObject(client, HttpClient.class);
         String s = wrappedClient.get().getBody();
 
         EnvironmentNode root = reRe.getReReRecordData().roots().get(0);

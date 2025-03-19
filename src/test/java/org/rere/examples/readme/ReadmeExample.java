@@ -14,7 +14,7 @@ public class ReadmeExample {
 
         Dice dice = new Dice();
         ReRe reRe = new ReRe();
-        Dice wrappedDice = reRe.createSpiedObject(dice, Dice.class);
+        Dice wrappedDice = reRe.createReReObject(dice, Dice.class);
 
 
         System.out.println("/*");

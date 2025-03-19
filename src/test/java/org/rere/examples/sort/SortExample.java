@@ -18,7 +18,7 @@ public class SortExample {
         BubbleSorter bubbleSorter = new BubbleSorter();
 
         ReRe rere = new ReRe(new ReReSettings().withParameterModding(true));
-        BubbleSorter wrapped = rere.createSpiedObject(bubbleSorter, bubbleSorter.getClass());
+        BubbleSorter wrapped = rere.createReReObject(bubbleSorter, bubbleSorter.getClass());
         wrapped.sort(arr);
         System.out.println("/*");
         for (int i = 0; i < 2; i++) {

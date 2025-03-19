@@ -6,9 +6,7 @@
 package org.rere.core.listener.graph.returnOnly;
 
 import org.rere.api.ReRe;
-import org.rere.api.ReReSettings;
 import org.rere.core.data.objects.EnvironmentNode;
-import org.rere.core.listener.interceptor.EnvironmentObjectListener;
 import org.junit.jupiter.api.Test;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.methods.MethodResult;
@@ -42,7 +40,7 @@ public class EnvironmentObjectListenerNullTests {
 
         NullDice dice = new NullDice();
         ReRe reRe = new ReRe();
-        NullDice wrappedDice = reRe.createSpiedObject(dice, NullDice.class);
+        NullDice wrappedDice = reRe.createReReObject(dice, NullDice.class);
 
         wrappedDice.rollNull();
 
@@ -61,7 +59,7 @@ public class EnvironmentObjectListenerNullTests {
 
         NullDice dice = new NullDice();
         ReRe reRe = new ReRe();
-        NullDice wrappedDice = reRe.createSpiedObject(dice, NullDice.class);
+        NullDice wrappedDice = reRe.createReReObject(dice, NullDice.class);
 
         wrappedDice.rollVoid();
 

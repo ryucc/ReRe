@@ -16,7 +16,7 @@ public class FinalTracingExample {
         Dice dice = new Dice();
         DiceRoller diceRoller = new DiceRoller();
         ReRe reRe = new ReRe(new ReReSettings().withParameterModding(true));
-        DiceRoller wrappedRoller = reRe.createSpiedObject(diceRoller, DiceRoller.class);
+        DiceRoller wrappedRoller = reRe.createReReObject(diceRoller, DiceRoller.class);
 
 
         System.out.println("/*");

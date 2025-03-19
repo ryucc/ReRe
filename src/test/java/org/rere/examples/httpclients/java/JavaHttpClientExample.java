@@ -5,7 +5,6 @@
 
 package org.rere.examples.httpclients.java;
 
-import org.junit.jupiter.api.Test;
 import org.rere.api.ReRe;
 import org.rere.api.ReReSettings;
 
@@ -25,7 +24,7 @@ public class JavaHttpClientExample {
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .connectTimeout(Duration.ofSeconds(20))
                 .build();
-        HttpClient rereClient = reRe.createSpiedObject(client, HttpClient.class);
+        HttpClient rereClient = reRe.createReReObject(client, HttpClient.class);
 
         System.out.println("/*");
         HttpRequest getRequest = HttpRequest.newBuilder().uri(new URI("https://mit-license.org")).GET().build();

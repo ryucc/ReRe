@@ -12,7 +12,7 @@ public class RecordExample {
         TwoDice twoDice = new TwoDice(new Dice(), new Dice());
 
         ReRe rere = new ReRe(new ReReSettings().withParameterModding(true));
-        TwoDice wrappedDice = rere.createSpiedObject(twoDice, TwoDice.class);
+        TwoDice wrappedDice = rere.createReReObject(twoDice, TwoDice.class);
 
         System.out.println("/*");
         for (int i = 1; i <= 5; i++) {

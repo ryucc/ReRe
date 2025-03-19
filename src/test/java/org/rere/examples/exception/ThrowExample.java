@@ -15,7 +15,7 @@ public class ThrowExample {
         ErrorDice dice = new ErrorDice();
 
         ReRe rere = new ReRe();
-        ErrorDice wrappedDice = rere.createSpiedObject(dice, ErrorDice.class);
+        ErrorDice wrappedDice = rere.createReReObject(dice, ErrorDice.class);
 
 
         System.out.println("/*");

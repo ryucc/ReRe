@@ -19,7 +19,7 @@ class ClassArrayTests {
 
         Integer[] arr = {1, 2, 3, 4, 5};
         ReRe rere = new ReRe();
-        rere.createSpiedObject(arr, arr.getClass());
+        rere.createReReObject(arr, arr.getClass());
 
         EnvironmentNode root = rere.getReReRecordData().roots().get(0);
         assertThat(root.getDirectChildren()).hasSize(5);
@@ -32,7 +32,7 @@ class ClassArrayTests {
         Integer[][] arr = {{1, 2}, {1, 2}};
         ReRe rere = new ReRe();
 
-        rere.createSpiedObject(arr, arr.getClass());
+        rere.createReReObject(arr, arr.getClass());
 
         EnvironmentNode root = rere.getReReRecordData().roots().get(0);
         assertThat(root.getDirectChildren()).hasSize(2);
@@ -46,8 +46,8 @@ class ClassArrayTests {
         arr[0] = holder;
 
         ReRe rere = new ReRe();
-        rere.createSpiedObject(arr, arr.getClass());
-        rere.createSpiedObject(holder, holder.getClass());
+        rere.createReReObject(arr, arr.getClass());
+        rere.createReReObject(holder, holder.getClass());
         EnvironmentNode arrRoot = rere.getReReRecordData().roots().get(0);
         assertThat(arrRoot.getDirectChildren()).hasSize(1);
         EnvironmentNode recordRoot = rere.getReReRecordData().roots().getLast();

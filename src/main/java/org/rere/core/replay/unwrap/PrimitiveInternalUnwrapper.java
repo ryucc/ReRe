@@ -8,7 +8,7 @@ package org.rere.core.replay.unwrap;
 import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.utils.ClassUtils;
 
-public class PrimitiveUnwrapper implements ReplayUnwrapper {
+public class PrimitiveInternalUnwrapper implements ReplayInternalUnwrapper {
     public Object parsePrimitive(Class<?> clazz, String value) {
         if(clazz.equals(Integer.class) || clazz.equals(int.class)) {
             return Integer.valueOf(value);

@@ -7,7 +7,6 @@ package org.rere.core.listener.graph.returnOnly;
 
 import org.rere.api.ReRe;
 import org.rere.core.data.objects.EnvironmentNode;
-import org.rere.core.listener.interceptor.EnvironmentObjectListener;
 import org.junit.jupiter.api.Test;
 import org.rere.core.data.methods.EnvironmentMethodCall;
 import org.rere.core.data.methods.MethodResult;
@@ -37,7 +36,7 @@ public class EnvironmentObjectListenerPrivateTests {
         PrivateDice dice = new PrivateDice();
 
         ReRe reRe = new ReRe();
-        PrivateDice wrappedDice = reRe.createSpiedObject(dice, PrivateDice.class);
+        PrivateDice wrappedDice = reRe.createReReObject(dice, PrivateDice.class);
 
         for (int i = 1; i <= 5; i++) {
             wrappedDice.roll();

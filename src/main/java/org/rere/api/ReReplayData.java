@@ -9,10 +9,10 @@ import org.rere.core.data.objects.EnvironmentNode;
 
 import java.util.List;
 
-public class ReReIntermediateData {
+public class ReReplayData {
     private final List<EnvironmentNode> roots;
 
-    public ReReIntermediateData(List<EnvironmentNode> roots) {
+    public ReReplayData(List<EnvironmentNode> roots) {
         this.roots = roots;
     }
 

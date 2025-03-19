@@ -14,7 +14,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.rere.api.ReRe;
 import org.rere.api.ReReSettings;
-import org.rere.core.data.objects.EnvironmentNode;
 
 import java.io.IOException;
 
@@ -22,7 +21,7 @@ public class ApacheHttpClientExample {
     public static void main(String[] args) throws IOException, InterruptedException {
         ReRe reRe = new ReRe(new ReReSettings().withParameterModding(false));
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        CloseableHttpClient rereClient = reRe.createSpiedObject(httpclient, CloseableHttpClient.class);
+        CloseableHttpClient rereClient = reRe.createReReObject(httpclient, CloseableHttpClient.class);
         HttpGet httpGet = new HttpGet("https://mit-license.org");
         CloseableHttpResponse response = rereClient.execute(httpGet);
 

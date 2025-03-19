@@ -13,7 +13,7 @@ public class ParameterMatchingExample {
 
         PrivateDice dice = new PrivateDice();
         ReRe rere = new ReRe();
-        PrivateDice wrappedDice = rere.createSpiedObject(dice, PrivateDice.class);
+        PrivateDice wrappedDice = rere.createReReObject(dice, PrivateDice.class);
 
 
         System.out.println("/*");

@@ -5,30 +5,40 @@
 
 package org.rere.replay;
 
+import org.junit.jupiter.api.Test;
 import org.rere.api.ReRe;
+import org.rere.api.ReReMode;
+import org.rere.api.ReReSettings;
 import org.rere.core.data.objects.EnvironmentNode;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class ReadmeExample {
-    public static void main(String[] args) {
+    @Test
+    public void test() {
 
         Dice dice = new Dice();
         ReRe reRe = new ReRe();
-        Dice wrappedDice = reRe.createSpiedObject(dice, Dice.class);
+        Dice wrappedDice = reRe.createReReObject(dice, Dice.class);
 
 
-        wrappedDice.chill();
+        List<Integer> rollResult = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
-            System.out.println("Rolled " + wrappedDice.roll());
+            rollResult.add(wrappedDice.roll());
         }
-        EnvironmentNode node = reRe.getReReRecordData().roots().get(0);
-        Dice replayDice = reRe.createReplayMock(node, Dice.class);
+        // replay
+        ReRe replayReRe = new ReRe(new ReReSettings().withReReMode(ReReMode.REPLAY)
+                .withReReplayData(reRe.getReReRecordData()));
+        Dice replayDice = replayReRe.createReReObject(null, Dice.class);
+        List<Integer> replayResult = new ArrayList<>();
         for (int i = 1; i <= 5; i++) {
-            System.out.println("Replay Rolled " + replayDice.roll());
+            replayResult.add(replayDice.roll());
         }
-
-
+        assertThat(replayResult).usingRecursiveComparison().isEqualTo(rollResult);
     }
 
     public static class Dice {

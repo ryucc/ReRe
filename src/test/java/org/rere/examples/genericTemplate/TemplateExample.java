@@ -14,7 +14,7 @@ public class TemplateExample {
 
         TemplateDice<Integer> dice = new TemplateDice<>(1);
         ReRe rere = new ReRe();
-        TemplateDice<Integer> wrappedDice = rere.createSpiedObject(dice, TemplateDice.class);
+        TemplateDice<Integer> wrappedDice = rere.createReReObject(dice, TemplateDice.class);
         System.out.println("/*");
 
         for (int i = 1; i <= 5; i++) {

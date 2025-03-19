@@ -16,7 +16,7 @@ public class ArrayExample {
         Dice[] twoDice = {new Dice(), new Dice()};
 
         ReRe rere = new ReRe(new ReReSettings().withParameterModding(true));
-        Dice[] wrappedDice = rere.createSpiedObject(twoDice, twoDice.getClass());
+        Dice[] wrappedDice = rere.createReReObject(twoDice, twoDice.getClass());
 
         System.out.println("/*");
         for (int i = 1; i <= 5; i++) {

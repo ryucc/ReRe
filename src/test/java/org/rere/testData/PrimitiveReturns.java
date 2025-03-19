@@ -27,7 +27,7 @@ public class PrimitiveReturns {
 
 
         ReRe rere = new ReRe();
-        PrimitiveGenerator wrapped = rere.createSpiedObject(identity, PrimitiveGenerator.class);
+        PrimitiveGenerator wrapped = rere.createReReObject(identity, PrimitiveGenerator.class);
 
         wrapped.getOne();
         wrapped.getTwo();

@@ -13,7 +13,7 @@ public class ReadmeRecursiveExample {
         HttpClient client = new HttpClient();
         ReRe rere = new ReRe();
 
-        HttpClient wrappedClient = rere.createSpiedObject(client, HttpClient.class);
+        HttpClient wrappedClient = rere.createReReObject(client, HttpClient.class);
 
         System.out.println("/*");
         System.out.println(wrappedClient.get(0).getBody());

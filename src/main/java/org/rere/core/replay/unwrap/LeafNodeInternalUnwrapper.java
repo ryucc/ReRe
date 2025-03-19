@@ -9,8 +9,8 @@ import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.replay.InOrderReplayNode;
 import org.rere.core.wrap.mockito.MockitoSingleNodeWrapper;
 
-public class LeafNodeUnwrapper implements ReplayUnwrapper{
-    public LeafNodeUnwrapper(MockitoSingleNodeWrapper<InOrderReplayNode> singleNodeWrapper) {
+public class LeafNodeInternalUnwrapper implements ReplayInternalUnwrapper {
+    public LeafNodeInternalUnwrapper(MockitoSingleNodeWrapper<InOrderReplayNode> singleNodeWrapper) {
         this.singleNodeWrapper = singleNodeWrapper;
     }
 
@@ -28,6 +28,6 @@ public class LeafNodeUnwrapper implements ReplayUnwrapper{
 
     @Override
     public boolean accept(EnvironmentNode node) {
-        return true;
+        return node.getDirectChildren().isEmpty();
     }
 }

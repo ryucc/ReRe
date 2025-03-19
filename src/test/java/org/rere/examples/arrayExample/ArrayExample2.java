@@ -17,7 +17,7 @@ public class ArrayExample2 {
         DiceRoller diceRoller = new DiceRoller();
 
         ReRe rere = new ReRe(new ReReSettings().withParameterModding(true));
-        DiceRoller wrappedRoller = rere.createSpiedObject(diceRoller, DiceRoller.class);
+        DiceRoller wrappedRoller = rere.createReReObject(diceRoller, DiceRoller.class);
 
         System.out.println("/*");
         for (int i = 1; i <= 5; i++) {

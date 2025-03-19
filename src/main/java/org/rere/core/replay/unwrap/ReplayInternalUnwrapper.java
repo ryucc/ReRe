@@ -7,7 +7,7 @@ package org.rere.core.replay.unwrap;
 
 import org.rere.core.data.objects.EnvironmentNode;
 
-public interface ReplayUnwrapper {
+public interface ReplayInternalUnwrapper {
     Object unwrap(EnvironmentNode node);
     boolean accept(EnvironmentNode node);
 }

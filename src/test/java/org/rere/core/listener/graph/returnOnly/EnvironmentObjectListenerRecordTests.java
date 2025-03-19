@@ -23,7 +23,7 @@ public class EnvironmentObjectListenerRecordTests {
         RecordA a = new RecordA(1, b);
         ReRe rere = new ReRe();
 
-        RecordA wrappedA = rere.createSpiedObject(a, RecordA.class);
+        RecordA wrappedA = rere.createReReObject(a, RecordA.class);
         assertThat(wrappedA).isEqualTo(a);
 
         EnvironmentNode environmentNode = rere.getReReRecordData().roots().get(0);

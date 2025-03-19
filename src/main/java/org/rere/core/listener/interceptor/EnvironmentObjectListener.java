@@ -116,7 +116,7 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
             orignalMethod.setAccessible(true);
             returnValue = orignalMethod.invoke(original, wrappedArguments);
         } catch (InvocationTargetException e) {
-            ReReWrapResult<?, EnvironmentNode> result = environmentObjectWrapper.createRoot(e.getTargetException(),
+            ReReWrapResult<?, EnvironmentNode> result = environmentObjectWrapper.wrapObject(e.getTargetException(),
                     e.getTargetException().getClass());
             edge.setReturnNode(result.node());
             edge.setResult(MethodResult.THROW);
@@ -164,7 +164,7 @@ public class EnvironmentObjectListener implements ReReMethodInterceptor<Environm
         // Due to type erasure
         Class<?> representingReturnType = orignalMethod.getReturnType();
 
-        ReReWrapResult<?, EnvironmentNode> result = environmentObjectWrapper.createRoot(returnValue, representingReturnType);
+        ReReWrapResult<?, EnvironmentNode> result = environmentObjectWrapper.wrapObject(returnValue, representingReturnType);
         edge.setReturnNode(result.node());
         edge.setReturnClass(representingReturnType);
         edge.setResult(MethodResult.RETURN);

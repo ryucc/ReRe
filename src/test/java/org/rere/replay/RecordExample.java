@@ -2,7 +2,9 @@
 package org.rere.replay;
 
 import org.rere.api.ReRe;
+import org.rere.api.ReReMode;
 import org.rere.api.ReReSettings;
+import org.rere.api.ReReplayData;
 
 import java.util.Random;
 
@@ -12,7 +14,7 @@ public class RecordExample {
         TwoDice twoDice = new TwoDice(new Dice(), new Dice());
 
         ReRe rere = new ReRe(new ReReSettings().withParameterModding(true));
-        TwoDice wrappedDice = rere.createSpiedObject(twoDice, TwoDice.class);
+        TwoDice wrappedDice = rere.createReReObject(twoDice, TwoDice.class);
 
         System.out.println("/*");
         for (int i = 1; i <= 5; i++) {
@@ -21,8 +23,12 @@ public class RecordExample {
         }
         System.out.println("*/");
 
+        ReReplayData reReplayData = rere.getReReRecordData();
+        ReRe replayReRe = new ReRe(new ReReSettings().withReReMode(ReReMode.REPLAY)
+                .withReReplayData(reReplayData));
 
-        TwoDice replayDice = rere.createReplayMock(rere.getReReRecordData().roots().get(0), TwoDice.class);
+
+        TwoDice replayDice = replayReRe.createReReObject(null, TwoDice.class);
 
         System.out.println("/*");
         for (int i = 1; i <= 5; i++) {

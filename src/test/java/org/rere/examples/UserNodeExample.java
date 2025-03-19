@@ -7,7 +7,6 @@ package org.rere.examples;
 
 import org.rere.api.ReRe;
 import org.rere.core.data.objects.EnvironmentNode;
-import org.rere.core.listener.interceptor.EnvironmentObjectListener;
 import org.rere.core.synthesizer.mockito.MockitoSynthesizer;
 
 import java.util.ArrayList;
@@ -19,7 +18,7 @@ public class UserNodeExample {
         ObjectModifier objectModifier = new ObjectModifier();
 
         ReRe reRe = new ReRe();
-        ObjectModifier wrapped = reRe.createSpiedObject(objectModifier, ObjectModifier.class);
+        ObjectModifier wrapped = reRe.createReReObject(objectModifier, ObjectModifier.class);
         MyClass obj = new MyClass();
         MyClass[] myClasses = {obj};
         MyRecord myRecord = new MyRecord(myClasses);

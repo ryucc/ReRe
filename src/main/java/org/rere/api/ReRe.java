@@ -9,23 +9,24 @@ import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.EnvironmentNodeManager;
 import org.rere.core.listener.interceptor.EnvironmentObjectListener;
 import org.rere.core.listener.spies.ObjectSpy;
+import org.rere.core.passthrough.PassThroughRootObjectWrapper;
 import org.rere.core.replay.InOrderReplayNode;
 import org.rere.core.replay.ReplayObjectListener;
-import org.rere.core.replay.unwrap.GraphRootUnwrapper;
-import org.rere.core.replay.unwrap.LeafNodeUnwrapper;
-import org.rere.core.replay.unwrap.PrimitiveUnwrapper;
-import org.rere.core.replay.unwrap.SerializedUnwrapper;
-import org.rere.core.replay.unwrap.SingleNodeUnwrapper;
+import org.rere.core.replay.ReplayRootObjectWrapper;
+import org.rere.core.replay.unwrap.LeafNodeInternalUnwrapper;
+import org.rere.core.replay.unwrap.PrimitiveInternalUnwrapper;
+import org.rere.core.replay.unwrap.ReplayObjectWrapper;
+import org.rere.core.replay.unwrap.SerializedInternalUnwrapper;
+import org.rere.core.replay.unwrap.SingleNodeInternalUnwrapper;
 import org.rere.core.synthesizer.mockito.MockitoSynthesizer;
 import org.rere.core.wrap.EnvironmentObjectWrapper;
-import org.rere.core.wrap.ReReWrapResult;
+import org.rere.core.wrap.ReReRootObjectWrapper;
 import org.rere.core.wrap.mockito.MockitoSingleNodeWrapper;
 
 import java.util.ArrayList;
 
 public class ReRe {
-    private final ReReIntermediateData reReIntermediateData;
-    EnvironmentObjectWrapper environmentObjectWrapper;
+    private final ReReRootObjectWrapper reReRootObjectWrapper;
 
     public ReRe() {
         this(new ReReSettings());
@@ -36,11 +37,18 @@ public class ReRe {
      * Initiate an instance of ReRe.
      */
     public ReRe(ReReSettings reReSettings) {
-        reReIntermediateData = new ReReIntermediateData(new ArrayList<>());
-        EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener(reReSettings);
-        EnvironmentNodeManager environmentNodeManager = new EnvironmentNodeManager(environmentObjectListener, reReSettings);
-        this.environmentObjectWrapper = new EnvironmentObjectWrapper(environmentNodeManager);
-        environmentObjectListener.setEnvironmentObjectWrapper(environmentObjectWrapper);
+        if (reReSettings.getReReMode().equals(ReReMode.RECORD)) {
+            EnvironmentObjectListener environmentObjectListener = new EnvironmentObjectListener(reReSettings);
+            EnvironmentNodeManager environmentNodeManager = new EnvironmentNodeManager(environmentObjectListener,
+                    reReSettings);
+            EnvironmentObjectWrapper environmentObjectWrapper = new EnvironmentObjectWrapper(environmentNodeManager);
+            environmentObjectListener.setEnvironmentObjectWrapper(environmentObjectWrapper);
+            this.reReRootObjectWrapper = environmentObjectWrapper;
+        } else if (reReSettings.getReReMode().equals(ReReMode.REPLAY)) {
+            reReRootObjectWrapper = new ReplayRootObjectWrapper(reReSettings);
+        } else {
+            reReRootObjectWrapper = new PassThroughRootObjectWrapper();
+        }
     }
 
 
@@ -50,8 +58,8 @@ public class ReRe {
      *
      * @return ReReIntermediateData
      */
-    public ReReIntermediateData getReReRecordData() {
-        return reReIntermediateData;
+    public ReReplayData getReReRecordData() {
+        return reReRootObjectWrapper.getReplayData();
     }
 
     /**
@@ -63,10 +71,8 @@ public class ReRe {
      * @param <T>
      * @return The wrapped spy of the original object.
      */
-    public <T> T createSpiedObject(Object original, Class<T> targetClass) {
-        ReReWrapResult<T, EnvironmentNode> result = environmentObjectWrapper.createRoot(original, targetClass);
-        reReIntermediateData.roots().add(result.node());
-        return result.wrapped();
+    public <T> T createReReObject(Object original, Class<T> targetClass) {
+        return reReRootObjectWrapper.wrapRootObject(original, targetClass);
     }
 
     /**
@@ -79,22 +85,7 @@ public class ReRe {
      */
     public String exportMockito(String packageName, String methodName, String className) {
         MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer(packageName, className);
-        return mockitoSynthesizer.generateMockito(reReIntermediateData.roots().get(0), methodName);
-    }
-
-    public <T> T createReplayMock(EnvironmentNode node, Class<T> targetClass) {
-
-        ReplayObjectListener replayObjectListener = new ReplayObjectListener();
-        MockitoSingleNodeWrapper<InOrderReplayNode> wrapper = new MockitoSingleNodeWrapper<>(replayObjectListener,
-                ObjectSpy.class);
-        SingleNodeUnwrapper singleNodeUnwrapper = new SingleNodeUnwrapper();
-        singleNodeUnwrapper.registerChild(new PrimitiveUnwrapper());
-        singleNodeUnwrapper.registerChild(new SerializedUnwrapper());
-        singleNodeUnwrapper.registerChild(new LeafNodeUnwrapper(wrapper));
-        GraphRootUnwrapper graphRootUnwrapper = new GraphRootUnwrapper(singleNodeUnwrapper);
-        replayObjectListener.setGraphRootUnwrapper(graphRootUnwrapper);
-
-
-        return targetClass.cast(graphRootUnwrapper.unwrap(node));
+        ReReplayData reReplayData = reReRootObjectWrapper.getReplayData();
+        return mockitoSynthesizer.generateMockito(reReplayData.roots().get(0), methodName);
     }
 }

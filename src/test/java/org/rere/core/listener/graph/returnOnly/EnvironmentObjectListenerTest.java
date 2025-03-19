@@ -8,7 +8,6 @@ package org.rere.core.listener.graph.returnOnly;
 import org.assertj.core.api.Assertions;
 import org.rere.api.ReRe;
 import org.rere.core.data.objects.EnvironmentNode;
-import org.rere.core.listener.interceptor.EnvironmentObjectListener;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,7 +17,7 @@ public class EnvironmentObjectListenerTest {
     @Test
     public void test() {
         ReRe reRe = new ReRe();
-        MyObjectCreatorFactory wrapped = reRe.createSpiedObject(new MyObjectCreatorFactory(), MyObjectCreatorFactory.class);
+        MyObjectCreatorFactory wrapped = reRe.createReReObject(new MyObjectCreatorFactory(), MyObjectCreatorFactory.class);
         MyObjectCreator creator = wrapped.build();
         MyObject myObject = creator.create();
 

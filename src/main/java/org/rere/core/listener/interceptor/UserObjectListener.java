@@ -110,7 +110,7 @@ public class UserObjectListener implements ReReMethodInterceptor<UserNode> {
                 }
                 // TODO
                 ReReWrapResult<?, EnvironmentNode> listenResult =
-                        environmentObjectWrapper.createRoot(arg, representingClass);
+                        environmentObjectWrapper.wrapObject(arg, representingClass);
 
                 int curIndex = environmentNodes.size();
                 LocalSymbol symbol = new LocalSymbol(LocalSymbol.Source.LOCAL_ENV, curIndex);

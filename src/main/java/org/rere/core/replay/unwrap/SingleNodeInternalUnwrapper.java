@@ -10,20 +10,20 @@ import org.rere.core.data.objects.EnvironmentNode;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SingleNodeUnwrapper implements ReplayUnwrapper{
-    private final List<ReplayUnwrapper> unwrapperList;
+public class SingleNodeInternalUnwrapper implements ReplayInternalUnwrapper {
+    private final List<ReplayInternalUnwrapper> unwrapperList;
 
-    public SingleNodeUnwrapper() {
+    public SingleNodeInternalUnwrapper() {
         this.unwrapperList = new ArrayList<>();
     }
 
-    public void registerChild(ReplayUnwrapper unwrapper) {
+    public void registerChild(ReplayInternalUnwrapper unwrapper) {
         this.unwrapperList.add(unwrapper);
     }
 
     @Override
     public Object unwrap(EnvironmentNode node) {
-        for(ReplayUnwrapper unwrapper: unwrapperList) {
+        for(ReplayInternalUnwrapper unwrapper: unwrapperList) {
             if(unwrapper.accept(node)) {
                 return unwrapper.unwrap(node);
             }

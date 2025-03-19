@@ -21,7 +21,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class GraphRootUnwrapper implements ReplayUnwrapper {
+public class ReplayObjectWrapper implements ReplayInternalUnwrapper{
     /*
      * Algorithm:
      * 1. Topological sort, build child count
@@ -30,9 +30,9 @@ public class GraphRootUnwrapper implements ReplayUnwrapper {
      * @param node
      * @return
      */
-    private final SingleNodeUnwrapper singleNodeUnwrapper;
+    private final SingleNodeInternalUnwrapper singleNodeUnwrapper;
 
-    public GraphRootUnwrapper(SingleNodeUnwrapper singleNodeUnwrapper) {
+    public ReplayObjectWrapper(SingleNodeInternalUnwrapper singleNodeUnwrapper) {
         this.singleNodeUnwrapper = singleNodeUnwrapper;
     }
 
@@ -164,7 +164,6 @@ public class GraphRootUnwrapper implements ReplayUnwrapper {
         }
     }
 
-    @Override
     public Object unwrap(EnvironmentNode node) {
         SortResult result = topologicalSort(node);
         Map<EnvironmentNode, Object> initMap = firstInit(result);

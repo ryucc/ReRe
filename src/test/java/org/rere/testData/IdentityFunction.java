@@ -27,7 +27,7 @@ public class IdentityFunction {
 
 
         ReRe rere = new ReRe();
-        Identity wrapped = rere.createSpiedObject(identity, Identity.class);
+        Identity wrapped = rere.createReReObject(identity, Identity.class);
 
         wrapped.identityFunction(identity);
 

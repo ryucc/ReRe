@@ -17,7 +17,7 @@ public class IdentityFunctionExample {
         IdentityFunction identityFunction = new IdentityFunction();
 
         ReRe rere = new ReRe(new ReReSettings().withParameterModding(true));
-        IdentityFunction wrapped = rere.createSpiedObject(identityFunction, identityFunction.getClass());
+        IdentityFunction wrapped = rere.createReReObject(identityFunction, identityFunction.getClass());
         wrapped.call(arr);
         String code = rere.exportMockito("org.rere.examples.identityFunction",
                 "create",

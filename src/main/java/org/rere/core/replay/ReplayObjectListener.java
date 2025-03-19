@@ -14,7 +14,7 @@ import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.data.objects.reference.LocalSymbol;
 import org.rere.core.listener.interceptor.ReReMethodInterceptor;
 import org.rere.core.listener.utils.ClassUtils;
-import org.rere.core.replay.unwrap.GraphRootUnwrapper;
+import org.rere.core.replay.unwrap.ReplayObjectWrapper;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ TODO: better type inference
  */
 public class ReplayObjectListener implements ReReMethodInterceptor<InOrderReplayNode> {
 
-    private GraphRootUnwrapper graphRootUnwrapper;
+    private ReplayObjectWrapper replayObjectWrapper;
 
     public ReplayObjectListener() {
         this(new ReReSettings());
@@ -34,8 +34,8 @@ public class ReplayObjectListener implements ReReMethodInterceptor<InOrderReplay
     public ReplayObjectListener(ReReSettings reReSettings) {
     }
 
-    public void setGraphRootUnwrapper(GraphRootUnwrapper graphRootUnwrapper) {
-        this.graphRootUnwrapper = graphRootUnwrapper;
+    public void setReplayObjectWrapper(ReplayObjectWrapper replayObjectWrapper) {
+        this.replayObjectWrapper = replayObjectWrapper;
     }
 
     public Object interceptInterface(Object original,
@@ -115,6 +115,6 @@ public class ReplayObjectListener implements ReReMethodInterceptor<InOrderReplay
 
 
     public Object unwrap(EnvironmentNode node) {
-        return graphRootUnwrapper.unwrap(node);
+        return replayObjectWrapper.unwrap(node);
     }
 }
