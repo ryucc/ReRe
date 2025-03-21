@@ -5,28 +5,24 @@
 
 package org.rere.api;
 
-import org.rere.core.data.objects.EnvironmentNode;
 import org.rere.core.listener.EnvironmentNodeManager;
 import org.rere.core.listener.interceptor.EnvironmentObjectListener;
-import org.rere.core.listener.spies.ObjectSpy;
 import org.rere.core.passthrough.PassThroughRootObjectWrapper;
-import org.rere.core.replay.InOrderReplayNode;
-import org.rere.core.replay.ReplayObjectListener;
 import org.rere.core.replay.ReplayRootObjectWrapper;
-import org.rere.core.replay.unwrap.LeafNodeInternalUnwrapper;
-import org.rere.core.replay.unwrap.PrimitiveInternalUnwrapper;
-import org.rere.core.replay.unwrap.ReplayObjectWrapper;
-import org.rere.core.replay.unwrap.SerializedInternalUnwrapper;
-import org.rere.core.replay.unwrap.SingleNodeInternalUnwrapper;
 import org.rere.core.synthesizer.mockito.MockitoSynthesizer;
 import org.rere.core.wrap.EnvironmentObjectWrapper;
 import org.rere.core.wrap.ReReRootObjectWrapper;
-import org.rere.core.wrap.mockito.MockitoSingleNodeWrapper;
+import org.rere.verify.PassThroughVerifier;
+import org.rere.verify.ReReVerificationFailure;
+import org.rere.verify.ReReVerifier;
+import org.rere.verify.RecordVerifier;
+import org.rere.verify.ReplayVerifier;
 
-import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class ReRe {
     private final ReReRootObjectWrapper reReRootObjectWrapper;
+    private final ReReVerifier reReVerifier;
 
     public ReRe() {
         this(new ReReSettings());
@@ -49,6 +45,14 @@ public class ReRe {
         } else {
             reReRootObjectWrapper = new PassThroughRootObjectWrapper();
         }
+
+        if (reReSettings.getReReMode().equals(ReReMode.RECORD)) {
+            reReVerifier = new RecordVerifier();
+        } else if (reReSettings.getReReMode().equals(ReReMode.PASS_THROUGH)) {
+            reReVerifier = new PassThroughVerifier();
+        } else {
+            reReVerifier = new ReplayVerifier(reReSettings.getReReData().get().getReReVerifyData());
+        }
     }
 
 
@@ -58,8 +62,8 @@ public class ReRe {
      *
      * @return ReReIntermediateData
      */
-    public ReReplayData getReReRecordData() {
-        return reReRootObjectWrapper.getReplayData();
+    public ReReData getReReData() {
+        return new ReReData(reReRootObjectWrapper.getReplayData(), reReVerifier.getVerifyData());
     }
 
     /**
@@ -87,5 +91,31 @@ public class ReRe {
         MockitoSynthesizer mockitoSynthesizer = new MockitoSynthesizer(packageName, className);
         ReReplayData reReplayData = reReRootObjectWrapper.getReplayData();
         return mockitoSynthesizer.generateMockito(reReplayData.roots().get(0), methodName);
+    }
+
+    public void verify(Number input) {
+        reReVerifier.verify(input);
+    }
+
+    void verify(Number input, Consumer<ReReVerificationFailure> failureResolve){
+        reReVerifier.verify(input, failureResolve);
+    }
+    public void verify(Character o) {
+        reReVerifier.verify(o);
+    }
+    void verify(Character input, Consumer<ReReVerificationFailure> failureResolve){
+        reReVerifier.verify(input, failureResolve);
+    }
+    public void verify(Boolean o) {
+        reReVerifier.verify(o);
+    }
+    void verify(Boolean input, Consumer<ReReVerificationFailure> failureResolve){
+        reReVerifier.verify(input, failureResolve);
+    }
+    public void verify(String o) {
+        reReVerifier.verify(o);
+    }
+    void verify(String input, Consumer<ReReVerificationFailure> failureResolve){
+        reReVerifier.verify(input, failureResolve);
     }
 }

@@ -33,7 +33,7 @@ public class PrimitiveReturns {
         wrapped.getTwo();
         wrapped.getString();
 
-        EnvironmentNode node = rere.getReReRecordData().roots().get(0);
+        EnvironmentNode node = rere.getReReData().getReReplayData().roots().get(0);
         GraphCompare graphCompare = new GraphCompare();
         assertThat(graphCompare.diffNode(getExpectedNode(), node)).isTrue();
     }

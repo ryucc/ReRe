@@ -124,7 +124,7 @@ public class MagicNumbersSimple {
 
         wrapped.magic(a);
 
-        EnvironmentNode node = rere.getReReRecordData().roots().getFirst();
+        EnvironmentNode node = rere.getReReData().getReReplayData().roots().getFirst();
         MockitoSynthesizer synthesizer = new MockitoSynthesizer("asd", "asdf");
         synthesizer.generateMockito(getExpectedNode(), "create");
         GraphCompare graphCompare = new GraphCompare();

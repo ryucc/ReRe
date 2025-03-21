@@ -26,7 +26,7 @@ public class EnvironmentObjectListenerRecordTests {
         RecordA wrappedA = rere.createReReObject(a, RecordA.class);
         assertThat(wrappedA).isEqualTo(a);
 
-        EnvironmentNode environmentNode = rere.getReReRecordData().roots().get(0);
+        EnvironmentNode environmentNode = rere.getReReData().getReReplayData().roots().get(0);
 
         assertThat(environmentNode.getRuntimeClass()).isEqualTo(RecordA.class);
         assertThat(environmentNode.getDirectChildren())

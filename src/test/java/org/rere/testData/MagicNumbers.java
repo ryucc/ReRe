@@ -139,7 +139,7 @@ public class MagicNumbers {
 
         wrapped.magic(a);
 
-        EnvironmentNode node = rere.getReReRecordData().roots().getFirst();
+        EnvironmentNode node = rere.getReReData().getReReplayData().roots().getFirst();
         GraphCompare graphCompare = new GraphCompare();
 
         assertThat(graphCompare.diffNode(getExpectedNode(), node)).isTrue();

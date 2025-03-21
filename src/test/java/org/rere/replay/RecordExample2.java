@@ -7,13 +7,13 @@ package org.rere.replay;
 
 import org.junit.jupiter.api.Test;
 import org.rere.api.ReRe;
+import org.rere.api.ReReData;
 import org.rere.api.ReReMode;
 import org.rere.api.ReReSettings;
 import org.rere.api.ReReplayData;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +35,7 @@ public class RecordExample2 {
             values.add(wrappedRoller.roll(twoDice).getValue());
         }
 
-        ReReplayData reReplayData = rere.getReReRecordData();
+        ReReData reReplayData = rere.getReReData();
 
         ReRe replayReRe = new ReRe(new ReReSettings().withReReMode(ReReMode.REPLAY)
                 .withReReplayData(reReplayData));

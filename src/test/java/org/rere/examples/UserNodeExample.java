@@ -23,7 +23,7 @@ public class UserNodeExample {
         MyClass[] myClasses = {obj};
         MyRecord myRecord = new MyRecord(myClasses);
         wrapped.modify(myRecord);
-        EnvironmentNode node = reRe.getReReRecordData().roots().get(0);
+        EnvironmentNode node = reRe.getReReData().getReReplayData().roots().get(0);
         System.out.println(new MockitoSynthesizer("pack", "method").generateMockito(node, "create"));
     }
 

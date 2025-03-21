@@ -18,22 +18,22 @@ public class ReReSettings {
     final Map<Class<?>, Class<? extends ReReSerde<?>>> customSerde;
     final boolean parameterModding;
     final ReReMode reReMode;
+    final Optional<ReReData> reReData;
 
-    public Optional<ReReplayData> getReReplayData() {
-        return reReplayData;
+    public Optional<ReReData> getReReData() {
+        return reReData;
     }
 
-    final Optional<ReReplayData> reReplayData;
 
     public ReReSettings(ReReMode reReMode,
                         Set<Class<?>> skipMethodTracingClasses,
                         Map<Class<?>, Class<? extends ReReSerde<?>>> customSerde,
-                        boolean parameterModding, Optional<ReReplayData> reReplayData) {
+                        boolean parameterModding, Optional<ReReData> reReData) {
         this.skipMethodTracingClasses = skipMethodTracingClasses;
         this.customSerde = customSerde;
         this.parameterModding = parameterModding;
         this.reReMode = reReMode;
-        this.reReplayData = reReplayData;
+        this.reReData = reReData;
     }
 
     public ReReSettings() {
@@ -41,7 +41,7 @@ public class ReReSettings {
         parameterModding = false;
         skipMethodTracingClasses = new HashSet<>();
         customSerde = new HashMap<>();
-        reReplayData = Optional.empty();
+        reReData = Optional.empty();
     }
 
     public ReReMode getReReMode() {
@@ -71,7 +71,7 @@ public class ReReSettings {
      * @return A copy of ReReSettings with new parameterModding value.
      */
     public ReReSettings withParameterModding(boolean parameterModding) {
-        return new ReReSettings(reReMode, skipMethodTracingClasses, customSerde, parameterModding, reReplayData);
+        return new ReReSettings(reReMode, skipMethodTracingClasses, customSerde, parameterModding, reReData);
     }
 
     /**
@@ -85,7 +85,7 @@ public class ReReSettings {
         Set<Class<?>> set = new HashSet<>(skipMethodTracingClasses);
         Map<Class<?>, Class<? extends ReReSerde<?>>> serdeCopy = new HashMap<>(customSerde);
         serdeCopy.put(clazz, serializer);
-        return new ReReSettings(reReMode, set, serdeCopy, parameterModding, reReplayData);
+        return new ReReSettings(reReMode, set, serdeCopy, parameterModding, reReData);
     }
 
     /**
@@ -99,7 +99,7 @@ public class ReReSettings {
         copySerde.putAll(otherSettings.getCustomSerde());
         Set<Class<?>> skipCopy = new HashSet<>(skipMethodTracingClasses);
         skipCopy.addAll(otherSettings.skipMethodTracingClasses());
-        return new ReReSettings(reReMode, skipCopy, copySerde, otherSettings.parameterModding(), reReplayData);
+        return new ReReSettings(reReMode, skipCopy, copySerde, otherSettings.parameterModding(), reReData);
     }
 
     /**
@@ -113,13 +113,13 @@ public class ReReSettings {
     public ReReSettings addSkipClass(Class<?> skipClass) {
         Set<Class<?>> set = new HashSet<>(skipMethodTracingClasses);
         set.add(skipClass);
-        return new ReReSettings(reReMode, set, customSerde, parameterModding, reReplayData);
+        return new ReReSettings(reReMode, set, customSerde, parameterModding, reReData);
     }
 
     public ReReSettings withReReMode(ReReMode reReMode) {
-        return new ReReSettings(reReMode, skipMethodTracingClasses, customSerde, parameterModding, reReplayData);
+        return new ReReSettings(reReMode, skipMethodTracingClasses, customSerde, parameterModding, reReData);
     }
-    public ReReSettings withReReplayData(ReReplayData reReplayData) {
-        return new ReReSettings(reReMode, skipMethodTracingClasses, customSerde, parameterModding, Optional.of(reReplayData));
+    public ReReSettings withReReplayData(ReReData reReData) {
+        return new ReReSettings(reReMode, skipMethodTracingClasses, customSerde, parameterModding, Optional.of(reReData));
     }
 }

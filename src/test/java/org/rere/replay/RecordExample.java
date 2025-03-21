@@ -2,6 +2,7 @@
 package org.rere.replay;
 
 import org.rere.api.ReRe;
+import org.rere.api.ReReData;
 import org.rere.api.ReReMode;
 import org.rere.api.ReReSettings;
 import org.rere.api.ReReplayData;
@@ -23,7 +24,7 @@ public class RecordExample {
         }
         System.out.println("*/");
 
-        ReReplayData reReplayData = rere.getReReRecordData();
+        ReReData reReplayData = rere.getReReData();
         ReRe replayReRe = new ReRe(new ReReSettings().withReReMode(ReReMode.REPLAY)
                 .withReReplayData(reReplayData));
 

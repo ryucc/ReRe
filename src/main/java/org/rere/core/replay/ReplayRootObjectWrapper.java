@@ -22,10 +22,10 @@ public class ReplayRootObjectWrapper implements ReReRootObjectWrapper {
     private final ReplayObjectWrapper replayObjectWrapper;
 
     public ReplayRootObjectWrapper(ReReSettings reReSettings) {
-        if (!reReSettings.getReReplayData().isPresent()) {
+        if (!reReSettings.getReReData().isPresent()) {
             throw new RuntimeException("No Replay data for Replay mode!");
         }
-        this.reReplayData = reReSettings.getReReplayData().get();
+        this.reReplayData = reReSettings.getReReData().get().getReReplayData();
 
         ReplayObjectListener replayObjectListener = new ReplayObjectListener();
         MockitoSingleNodeWrapper<InOrderReplayNode> wrapper = new MockitoSingleNodeWrapper<>(replayObjectListener,

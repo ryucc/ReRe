@@ -31,7 +31,7 @@ public class IdentityFunction {
 
         wrapped.identityFunction(identity);
 
-        EnvironmentNode node = rere.getReReRecordData().roots().getFirst();
+        EnvironmentNode node = rere.getReReData().getReReplayData().roots().getFirst();
         GraphCompare graphCompare = new GraphCompare();
         assertThat(graphCompare.diffNode(getExpectedNode(Identity.class), node)).isTrue();
     }

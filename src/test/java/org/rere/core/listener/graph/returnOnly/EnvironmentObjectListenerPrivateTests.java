@@ -42,7 +42,7 @@ public class EnvironmentObjectListenerPrivateTests {
             wrappedDice.roll();
         }
 
-        EnvironmentNode root = reRe.getReReRecordData().roots().get(0);
+        EnvironmentNode root = reRe.getReReData().getReReplayData().roots().get(0);
         assertThat(root.getRuntimeClass()).isEqualTo(PrivateDice.class);
         assertThat(root.getMethodCalls()).hasSize(5)
                 .extracting(EnvironmentMethodCall::getResult)

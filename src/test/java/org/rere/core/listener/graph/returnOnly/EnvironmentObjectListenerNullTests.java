@@ -44,7 +44,7 @@ public class EnvironmentObjectListenerNullTests {
 
         wrappedDice.rollNull();
 
-        EnvironmentNode root = reRe.getReReRecordData().roots().getFirst();
+        EnvironmentNode root = reRe.getReReData().getReReplayData().roots().getFirst();
         assertThat(root.getRuntimeClass()).isEqualTo(NullDice.class);
         assertThat(root.getMethodCalls()).hasSize(1)
                 .extracting(EnvironmentMethodCall::getResult)
@@ -63,7 +63,7 @@ public class EnvironmentObjectListenerNullTests {
 
         wrappedDice.rollVoid();
 
-        EnvironmentNode root = reRe.getReReRecordData().roots().getFirst();
+        EnvironmentNode root = reRe.getReReData().getReReplayData().roots().getFirst();
         assertThat(root.getRuntimeClass()).isEqualTo(NullDice.class);
         assertThat(root.getMethodCalls()).hasSize(1)
                 .extracting(EnvironmentMethodCall::getResult)

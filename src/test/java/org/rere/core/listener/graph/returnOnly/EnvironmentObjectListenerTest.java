@@ -24,7 +24,7 @@ public class EnvironmentObjectListenerTest {
         int id = myObject.getId();
         String value = myObject.getValue();
 
-        EnvironmentNode root = reRe.getReReRecordData().roots().getFirst();
+        EnvironmentNode root = reRe.getReReData().getReReplayData().roots().getFirst();
         assertThat(root.isTerminal()).isFalse();
         assertThat(root.getRuntimeClass()).isEqualTo(MyObjectCreatorFactory.class);
         Assertions.assertThat(root.getMethodCalls()).hasSize(1);
