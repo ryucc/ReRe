@@ -29,6 +29,7 @@ public class HttpHeadersSerde implements ReReSerde {
         primitiveSerde = new PrimitiveSerde();
     }
 
+
     @Override
     public String serialize(Object object) throws SerializationException {
         if(object instanceof HttpHeaders) {
@@ -55,5 +56,10 @@ public class HttpHeadersSerde implements ReReSerde {
         } catch (ClassNotFoundException | IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean accept(Class clazz) {
+        return HttpHeaders.class.isAssignableFrom(clazz);
     }
 }

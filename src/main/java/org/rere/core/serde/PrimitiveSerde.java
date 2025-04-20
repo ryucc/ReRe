@@ -17,12 +17,12 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
-public class PrimitiveSerde implements ReReSerde<Serializable> {
+public class PrimitiveSerde implements ReReSerde {
     private static final Base64.Encoder encoder = Base64.getEncoder();
     private static final Base64.Decoder decoder = Base64.getDecoder();
 
 
-    public String serialize(Serializable object) throws SerializationException {
+    public String serialize(Object object) throws SerializationException {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); ObjectOutputStream objectOutputStream = new ObjectOutputStream(
                 baos)) {
             objectOutputStream.writeObject(object);
@@ -33,13 +33,18 @@ public class PrimitiveSerde implements ReReSerde<Serializable> {
         }
     }
 
-    public Serializable deserialize(String serialization) {
+    public Object deserialize(String serialization) {
         try (InputStream stream = new ByteArrayInputStream(serialization.getBytes(StandardCharsets.UTF_8)); ObjectInputStream objectInputStream = new ObjectInputStream(
                 decoder.wrap(stream))) {
-            return (Serializable) objectInputStream.readObject();
+            return objectInputStream.readObject();
         } catch (ClassNotFoundException | IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean accept(Class<?> clazz) {
+        return Serializable.class.isAssignableFrom(clazz);
     }
 
 }

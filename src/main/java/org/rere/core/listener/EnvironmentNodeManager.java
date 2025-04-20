@@ -11,6 +11,7 @@ import org.rere.core.listener.interceptor.ReReMethodInterceptor;
 import org.rere.core.listener.utils.ClassUtils;
 import org.rere.core.listener.spies.EnvironmentObjectSpy;
 import org.rere.core.serde.ReReSerde;
+import org.rere.core.serde.SerdeStrategy;
 import org.rere.core.wrap.SingleNodeWrapper;
 import org.rere.core.wrap.mockito.MockitoSingleNodeWrapper;
 import org.rere.core.serde.PrimitiveSerde;
@@ -18,6 +19,7 @@ import org.rere.core.serde.exceptions.SerializationException;
 
 import java.io.Serializable;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -26,12 +28,12 @@ import java.util.Map;
 public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
     private static final PrimitiveSerde PRIMITIVE_SERDE = new PrimitiveSerde();
     private SingleNodeWrapper<EnvironmentNode> leafNodeWrapper;
-    final Map<Class<?>, Class<? extends ReReSerde<?>>> customSerde;
+    final SerdeStrategy serdeStrategy;
 
     public EnvironmentNodeManager(ReReMethodInterceptor<EnvironmentNode> listener, ReReSettings reReSettings) {
         //this.leafNodeWrapper = new EnvironmentNodeWrapper(listener);
         //this.wrapper = new JavaProxySingleNodeWrapper<>(listener);
-        this.customSerde = reReSettings.getCustomSerde();
+        this.serdeStrategy = new SerdeStrategy(reReSettings.getCustomSerde());
         this.leafNodeWrapper = new MockitoSingleNodeWrapper<>(listener, EnvironmentObjectSpy.class);
     }
     //private final MockitoSingleEnvironmentNodeWrapper wrapper;
@@ -61,13 +63,12 @@ public class EnvironmentNodeManager implements NodeManager<EnvironmentNode> {
 
     public Object synthesizeLeafNode(Object original, EnvironmentNode node) {
         Object wrapped;
-        if (customSerde.containsKey(original.getClass())) {
+        if (serdeStrategy.shouldSerialize(original.getClass())) {
             try {
-                Class<? extends ReReSerde<?>> serializer = customSerde.get(original.getClass());
-                ReReSerde reReSerde = serializer.getConstructor().newInstance();
-                node.setValue(reReSerde.serialize(original));
+                ReReSerde serializer = serdeStrategy.getSerializer(original.getClass());
+                node.setValue(serializer.serialize(original));
                 node.setSerialized(true);
-                node.setSerializer(customSerde.get(original.getClass()));
+                node.setSerializer(serializer.getClass());
                 node.setComments(original.toString());
                 node.setTerminal(true);
                 wrapped = original;

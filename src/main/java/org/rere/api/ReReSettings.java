@@ -7,15 +7,17 @@ package org.rere.api;
 
 import org.rere.core.serde.ReReSerde;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 public class ReReSettings {
     final Set<Class<?>> skipMethodTracingClasses;
-    final Map<Class<?>, Class<? extends ReReSerde<?>>> customSerde;
+    final List<Class<? extends ReReSerde>> customSerde;
     final boolean parameterModding;
     final ReReMode reReMode;
     final Optional<ReReData> reReData;
@@ -27,7 +29,7 @@ public class ReReSettings {
 
     public ReReSettings(ReReMode reReMode,
                         Set<Class<?>> skipMethodTracingClasses,
-                        Map<Class<?>, Class<? extends ReReSerde<?>>> customSerde,
+                        List<Class<? extends ReReSerde>> customSerde,
                         boolean parameterModding, Optional<ReReData> reReData) {
         this.skipMethodTracingClasses = skipMethodTracingClasses;
         this.customSerde = customSerde;
@@ -40,7 +42,7 @@ public class ReReSettings {
         reReMode = ReReMode.RECORD;
         parameterModding = false;
         skipMethodTracingClasses = new HashSet<>();
-        customSerde = new HashMap<>();
+        customSerde = new ArrayList<>();
         reReData = Optional.empty();
     }
 
@@ -48,7 +50,7 @@ public class ReReSettings {
         return reReMode;
     }
 
-    public Map<Class<?>, Class<? extends ReReSerde<?>>> getCustomSerde() {
+    public List<Class<? extends ReReSerde>> getCustomSerde() {
         return customSerde;
     }
 
@@ -78,13 +80,12 @@ public class ReReSettings {
      * User implementation of serialization. This may be useful when a class is final, ReRe is not able to spy on final classes. But if the class is serializable, replay is still possible.
      * TODO not implemented yet.
      *
-     * @param clazz      The target class to serialize.
      * @param serializer User's custom implementation of ReReSerde for class T.
      */
-    public ReReSettings registerSerializer(Class<?> clazz, Class<? extends ReReSerde<?>> serializer) {
+    public ReReSettings registerSerializer(Class<? extends ReReSerde> serializer) {
         Set<Class<?>> set = new HashSet<>(skipMethodTracingClasses);
-        Map<Class<?>, Class<? extends ReReSerde<?>>> serdeCopy = new HashMap<>(customSerde);
-        serdeCopy.put(clazz, serializer);
+        List<Class<? extends ReReSerde>> serdeCopy = new ArrayList<>(customSerde);
+        serdeCopy.add(serializer);
         return new ReReSettings(reReMode, set, serdeCopy, parameterModding, reReData);
     }
 
@@ -95,8 +96,8 @@ public class ReReSettings {
      * @return Merged settings.
      */
     public ReReSettings merge(ReReSettings otherSettings) {
-        Map<Class<?>, Class<? extends ReReSerde<?>>> copySerde = new HashMap<>(customSerde);
-        copySerde.putAll(otherSettings.getCustomSerde());
+        List<Class<? extends ReReSerde>> copySerde = new ArrayList<>(customSerde);
+        copySerde.addAll(otherSettings.getCustomSerde());
         Set<Class<?>> skipCopy = new HashSet<>(skipMethodTracingClasses);
         skipCopy.addAll(otherSettings.skipMethodTracingClasses());
         return new ReReSettings(reReMode, skipCopy, copySerde, otherSettings.parameterModding(), reReData);

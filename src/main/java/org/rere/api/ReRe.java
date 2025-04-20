@@ -12,11 +12,11 @@ import org.rere.core.replay.ReplayRootObjectWrapper;
 import org.rere.core.synthesizer.mockito.MockitoSynthesizer;
 import org.rere.core.wrap.EnvironmentObjectWrapper;
 import org.rere.core.wrap.ReReRootObjectWrapper;
-import org.rere.verify.PassThroughVerifier;
-import org.rere.verify.ReReVerificationFailure;
-import org.rere.verify.ReReVerifier;
-import org.rere.verify.RecordVerifier;
-import org.rere.verify.ReplayVerifier;
+import org.rere.core.verify.PassThroughVerifier;
+import org.rere.core.verify.ReReVerificationFailure;
+import org.rere.core.verify.ReReVerifier;
+import org.rere.core.verify.RecordVerifier;
+import org.rere.core.verify.ReplayVerifier;
 
 import java.util.function.Consumer;
 

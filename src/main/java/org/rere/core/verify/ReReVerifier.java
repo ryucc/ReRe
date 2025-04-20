@@ -3,7 +3,7 @@
  * This program is made available under the terms of the MIT License.
  */
 
-package org.rere.verify;
+package org.rere.core.verify;
 
 import org.rere.api.ReReVerifyData;
 

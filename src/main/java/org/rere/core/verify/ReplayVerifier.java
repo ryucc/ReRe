@@ -3,10 +3,9 @@
  * This program is made available under the terms of the MIT License.
  */
 
-package org.rere.verify;
+package org.rere.core.verify;
 
 import org.rere.api.ReReVerifyData;
-import org.rere.api.ReReplayData;
 
 import java.util.function.Consumer;
 
@@ -49,16 +48,22 @@ public class ReplayVerifier implements ReReVerifier {
 
     public void verifyAll(Object input, Consumer<ReReVerificationFailure> failureResolve) {
         if (index >= verifyData.getResultList().size()) {
-            String errorMsg = String.format("%d-th verification called, but only %d recorded.",
+            ReReVerificationFailure verificationFailure = new ReReVerificationFailure(ReReVerificationFailure.FailureType.VALUE_MISMATCH,
+                    null,
+                    input,
                     index,
                     verifyData.getResultList().size());
-            throw new VerificationFailedException(errorMsg);
+            failureResolve.accept(verificationFailure);
+            return;
         }
         if (input == verifyData.getResultList().get(index)) {
             index++;
         } else {
-            ReReVerificationFailure verificationFailure = new ReReVerificationFailure(verifyData.getResultList()
-                    .get(index), input);
+            ReReVerificationFailure verificationFailure = new ReReVerificationFailure(ReReVerificationFailure.FailureType.VALUE_MISMATCH,
+                    verifyData.getResultList().get(index),
+                    input,
+                    index,
+                    verifyData.getResultList().size());
             failureResolve.accept(verificationFailure);
         }
     }
